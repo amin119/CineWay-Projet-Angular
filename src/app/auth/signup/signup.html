@@ -1,0 +1,133 @@
+<div class="signup-container">
+  <h2>Create an Account</h2>
+
+  <form [formGroup]="signupform" (ngSubmit)="onSubmit()" novalidate>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        placeholder="Enter your email"
+        class="form-control"
+      />
+      @if (signupform.get('email')?.touched && signupform.get('email')?.invalid) {
+        <div class="error">
+          @if (signupform.get('email')?.errors?.['required']) {
+            <div>Email is required.</div>
+          }
+          @if (signupform.get('email')?.errors?.['email']) {
+            <div>Invalid email format.</div>
+          }
+          @if (signupform.get('email')?.errors?.['emailExists']) {
+            <div>Email already exists.</div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Full Name -->
+    <div class="form-group">
+      <label for="full_name">Full Name</label>
+      <input
+        type="text"
+        id="full_name"
+        formControlName="full_name"
+        placeholder="Enter your full name"
+        class="form-control"
+      />
+      @if (signupform.get('full_name')?.touched && signupform.get('full_name')?.invalid) {
+        <div class="error">
+          @if (signupform.get('full_name')?.errors?.['required']) {
+            <div>Full name is required.</div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        formControlName="password"
+        placeholder="Enter a strong password"
+        class="form-control"
+      />
+      @if (signupform.get('password')?.touched && signupform.get('password')?.invalid) {
+        <div class="error">
+          @if (signupform.get('password')?.errors?.['required']) {
+            <div>Password is required.</div>
+          }
+          @if (signupform.get('password')?.errors?.['minlength']) {
+            <div>
+              Password must be at least 8 characters.
+            </div>
+          }
+          @if (signupform.get('password')?.errors?.['weakPassword']) {
+            <div>
+              Password must contain uppercase, lowercase, number, and special character.
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Date of Birth -->
+    <div class="form-group">
+      <label for="date_of_birth">Date of Birth</label>
+      <input
+        type="date"
+        id="date_of_birth"
+        formControlName="date_of_birth"
+        class="form-control"
+      />
+      @if (signupform.get('date_of_birth')?.errors?.['futureDate']) {
+        <div class="error">
+          Date of birth cannot be in the future.
+        </div>
+      }
+    </div>
+
+    <!-- Profile Picture URL -->
+    <div class="form-group">
+      <label for="profile_picture_url">Profile Picture URL</label>
+      <input
+        type="url"
+        id="profile_picture_url"
+        formControlName="profile_picture_url"
+        placeholder="https://example.com/avatar.jpg"
+        class="form-control"
+      />
+      @if (signupform.get('profile_picture_url')?.errors?.['invalidUrl']) {
+        <div class="error">
+          Enter a valid URL.
+        </div>
+      }
+    </div>
+
+    <!-- Newsletter -->
+    <div class="form-group form-check">
+      <input
+        type="checkbox"
+        id="newsletter_subscribed"
+        formControlName="newsletter_subscribed"
+        class="form-check-input"
+      />
+      <label for="newsletter_subscribed" class="form-check-label">Subscribe to newsletter</label>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary" [disabled]="signupform.invalid">
+      Sign Up
+    </button>
+
+  </form>
+
+  <p class="login-link">
+    Already have an account? <a [routerLink]="['/' + APP_ROUTES.login]">Login here</a>.
+  </p>
+</div>
