@@ -1,133 +1,124 @@
-<div class="signup-container">
-  <h2>Create an Account</h2>
+<div class="container py-5 my-4" style="max-width: 30%">
+  <div class="row justify-content-center align-items-center">
+    <div class="text-center mb-4">
+      <h1 class="fw-bold">Create Your CineWay Account</h1>
+      <p class="text-muted">Join us and enjoy exclusive cinema experiences</p>
+    </div>
 
-  <form [formGroup]="signupform" (ngSubmit)="onSubmit()" novalidate>
-
-    <!-- Email -->
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input
-        type="email"
-        id="email"
-        formControlName="email"
-        placeholder="Enter your email"
-        class="form-control"
-      />
-      @if (signupform.get('email')?.touched && signupform.get('email')?.invalid) {
-        <div class="error">
+    <form [formGroup]="signupform" (ngSubmit)="onSubmit()" novalidate>
+      <!-- Email -->
+      <div class="form-group mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="Enter your email"
+          class="form-control"
+        />
+        @if (signupform.get('email')?.touched && signupform.get('email')?.invalid) {
+        <div class="text-danger">
           @if (signupform.get('email')?.errors?.['required']) {
-            <div>Email is required.</div>
-          }
-          @if (signupform.get('email')?.errors?.['email']) {
-            <div>Invalid email format.</div>
-          }
-          @if (signupform.get('email')?.errors?.['emailExists']) {
-            <div>Email already exists.</div>
+          <div>Email is required.</div>
+          } @if (signupform.get('email')?.errors?.['email']) {
+          <div>Invalid email format.</div>
+          } @if (signupform.get('email')?.errors?.['emailExists']) {
+          <div>Email already exists.</div>
           }
         </div>
-      }
-    </div>
+        }
+      </div>
 
-    <!-- Full Name -->
-    <div class="form-group">
-      <label for="full_name">Full Name</label>
-      <input
-        type="text"
-        id="full_name"
-        formControlName="full_name"
-        placeholder="Enter your full name"
-        class="form-control"
-      />
-      @if (signupform.get('full_name')?.touched && signupform.get('full_name')?.invalid) {
-        <div class="error">
+      <!-- Full Name -->
+      <div class="form-group mb-3">
+        <label for="full_name" class="form-label">Full Name</label>
+        <input
+          type="text"
+          id="full_name"
+          formControlName="full_name"
+          placeholder="Enter your full name"
+          class="form-control"
+        />
+        @if (signupform.get('full_name')?.touched && signupform.get('full_name')?.invalid) {
+        <div class="text-danger">
           @if (signupform.get('full_name')?.errors?.['required']) {
-            <div>Full name is required.</div>
+          <div>Full name is required.</div>
           }
         </div>
-      }
-    </div>
+        }
+      </div>
 
-    <!-- Password -->
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        formControlName="password"
-        placeholder="Enter a strong password"
-        class="form-control"
-      />
-      @if (signupform.get('password')?.touched && signupform.get('password')?.invalid) {
-        <div class="error">
+      <!-- Password -->
+      <div class="form-group mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="Enter a strong password"
+          class="form-control"
+        />
+        @if (signupform.get('password')?.touched && signupform.get('password')?.invalid) {
+        <div class="text-danger">
           @if (signupform.get('password')?.errors?.['required']) {
-            <div>Password is required.</div>
-          }
-          @if (signupform.get('password')?.errors?.['minlength']) {
-            <div>
-              Password must be at least 8 characters.
-            </div>
-          }
-          @if (signupform.get('password')?.errors?.['weakPassword']) {
-            <div>
-              Password must contain uppercase, lowercase, number, and special character.
-            </div>
+          <div>Password is required.</div>
+          } @if (signupform.get('password')?.errors?.['minlength']) {
+          <div>Password must be at least 8 characters.</div>
+          } @if (signupform.get('password')?.errors?.['weakPassword']) {
+          <div>Password must contain uppercase, lowercase, number, and special character.</div>
           }
         </div>
-      }
-    </div>
+        }
+      </div>
 
-    <!-- Date of Birth -->
-    <div class="form-group">
-      <label for="date_of_birth">Date of Birth</label>
-      <input
-        type="date"
-        id="date_of_birth"
-        formControlName="date_of_birth"
-        class="form-control"
-      />
-      @if (signupform.get('date_of_birth')?.errors?.['futureDate']) {
-        <div class="error">
-          Date of birth cannot be in the future.
-        </div>
-      }
-    </div>
+      <!-- Date of Birth -->
+      <div class="form-group mb-3">
+        <label for="date_of_birth" class="form-label">Date of Birth</label>
+        <input
+          type="date"
+          id="date_of_birth"
+          formControlName="date_of_birth"
+          class="form-control"
+        />
+        @if (signupform.get('date_of_birth')?.errors?.['futureDate']) {
+        <div class="text-danger">Date of birth cannot be in the future.</div>
+        }
+      </div>
 
-    <!-- Profile Picture URL -->
-    <div class="form-group">
-      <label for="profile_picture_url">Profile Picture URL</label>
-      <input
-        type="url"
-        id="profile_picture_url"
-        formControlName="profile_picture_url"
-        placeholder="https://example.com/avatar.jpg"
-        class="form-control"
-      />
-      @if (signupform.get('profile_picture_url')?.errors?.['invalidUrl']) {
-        <div class="error">
-          Enter a valid URL.
-        </div>
-      }
-    </div>
+      <!-- Profile Picture URL -->
+      <div class="form-group mb-3">
+        <label for="profile_picture_url" class="form-label">Profile Picture URL</label>
+        <input
+          type="url"
+          id="profile_picture_url"
+          formControlName="profile_picture_url"
+          placeholder="https://example.com/avatar.jpg"
+          class="form-control"
+        />
+        @if (signupform.get('profile_picture_url')?.errors?.['invalidUrl']) {
+        <div class="text-danger">Enter a valid URL.</div>
+        }
+      </div>
 
-    <!-- Newsletter -->
-    <div class="form-group form-check">
-      <input
-        type="checkbox"
-        id="newsletter_subscribed"
-        formControlName="newsletter_subscribed"
-        class="form-check-input"
-      />
-      <label for="newsletter_subscribed" class="form-check-label">Subscribe to newsletter</label>
-    </div>
+      <!-- Newsletter -->
+      <div class="form-group form-check mb-3">
+        <input
+          type="checkbox"
+          id="newsletter_subscribed"
+          formControlName="newsletter_subscribed"
+          class="form-check-input"
+        />
+        <label for="newsletter_subscribed" class="form-check-label">Subscribe to newsletter</label>
+      </div>
 
-    <!-- Submit Button -->
-    <button type="submit" class="btn btn-primary" [disabled]="signupform.invalid">
-      Sign Up
-    </button>
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary btn-lg w-100" [disabled]="signupform.invalid">
+        Sign Up
+      </button>
 
-  </form>
-
-  <p class="login-link">
-    Already have an account? <a [routerLink]="['/' + APP_ROUTES.login]">Login here</a>.
-  </p>
+      <p class="mt-3 text-center text-muted">
+        Already have an account? <a [routerLink]="['/' + APP_ROUTES.login]">Login here</a>.
+      </p>
+    </form>
+  </div>
 </div>
