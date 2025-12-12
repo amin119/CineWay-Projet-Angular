@@ -1,69 +1,69 @@
-<div class="login-container">
-  <h2>Login to Your Account</h2>
-
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-
-    <!-- Email -->
-    <div class="form-group">
-      <label for="username">Email</label>
-      <input
-        type="email"
-        id="username"
-        formControlName="username"
-        placeholder="Enter your email"
-        class="form-control"
-      />
-      @if (loginForm.get('username')?.touched && loginForm.get('username')?.invalid) {
-        <div class="error">
-          @if (loginForm.get('username')?.errors?.['required']) {
-            <div>username is required.</div>
-          }
-          @if (loginForm.get('username')?.errors?.['email']) {
-            <div>Invalid email format.</div>
-          }
-        </div>
-      }
-    </div>
-
-    <!-- Password -->
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        formControlName="password"
-        placeholder="Enter your password"
-        class="form-control"
-      />
-      @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
-        <div class="error">
-          @if (loginForm.get('password')?.errors?.['required']) {
-            <div>Password is required.</div>
-          }
-          @if (loginForm.get('password')?.errors?.['minlength']) {
-            <div>
-              Password must be at least 8 characters.
-            </div>
+<div class="container py-5 my-4" style="max-width: 70%;">
+  <div class="row justify-content-center align-items-center " >
+    <div class="col-md-6">
+      <div class="text-center mb-4">
+        <h1 class="fw-bold">Create Your CineWay Account</h1>
+        <p class="text-muted ">Join us and enjoy exclusive cinema experiences</p>
+      </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Email -->
+        <div class="form-group mb-3">
+          <label for="username" class="form-label">Email</label>
+          <input
+            type="email"
+            id="username"
+            formControlName="username"
+            placeholder="Enter your email"
+            class="form-control"
+          />
+          @if (loginForm.get('username')?.touched && loginForm.get('username')?.invalid) {
+          <div class="error">
+            @if (loginForm.get('username')?.errors?.['required']) {
+            <div class="text-danger">username is required.</div>
+            } @if (loginForm.get('username')?.errors?.['email']) {
+            <div class="text-danger">Invalid email format.</div>
+            }
+          </div>
           }
         </div>
-      }
+
+        <!-- Password -->
+        <div class="form-group mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            class="form-control"
+          />
+          @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+          <div class="error">
+            @if (loginForm.get('password')?.errors?.['required']) {
+            <div class="text-danger">Password is required.</div>
+            } @if (loginForm.get('password')?.errors?.['minlength']) {
+            <div class="text-danger">Password must be at least 8 characters.</div>
+            }
+          </div>
+          }
+        </div>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-lg w-100" [disabled]="loginForm.invalid">
+          Login
+        </button>
+        <br>
+        <!-- Sign up Link -->
+        <p class="text-muted">
+          Don't have an account? <a [routerLink]="['/' + APP_ROUTES.signup]">Sign up</a>.
+        </p>
+      </form>
     </div>
-
-    <!-- Submit Button -->
-    <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">
-      Login
-    </button>
-
-    <!-- Forgot Password Link -->
-    <p class="forgot-password">
-      <a [routerLink]="[APP_ROUTES.login]">Forgot password?</a>
-      <!-- to change to forgetpassword route later -->
-    </p>
-
-    <!-- Sign up Link -->
-    <p class="signup-link">
-      Don't have an account? <a [routerLink]="['/' + APP_ROUTES.signup]">Sign up here</a>.
-    </p>
-
-  </form>
+    <div class="col-md-6 d-none d-md-flex justify-content-center">
+      <img
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiIIQIFOb8Fx4XXbGrNUJxk4X8Ve5GrOAh1Oa1_ThTXf_Uo1ySRVVNlAzDlFYyw1a6Y983w8ccBdzwP_0WjdxNGa6vNUQ6X14uOg-c00O_Kl5I_OFLqEeGX4UNMQCUUCVTBqNr6kJulShLUttwWFjiFLtm9oORpZMCw9if7I7aVBIxnMRWB4g_s6m9UMxXZs06qQYPkKnvpTgvaHRj8l8lBWOKBXZ2PJlJGAwtTdcvC3UJ6nR8kMqsb7_FHDqcDYwP7Z3xKYwDOV1N"
+        class="img-fluid rounded-3 shadow"
+        alt="Cinema Image"
+      />
+    </div>
+  </div>
 </div>
