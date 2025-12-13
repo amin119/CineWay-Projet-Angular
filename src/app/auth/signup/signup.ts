@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { SignupRequestDto } from '../dto/signup-request.dto';
@@ -22,17 +22,27 @@ export class Signup {
   private toastr = inject(ToastrService);
   private formBuilder = inject(FormBuilder);
 
+  showPass = signal(false);
+  togglePass() {
+    this.showPass.update((value) => !value);
+  }
+
+  isLoading = this.authService.loading;
   signupform = this.formBuilder.group({
-    email: ['', {validators : [Validators.required, Validators.email],
-    asyncValidators: [emailExistsValidator(this.authService)],
-    updateOn: 'blur'
-  }],
+    email: [
+      '',
+      {
+        validators: [Validators.required, Validators.email],
+        asyncValidators: [emailExistsValidator(this.authService)],
+        updateOn: 'blur',
+      },
+    ],
     full_name: ['', [Validators.required]],
     password: [
       '',
       {
         validators: [Validators.required, Validators.minLength(8), strongPasswordValidator()],
-        updateOn: 'blur'
+        updateOn: 'blur',
       },
     ],
     date_of_birth: [''],

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { APP_ROUTES } from '../../config/app-routes.confg';
 import { AuthService } from '../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
@@ -20,21 +20,31 @@ export class Login {
   private toastr = inject(ToastrService);
   private formBuilder = inject(NonNullableFormBuilder);
 
+  isLoading = this.authService.loading;
   loginForm = this.formBuilder.group({
     username: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
+  showPass = signal(false);
+  togglePass(){
+    this.showPass.update(value => !value);
+  }
 
   onSubmit() {
     if (this.loginForm.valid) {
       const loginData = this.loginForm.getRawValue();
 
       this.authService.login(loginData).subscribe({
-        next: (res : LoginResponseDto) => {
-          localStorage.setItem('token',res.access_token)
-          this.toastr.success(`Welcome back`); //to add logic to get user name with the response
+        next: (user) => {
+          if (user){
+          this.toastr.success(`Welcome back , ${user?.full_name}`);
           this.router.navigate([APP_ROUTES.home]);
-        },
+        }
+        else
+        {
+          this.toastr.error('Login failed. Please try again.');
+        }
+      },
         error: (err) => {
           this.toastr.error('Email or password is incorrect.');
         },
