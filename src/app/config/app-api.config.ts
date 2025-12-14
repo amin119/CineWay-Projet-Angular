@@ -13,7 +13,7 @@ export const APP_API = {
   },
   movies:{
     movies: `${environment.apiUrl}/movies`,
-  }
+  },
   cinema:{
     list: `${environment.apiUrl}/cinemas/`,
     search :`${environment.apiUrl}/cinemas/search`
