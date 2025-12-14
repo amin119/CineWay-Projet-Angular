@@ -65,11 +65,11 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  private loadUser(): Observable<User | null> {
+  loadUser(): Observable<User | null> {
     const token = this.getToken();
     if (token) {
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      return this.http.get<User>(APP_API.auth.me, { headers }).pipe(
+      //const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      return this.http.get<User>(APP_API.auth.me).pipe(
         tap((user) => {
           this._user.set(user);
           const { id, ...userToSave } = user;
@@ -80,7 +80,7 @@ export class AuthService {
       return of(null);
     }
   }
-  private loadUserFromStorage() {
+  loadUserFromStorage() {
     const userData = localStorage.getItem('authUser');
     if (userData) {
       this._user.set(JSON.parse(userData));
@@ -91,7 +91,6 @@ export class AuthService {
   getUser() {
     return this._user.asReadonly();
   }
-  user = signal<User | null>(null);
 
 
 

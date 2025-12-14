@@ -1,0 +1,15 @@
+<div class="flex gap-8">
+  <div class="relative flex flex-col w-64">
+<app-sidebar  [user]="user()"
+  (logout)="onLogout()"
+  (sectionChange)="onSectionChange($event)"/>  
+
+</div>
+
+ 
+  <section class=" relative flex flex-col mx-auto min-w-4xl">
+  <app-content [user]="user()"
+  [section]="section"
+  (updateProfile)="onUpdateProfile($event)"/>
+  </section>
+</div>

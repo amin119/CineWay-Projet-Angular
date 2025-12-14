@@ -32,12 +32,51 @@
           <a href="#" class="cw-li-navbar">Cinemas</a>
           <a href="#" class="cw-li-navbar">Special Offers</a>
         </div>
-          <div class="flex items-center gap-2">
-          <button class="cw-btn-primary" (click)="logout()">
-            <i class="bi bi-box-arrow-right"></i>
-            Logout
-          </button>
-        </div>
+      <div class="relative ml-auto">
+  <!-- Avatar button -->
+  <button
+    class="flex items-center gap-2 focus:outline-none"
+    (click)="toggleMenu()"
+  >
+    <img
+      [src]="user()?.profile_picture_url 
+        ? user()!.profile_picture_url 
+        : '/assets/avatar.png'"
+      alt="User avatar"
+      class="w-10 h-10 rounded-full object-cover border border-gray-600"
+    />
+    <span class="hidden lg:block text-sm text-gray-200">
+      {{ user()?.full_name }}
+    </span>
+    <i class="bi bi-chevron-down text-xs"></i>
+  </button>
+
+  <!-- Dropdown -->
+  @if (menuOpen) {
+    <div
+      class="absolute left-0 mt-2 w-44 bg-gray-900 border border-gray-700  shadow-lg overflow-hidden z-50"
+    >
+      <button
+         [routerLink]="APP_ROUTES.profile"
+        class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:bg-gray-800"
+      >
+      <i class="bi bi-person"></i>
+       View Profile
+  </button>
+
+      <div class="border-t border-gray-700"></div>
+
+      <button
+        class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:bg-gray-800"
+        (click)="logout()"
+      >
+      <i class="bi bi-box-arrow-right"></i>
+      Logout
+     
+      </button>
+    </div>
+  }
+</div>
         }
         @else{
         <div class="flex items-center gap-2">
@@ -48,3 +87,4 @@
     </div>
   </div>
 </nav>
+

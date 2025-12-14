@@ -49,6 +49,21 @@
            text-gray-400
            pointer-events-none;
   }
+  .profile-link {
+  @apply w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-gray-800;
+}
+.profile-link.active {
+  @apply bg-gray-800 text-white;
+}
+.profile-input {
+    @apply w-full rounded-lg px-4 py-2 text-sm
+           bg-[#101922] text-white
+           border border-gray-700
+           placeholder-gray-500
+           focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+
+
  
 }
 
@@ -69,3 +84,4 @@ button{
   border-radius: 8px;
 
 }
+
