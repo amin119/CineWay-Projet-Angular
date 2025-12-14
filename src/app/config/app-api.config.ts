@@ -8,4 +8,8 @@ export const APP_API = {
     checkmail: `${environment.apiUrl}/auth/check-email`,
     me : `${environment.apiUrl}/auth/me`,
   },
+  cinema:{
+    list: `${environment.apiUrl}/cinemas/`,
+    search :`${environment.apiUrl}/cinemas/search`
+  }
 };
