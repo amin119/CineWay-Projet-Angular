@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, Observable, of } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 import { APP_API } from '../../config/app-api.config';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { LoginRequestDto } from '../dto/login-request.dto';
@@ -51,4 +51,12 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
   }
+  user = signal<User | null>(null);
+
+  loadUser() {
+    return this.http.get<User>('auth/me').pipe(
+      tap(user => this.user.set(user))
+    );
+  }
+
 }
