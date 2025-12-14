@@ -1,4 +1,3 @@
-// this is not the final version of the movie model
 export interface MovieModel {
   id: number;
   title: string;

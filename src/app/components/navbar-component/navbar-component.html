@@ -1,0 +1,50 @@
+<nav class="cw fixed w-full border-b border-gray-500 bg-gray-950 z-50 h-16">
+  <div class="max-w-screen-xl mx-auto flex items-center px-2 py-2">
+    <!-- Logo -->
+    <div class="flex items-center gap-2">
+      <img
+        src="https://img.icons8.com/?size=100&id=111180&format=png&color=228BE6"
+        class="h-7"
+        alt="CineWay Logo"
+      />
+      <span class="text-xl font-semibold text-heading">CineWay</span>
+    </div>
+
+    <div class="hidden md:flex flex-1 items-center justify-between ml-12">
+      <!--  Search -->
+      <div class="search-container">
+        <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-4.35-4.35m1.85-5.4a7.25 7.25 0 11-14.5 0 7.25 7.25 0 0114.5 0z"
+          />
+        </svg>
+        <input type="text" placeholder="Search for movies..." class="search-input" />
+      </div>
+
+      <!--  Tabs + Auth -->
+      <div class="flex items-center gap-8">
+        @if (isAuth()){
+        <div class="flex items-center gap-6">
+          <a href="#" class="cw-li-navbar">Movies</a>
+          <a href="#" class="cw-li-navbar">Cinemas</a>
+          <a href="#" class="cw-li-navbar">Special Offers</a>
+        </div>
+          <div class="flex items-center gap-2">
+          <button class="cw-btn-primary" (click)="logout()">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+          </button>
+        </div>
+        }
+        @else{
+        <div class="flex items-center gap-2">
+          <button class="cw-btn-secondary" [routerLink]="['/' + APP_ROUTES.signup]">Sign Up</button>
+          <button class="cw-btn-primary" [routerLink]="['/' + APP_ROUTES.login]">Sign In</button>
+        </div>}
+      </div>
+    </div>
+  </div>
+</nav>

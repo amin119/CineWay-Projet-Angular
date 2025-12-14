@@ -1,6 +1,8 @@
+
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, finalize, map, Observable, of, switchMap, tap } from 'rxjs';
+
 import { APP_API } from '../../config/app-api.config';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { LoginRequestDto } from '../dto/login-request.dto';
@@ -89,4 +91,8 @@ export class AuthService {
   getUser() {
     return this._user.asReadonly();
   }
+  user = signal<User | null>(null);
+
+
+
 }

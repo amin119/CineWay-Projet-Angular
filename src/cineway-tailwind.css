@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+
+
+@layer components {
+
+  /* CineWay Buttons */
+  .cw-btn {
+    @apply px-4 py-2 rounded-2xl font-medium transition duration-200;
+  }
+
+  .cw-btn-primary {
+    @apply px-4 py-2 rounded-2xl font-medium transition duration-200
+           bg-blue-400 text-white hover:bg-blue-700;
+  }
+
+  .cw-btn-secondary {
+    @apply px-4 py-2 rounded-2xl font-medium transition duration-200
+     bg-gray-950 text-white hover:bg-gray-900;
+           
+  }
+
+  /* Layout */
+  .cw-container {
+    @apply max-w-7xl mx-auto px-6;
+  }
+  /* Search container */
+  .search-container {
+    @apply relative w-full max-w-md;
+  }
+
+  /* Search input */
+  .search-input {
+    @apply w-full rounded-xl
+           bg-gray-800
+           text-gray-200
+           placeholder-gray-400
+           px-2 py-1
+           text-sm
+           outline-none
+           border border-gray-700
+           focus:border-gray-500
+           focus:ring-2 focus:ring-gray-600
+           transition;
+  }
+ /* Search icon */
+  .search-icon {
+    @apply absolute right-4 top-1/2
+           -translate-y-1/2
+           text-gray-400
+           pointer-events-none;
+  }
+ 
+}
+
+
+.cw-li-navbar,
+.cw-li-navbar:link,
+.cw-li-navbar:visited {
+  color: #9ca3af; 
+  text-decoration: none;
+}
+
+.cw-li-navbar:hover,
+.cw-li-navbar:focus {
+  color: #ffffff;
+  text-decoration: none;
+}
+button{
+  border-radius: 8px;
+
+}

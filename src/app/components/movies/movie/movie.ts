@@ -1,4 +1,5 @@
-import { Component, input} from '@angular/core';
+
+import { Component, input } from '@angular/core';
 import { MovieModel } from '../../../models/movie.model';
 
 @Component({
@@ -8,5 +9,10 @@ import { MovieModel } from '../../../models/movie.model';
   styleUrl: './movie.css',
 })
 export class Movie {
-   movie=input.required<MovieModel>();
+
+     movie=input.required<MovieModel>();
+
+
+
+
 }
