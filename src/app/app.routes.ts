@@ -12,7 +12,7 @@ export const routes: Routes = [
    
   },
   {
-    path: '',
+    path: 'home',
     component: Home,
     canActivate: [AuthGuard]
   },
