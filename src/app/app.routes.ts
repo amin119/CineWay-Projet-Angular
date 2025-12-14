@@ -7,17 +7,25 @@ import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
 
 import { LandingPageComponent } from './components/landingPage/landing-page-component/landing-page-component';
+import { MainLayout } from './components/layouts/main-layout/main-layout';
 export const routes: Routes = [
   {
     path: '',
-    component: LandingPageComponent,
-   
+    component: MainLayout,
+    children: [
+      {
+        path: 'home',
+        component: Home,
+        canActivate: [authGuard],
+      },
+      {
+        path: '',
+        component: LandingPageComponent,
+        canActivate : [guestGuard]
+      },
+    ],
   },
-  {
-    path: 'home',
-    component: Home,
-    canActivate: [authGuard]
-  },
+
   {
     path: 'auth',
     canActivate: [guestGuard],
