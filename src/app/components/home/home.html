@@ -1,1 +1,2 @@
-<p>home works!</p>
+<span>Welcome {{ auth.user()?.isAdmin }}</span>
+<button (click)="auth.logout()">Logout</button>
