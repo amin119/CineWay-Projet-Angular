@@ -1,25 +1,7 @@
 <div class="container py-5">
   <br>
   <h2 class="my-4">Cinemas</h2>
- <div class="mb-4 d-flex justify-content-center">
-  <div class="d-flex" style="gap: 10px; max-width: 700px; width: 100%;">
-    <!-- Search input -->
-    <div class="input-group flex-grow-1">
-      <span class="input-group-text bg-dark text-white rounded-start">
-        <i class="bi bi-search"></i>
-      </span>
-      <input
-        type="text"
-        class="form-control bg-dark text-white border-start-0 placeholder-glow"
-        placeholder="Search for cinema around you ..."
-        [(ngModel)]="searchTerm"
-      />
-    </div>
-  </div>
-</div>
-
-
-
+  <app-search-bar/>
   @if (error()) {
     <div class="text-danger">{{ error() }}</div>
   }

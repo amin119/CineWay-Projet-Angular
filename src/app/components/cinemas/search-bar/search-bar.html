@@ -1,0 +1,17 @@
+<div class="mb-4 d-flex justify-content-center">
+  <div class="d-flex" style="max-width: 700px; width: 100%">
+    <form [formGroup]="form" class="mb-0 w-100">
+      <div class="input-group w-100">
+        <input
+          type="text"
+          class="form-control bg-dark text-white placeholder-glow rounded-start"
+          formControlName="search"
+          placeholder="Search for cinemas by name , city or zip code..."
+        />
+        <button class="btn btn-dark rounded-end border-white" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
