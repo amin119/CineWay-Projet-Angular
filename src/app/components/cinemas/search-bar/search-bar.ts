@@ -1,25 +1,37 @@
-import { Component, inject, Output, signal, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Cinema } from '../../../models/cinema.model';
-import { APP_ROUTES } from '../../../config/app-routes.confg';
 import { CinemaService } from '../../../services/cinema.service';
-import { Router } from '@angular/router';
-import { catchError, debounceTime, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, of, switchMap, tap } from 'rxjs';
+import { rxResource, toObservable } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
+import { Cinema } from '../../../models/cinema.model';
 
 @Component({
   selector: 'app-search-bar',
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.css',
 })
 export class SearchBar {
   formBuilder = inject(FormBuilder);
   cinemaService = inject(CinemaService);
-  router = inject(Router);
-  @Output() searchResult: Cinema[] = [];
+
   form = this.formBuilder.group({ search: [''] });
-  get search(): AbstractControl {
+
+  get searchControl(): AbstractControl {
     return this.form.get('search')!;
   }
+
+  searchResults = rxResource({
+    stream: () =>
+      this.searchControl.valueChanges.pipe(
+        filter((q): q is string => !!q && q.length >= 2),
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((q) => this.cinemaService.searchCinemas(q)),
+        catchError(() => of([]))
+      ),
+    defaultValue: [],
+  });
 
 }

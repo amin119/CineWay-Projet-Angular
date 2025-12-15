@@ -31,8 +31,9 @@ export class CinemaService {
     this.skip.update((s) => Math.max(0, s - this.limit));
   }
   canGoPrevious = computed(() => this.skip() > 0);
+
   searchCinemas(query: string) {
     const params = new HttpParams().set('q', query);
-    return this.http.get<Cinema[]>(`${APP_API.cinema}/search`, { params }).pipe;
+    return this.http.get<Cinema[]>(`${APP_API.cinema.search}`, { params });
   }
 }
