@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams, httpResource } from '@angular/common/http';
 import { Cinema } from '../models/cinema.model';
 import { APP_API } from '../config/app-api.config';
+import { Showtime } from '../models/showtime.model';
 
 @Injectable({
   providedIn: 'root',
@@ -46,4 +47,16 @@ export class CinemaService {
   getCinemaDetails(cinema_id: number) {
     this.cinemaId.update(() => cinema_id);
   }
+  chosenDate = signal('');
+  readonly showTimesRes = httpResource<Showtime[]>(() => ({
+    url: `${APP_API.cinema.list}${this.cinemaId()}/showtimes`,
+    method: 'GET',
+    params: this.chosenDate() ? { date: this.chosenDate() } : undefined
+  }));
+  getShowTimes (cinema_id:number, date : string){
+    this.cinemaId.update(() => cinema_id);
+    this.chosenDate.update(() => date);
+
+  }
 }
+

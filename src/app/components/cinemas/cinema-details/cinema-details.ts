@@ -2,17 +2,26 @@ import { Component, input, inject, OnInit, signal, computed } from '@angular/cor
 import { ActivatedRoute, Router } from '@angular/router';
 import { CinemaService } from '../../../services/cinema.service';
 import { Cinema } from '../../../models/cinema.model';
-import { AMENITY_ICONS, DEFAULT_AMENITY_ICON, formatName, getIconAmenity } from '../../../config/amenities.config';
+import {
+  AMENITY_ICONS,
+  DEFAULT_AMENITY_ICON,
+  formatName,
+  getIconAmenity,
+} from '../../../config/amenities.config';
+import { Showtime } from '../../../models/showtime.model';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-cinema-details',
   templateUrl: './cinema-details.html',
   styleUrl: './cinema-details.css',
+  imports: [DatePipe],
 })
 export class CinemaDetails implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cinemaService = inject(CinemaService);
+  private cinemaId = Number(this.route.snapshot.paramMap.get('id'));
 
   cinema = computed(() => this.cinemaService.cinemaDetailsRes.value());
   error = computed(() => this.cinemaService.cinemaDetailsRes.error());
@@ -25,6 +34,7 @@ export class CinemaDetails implements OnInit {
     const cinemaId = Number(this.route.snapshot.paramMap.get('id'));
     if (cinemaId) {
       this.cinemaService.getCinemaDetails(cinemaId);
+      this.onTodayClick();
     }
   }
 
@@ -37,5 +47,34 @@ export class CinemaDetails implements OnInit {
   }
   goBack() {
     this.router.navigate(['/cinemas']);
+  }
+
+  showTimes = computed(() => {
+    const res = this.cinemaService.showTimesRes.value();
+    if (!res) return [];
+    return res.map((item) => ({
+      id: item.id,
+      movie_id: item.movie_id,
+      screening_time: item.screening_time,
+    }));
+  });
+  selectedDate: string | null = null;
+  showtimes: Showtime[] = [];
+
+  onTodayClick() {
+    const today = new Date().toISOString().split('T')[0];
+    this.selectedDate = today;
+    this.cinemaService.getShowTimes(this.cinemaId, this.selectedDate);
+  }
+
+  onTomorrowClick() {
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+    this.selectedDate = tomorrow;
+    this.cinemaService.getShowTimes(this.cinemaId, this.selectedDate);
+  }
+
+  onDatePickerChange(dateString: string) {
+    this.selectedDate = dateString;
+    this.cinemaService.getShowTimes(this.cinemaId, this.selectedDate);
   }
 }
