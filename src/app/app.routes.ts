@@ -9,6 +9,7 @@ import { guestGuard } from './auth/guards/guest.guard';
 import { LandingPageComponent } from './components/landingPage/landing-page-component/landing-page-component';
 import { MainLayout } from './components/layouts/main-layout/main-layout';
 import { Cinemas } from './components/cinemas/cinemas/cinemas';
+import { CinemaDetails } from './components/cinemas/cinema-details/cinema-details';
 export const routes: Routes = [
   {
     path: '',
@@ -27,8 +28,13 @@ export const routes: Routes = [
       {
         path: 'cinemas',
         component : Cinemas,
-        canActivate :[authGuard]
-      }
+        canActivate :[authGuard],
+      },
+      {
+        path: 'cinemas/:id',
+        component: CinemaDetails,
+        canActivate: [authGuard],
+      },
     ],
   },
 

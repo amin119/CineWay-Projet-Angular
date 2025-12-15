@@ -6,10 +6,7 @@ export const APP_API = {
     signup: `${environment.apiUrl}/auth/register`,
     logout: `${environment.apiUrl}/auth/logout`,
     checkmail: `${environment.apiUrl}/auth/check-email`,
-
     me : `${environment.apiUrl}/auth/me`,
-
-
   },
   movies:{
     movies: `${environment.apiUrl}/movies`,

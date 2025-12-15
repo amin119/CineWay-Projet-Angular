@@ -33,3 +33,11 @@ export const AMENITY_ICONS: Record<string, string> = {
 };
 
 export const DEFAULT_AMENITY_ICON = 'bi-info-circle';
+
+  export function getIconAmenity(amenity: string): string {
+    return AMENITY_ICONS[amenity] ?? DEFAULT_AMENITY_ICON;
+  }
+
+  export function formatName(amenity: string): string {
+    return amenity.replaceAll('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  }
