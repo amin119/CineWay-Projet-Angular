@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from "@angular/router";
+import { Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { APP_ROUTES } from '../../config/app-routes.confg';
 import { AuthService } from '../../auth/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
@@ -7,7 +7,7 @@ import { User } from '../../auth/model/user';
 
 @Component({
   selector: 'app-navbar-component',
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './navbar-component.html',
   styleUrl: './navbar-component.css',
 })
@@ -29,7 +29,7 @@ logout(){
 isAuth(){
   return this.authService.isAuthenticated();
 }
-user = this.authService.getUser(); 
+user = this.authService.getUser();
 
 
 }

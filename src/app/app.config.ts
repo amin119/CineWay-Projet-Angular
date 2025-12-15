@@ -11,10 +11,10 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes), provideClientHydration(withEventReplay()),
+    provideRouter(routes),
+    provideClientHydration(withEventReplay()),
     provideToastr({}),
-    provideHttpClient(withInterceptors([authInterceptor]),withFetch()),
-    provideAnimations()
-
-  ]
+    provideHttpClient(withInterceptors([authInterceptor]), withFetch()),
+    provideAnimations(),
+  ],
 };

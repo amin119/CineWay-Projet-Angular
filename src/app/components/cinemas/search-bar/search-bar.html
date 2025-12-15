@@ -1,0 +1,52 @@
+<div class="mb-4 d-flex justify-content-center">
+  <div class="d-flex" style="max-width: 700px; width: 100%">
+    <form [formGroup]="form" class="mb-0 w-100">
+      <div class="input-group w-100">
+        <input
+          type="text"
+          class="form-control bg-dark text-white placeholder-glow rounded-start"
+          formControlName="search"
+          placeholder="Search for cinemas by name, city, or zip code..."
+          autocomplete="off"
+        />
+        <span class="input-group-text bg-dark rounded-end border-white">
+          <i class="bi bi-search text-white"></i>
+        </span>
+      </div>
+      @if (searchResults.value().length && (form.get('search')?.value != "")) {
+      <ul class="list-group w-100 shadow bg-dark mt-1">
+        @for (cinema of searchResults.value(); track cinema.id) {
+        <li
+          class="list-group-item list-group-item-dark"
+          style="cursor: pointer; padding: 0.5rem 1rem"
+          [routerLink]="['/cinemas', cinema.id]"
+        >
+          <strong>{{ cinema.name }}</strong> – {{ cinema.city }} – {{ cinema.address }}
+        </li>
+        }
+      </ul>
+      }
+
+      @else {@if(form.touched && searchResults.value().length == 0 && form.get('search')?.value != "") {
+      <div class="text-warning mt-2">
+        No cinemas found. Try another keyword.
+      </div>
+      }}
+
+      @if (searchResults.isLoading() && (form.get('search')?.value != "")) {
+      <div class="text-center mt-2">
+        <div class="spinner-grow text-primary" role="status">
+          <span class="sr-only">Searching...</span>
+        </div>
+        <span class="text-light ms-2">Searching cinemas...</span>
+      </div>
+      }
+      @if (searchResults.error()) {
+      <div class="text-danger mt-2">
+        Oops! Something went wrong while searching. Please try again later.
+      </div>
+      }
+
+    </form>
+  </div>
+</div>
