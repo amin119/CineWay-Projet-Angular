@@ -1,0 +1,132 @@
+<aside class="fixed left-0 top-0 w-64 h-screen bg-gray-950 border-r border-gray-800 pt-16">
+  <nav class="mt-8 px-4">
+    <a
+      routerLink="/admin/overview"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-blue-400 rounded-lg transition duration-200 hover:bg-gray-900 [&.active]:bg-blue-500 [&.active]:bg-opacity-20 [&.active]:text-blue-400 [&.active]:border-l-2 [&.active]:border-blue-400 block"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 12l2-3m2 3l2-3m2 3l2-3m2-3v6m0 0v6m0-6h6m0 0h6m0-6v6m0 0v6"
+        />
+      </svg>
+      <span>Overview</span>
+    </a>
+
+    <a
+      routerLink="/admin/movies"
+      routerLinkActive="active"
+      class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-blue-400 rounded-lg transition duration-200 hover:bg-gray-900 [&.active]:bg-blue-500 [&.active]:bg-opacity-20 [&.active]:text-blue-400 [&.active]:border-l-2 [&.active]:border-blue-400 block"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M7 4v16m10-16v16m-8-16h4m0 16h-4m8-16h4m0 16h-4"
+        />
+      </svg>
+      <span>Movie Management</span>
+    </a>
+
+    <a
+      routerLink="/admin/cinemas"
+      routerLinkActive="active"
+      class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-blue-400 rounded-lg transition duration-200 hover:bg-gray-900 [&.active]:bg-blue-500 [&.active]:bg-opacity-20 [&.active]:text-blue-400 [&.active]:border-l-2 [&.active]:border-blue-400 block"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"
+        />
+      </svg>
+      <span>Cinema Management</span>
+    </a>
+
+    <a
+      routerLink="/admin/users"
+      routerLinkActive="active"
+      class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-blue-400 rounded-lg transition duration-200 hover:bg-gray-900 [&.active]:bg-blue-500 [&.active]:bg-opacity-20 [&.active]:text-blue-400 [&.active]:border-l-2 [&.active]:border-blue-400 block"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+        />
+      </svg>
+      <span>User Management</span>
+    </a>
+
+    <a
+      routerLink="/admin/showtimes"
+      routerLinkActive="active"
+      class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-blue-400 rounded-lg transition duration-200 hover:bg-gray-900 [&.active]:bg-blue-500 [&.active]:bg-opacity-20 [&.active]:text-blue-400 [&.active]:border-l-2 [&.active]:border-blue-400 block opacity-50 cursor-not-allowed"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>Showtimes (Soon)</span>
+    </a>
+
+    <hr class="my-6 border-gray-800" />
+
+  
+    <button
+      class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-300 rounded-lg transition duration-200 hover:bg-red-900 w-full text-left"
+      (click)="logout()"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+        />
+      </svg>
+      <span>Logout</span>
+    </button>
+  </nav>
+</aside>
