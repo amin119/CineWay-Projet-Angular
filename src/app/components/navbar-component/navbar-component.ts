@@ -4,6 +4,7 @@ import { APP_ROUTES } from '../../config/app-routes.confg';
 import { AuthService } from '../../auth/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { User } from '../../auth/model/user';
+import { UserApi } from '../../services/user-api';
 
 @Component({
   selector: 'app-navbar-component',
@@ -17,6 +18,7 @@ private router = inject(Router);
 private toastrService = inject(ToastrService);
 APP_ROUTES = APP_ROUTES;
 menuOpen = false;
+  userApi=inject(UserApi)
 
 toggleMenu() {
   this.menuOpen = !this.menuOpen;
@@ -29,7 +31,7 @@ logout(){
 isAuth(){
   return this.authService.isAuthenticated();
 }
-user = this.authService.getUser(); 
+  user = this.userApi.user;
 
 
 }

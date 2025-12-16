@@ -13,18 +13,19 @@ import { User } from '../model/user';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private _user = signal<User | null>(null);
   private _loading = signal(false);
   public loading = this._loading.asReadonly();
-  isAuthenticated = computed(() => !!this._user());
+isAuthenticated(): boolean {
+  return !!localStorage.getItem('token');
+}
   constructor() {
-    this.loadUserFromStorage();
+    
   }
 
-  login(credentials: LoginRequestDto): Observable<User | null> {
+  login(credentials: LoginRequestDto): Observable<LoginResponseDto> {
     this._loading.set(true);
     const body = new HttpParams()
-      .set('username', credentials.username)
+      .set('username', credentials.username.trim())
       .set('password', credentials.password);
     return this.http
       .post<LoginResponseDto>(APP_API.auth.login, body.toString(), {
@@ -34,7 +35,7 @@ export class AuthService {
         tap((response) => {
           localStorage.setItem('token', response.access_token);
         }),
-        switchMap(() => this.loadUser()),
+        
         finalize(() => this._loading.set(false))
       );
   }
@@ -57,41 +58,11 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
-    localStorage.removeItem('authUser');
-    this._user.set(null);
   }
 
   getToken(): string | null {
     return localStorage.getItem('token');
   }
-
-  loadUser(): Observable<User | null> {
-    const token = this.getToken();
-    if (token) {
-      //const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      return this.http.get<User>(APP_API.auth.me).pipe(
-        tap((user) => {
-          this._user.set(user);
-          const { id, ...userToSave } = user;
-          localStorage.setItem('authUser', JSON.stringify(userToSave));
-        })
-      );
-    } else {
-      return of(null);
-    }
-  }
-  loadUserFromStorage() {
-    const userData = localStorage.getItem('authUser');
-    if (userData) {
-      this._user.set(JSON.parse(userData));
-    } else if (this.getToken()) {
-      this.loadUser().subscribe();
-    }
-  }
-  getUser() {
-    return this._user.asReadonly();
-  }
-
 
 
 }

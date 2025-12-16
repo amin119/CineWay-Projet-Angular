@@ -12,5 +12,10 @@ export const APP_API = {
   },
   movies:{
     movies: `${environment.apiUrl}/movies`,
-  }
+  },
+  user: {
+    me:`${environment.apiUrl}/users/me`,
+    preferences: `${environment.apiUrl}/users/me/preferences`,
+    profilePicture: `${environment.apiUrl}/users/me/profile-picture`,
+  },
 };

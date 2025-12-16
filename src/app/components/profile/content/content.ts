@@ -1,6 +1,7 @@
 import { Component, effect, EventEmitter, inject, Input, Output } from '@angular/core';
-import { User } from '../../../auth/model/user';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UserApi } from '../../../services/user-api';
+import { Profile } from '../../../models/profile.model';
 
 @Component({
   selector: 'app-content',
@@ -9,44 +10,50 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
   styleUrl: './content.css',
 })
 export class Content {
-@Input() user!: User | null;
-@Input() section!: 'profile' | 'preferences' | 'help';
-@Output() updateProfile = new EventEmitter<Partial<User>>();
-//@Output() changePassword = new EventEmitter<PasswordDto>(); NO logic change password in back 
-private fb = inject(FormBuilder);
+  private fb = inject(FormBuilder);
+  private userApi = inject(UserApi);
 
-profileForm = this.fb.group({
-  full_name: ['', Validators.required],
-  email: ['', [Validators.required, Validators.email]],
-});
-private formInitialized = false;
+ 
+  profile = this.userApi.profile;
 
-constructor() {
-  effect(() => {
-    if (this.user && !this.formInitialized) {
-      this.profileForm.patchValue({
-        full_name: this.user.full_name,
-        email: this.user.email,
-      });
-      this.formInitialized = true;
-    }
+  @Input() section!: 'profile' | 'preferences' | 'help';
+
+  @Output() updateProfile = new EventEmitter<{
+    payload: Partial<Profile>;
+    emailChanged: boolean;
+  }>();
+
+  profileForm = this.fb.nonNullable.group({
+    full_name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
   });
-}
 
-//to fiiiiix
-onSave() {
-  if (this.profileForm.invalid || this.profileForm.pristine) return;
+  constructor() {
+    effect(() => {
+      const p = this.profile();
+      if (!p) return;
 
-  const raw = this.profileForm.getRawValue();
+      this.profileForm.patchValue({
+        full_name: p.full_name,
+        email: p.email,
+      });
+    });
+  }
 
-  const payload: Partial<User> = {
-    ...(raw.full_name ? { full_name: raw.full_name } : {}),
-    ...(raw.email ? { email: raw.email } : {}),
-  };
+  onSave() {
+    if (this.profileForm.invalid || this.profileForm.pristine) return;
 
-  this.updateProfile.emit(payload);
-  this.profileForm.markAsPristine();
-}
+    const payload = this.profileForm.getRawValue();
+    const currentProfile = this.profile();
 
+    const emailChanged =
+      !!currentProfile && payload.email !== currentProfile.email;
 
+    this.updateProfile.emit({
+      payload,
+      emailChanged,
+    });
+
+    this.profileForm.markAsPristine();
+  }
 }

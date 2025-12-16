@@ -37,7 +37,7 @@ export class Login {
       this.authService.login(loginData).subscribe({
         next: (user) => {
           if (user){
-          this.toastr.success(`Welcome back , ${user?.full_name}`);
+          this.toastr.success(`Welcome back`);
           this.router.navigate([APP_ROUTES.home]);
         }
         else

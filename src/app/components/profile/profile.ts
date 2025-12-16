@@ -1,11 +1,15 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, DestroyRef, effect, inject, OnInit } from '@angular/core';
 import { Sidebar } from "./sidebar/sidebar";
 import { Content } from "./content/content";
 import { User } from '../../auth/model/user';
 import { AuthService } from '../../auth/services/auth.service';
 import { UserApi } from '../../services/user-api';
 import { FormBuilder, Validators } from '@angular/forms';
-
+import { Profile as ProfileModel} from '../../models/profile.model';
+import { Toast, ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
+import { APP_API } from '../../config/app-api.config';
+import { APP_ROUTES } from '../../config/app-routes.confg';
 @Component({
   selector: 'app-profile',
   imports: [Sidebar, Content],
@@ -13,22 +17,48 @@ import { FormBuilder, Validators } from '@angular/forms';
   styleUrl: './profile.css',
 })
 export class Profile {
-userService=inject(UserApi)
+  APP_Routes=APP_ROUTES;
+userApi=inject(UserApi)
 authService=inject(AuthService)
-user=this.authService.getUser()
+profile = this.userApi.profile;
+loading = this.userApi.loading;
 section: 'profile' | 'preferences' | 'help' = 'profile';
+  toastr=inject(ToastrService)
+  router=inject(Router)
+
+onUpdateProfile(event: {
+  payload: Partial<ProfileModel>;
+  emailChanged: boolean;
+}) {
+  this.userApi.updateProfile(event.payload).subscribe({
+    next: () => {
+      if (event.emailChanged) {
+        this.toastr.info(
+          'Your email has changed. Please login again.'
+        );
+          this.authService.logout(); 
+    this.userApi.clear();   
 
 
-onUpdateProfile(payload: Partial<User>) {
-    this.userService.updateProfile(payload).subscribe();
+        this.router.navigate([APP_ROUTES.login]);
+      } else {
+        this.toastr.success('Profile updated successfully');
+      }
+    },
+    error: () => {
+      this.toastr.error('Failed to update profile');
+    },
+  });
+}
+
+  onSectionChange(section: 'profile' | 'preferences' | 'help') {
+    this.section = section;
   }
 
   onLogout() {
     this.authService.logout();
   }
 
-onSectionChange(section: 'profile' | 'preferences' | 'help') {
-  this.section = section;
-}
+
 
 }
