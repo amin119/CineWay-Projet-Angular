@@ -1,15 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../auth/services/auth.service';
-
 @Component({
   selector: 'app-home',
-  imports: [],
   templateUrl: './home.html',
-  styleUrl: './home.css',
+  imports: [],
 })
 export class Home {
   auth= inject(AuthService)
-  user=this.auth.loadUser().subscribe(
-  )
 
 }

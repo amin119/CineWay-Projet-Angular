@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { UserApi } from '../../../../services/user-api';
 
 @Component({
   selector: 'app-admin-header',
@@ -14,8 +15,9 @@ export class AdminHeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private toastrService = inject(ToastrService);
-  
-  user = this.authService.getUser();
+  userApi=inject(UserApi)
+
+  user = this.userApi.user;
   menuOpen = false;
 
   toggleMenu() {

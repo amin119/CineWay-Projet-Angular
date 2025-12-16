@@ -1,6 +1,6 @@
 <div class="flex gap-8">
   <div class="relative flex flex-col w-64">
-<app-sidebar  [user]="user()"
+<app-sidebar  
   (logout)="onLogout()"
   (sectionChange)="onSectionChange($event)"/>  
 
@@ -8,8 +8,13 @@
 
  
   <section class=" relative flex flex-col mx-auto min-w-4xl">
-  <app-content [user]="user()"
-  [section]="section"
-  (updateProfile)="onUpdateProfile($event)"/>
+ 
+  <app-content
+    
+      [section]="section"
+
+    (updateProfile)="onUpdateProfile($event)">
+  </app-content>
+
   </section>
 </div>

@@ -8,15 +8,15 @@
 </div>
    
     <!-- User info -->
-     @if(user){
+     @if(user()){
         <div class="flex flex-col items-center gap-2 mb-10">
       <img
-        [src]="user.profile_picture_url || '/assets/avatar.png'"
+        [src]="user()?.profile_picture_url || '/assets/avatar.png'"
         class="w-12 h-12 rounded-full object-cover"
       />
       <div>
-        <p class="text-sm font-medium">{{ user.full_name }}</p>
-        <p class="text-xs text-gray-400">{{ user.email }}</p>
+        <p class="text-sm font-medium">{{ user()?.full_name }}</p>
+        <p class="text-xs text-gray-400">{{ user()?.email }}</p>
       </div>
     </div>
      }

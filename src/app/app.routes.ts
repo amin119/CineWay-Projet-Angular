@@ -9,6 +9,8 @@ import { adminGuard } from './auth/guards/admin/admin.guard';
 
 import { LandingPageComponent } from './components/landingPage/landing-page-component/landing-page-component';
 import { MainLayout } from './components/layouts/main-layout/main-layout';
+import { Cinemas } from './components/cinemas/cinemas/cinemas';
+import { CinemaDetails } from './components/cinemas/cinema-details/cinema-details';
 import { Profile } from './components/profile/profile';
 
 import { AdminLayoutComponent } from './components/admin/layouts/admin-layout/admin-layout';
@@ -32,6 +34,16 @@ export const routes: Routes = [
         path: '',
         component: LandingPageComponent,
         canActivate : [guestGuard]
+      },
+      {
+        path: 'cinemas',
+        component : Cinemas,
+        canActivate :[authGuard],
+      },
+      {
+        path: 'cinemas/:id',
+        component: CinemaDetails,
+        canActivate: [authGuard],
       },
       {
         path: 'profile',
