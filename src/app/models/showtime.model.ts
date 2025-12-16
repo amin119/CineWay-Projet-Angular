@@ -1,5 +1,9 @@
-export interface Showtime {
-  id: number;
-  movie_id: number;
-  screening_time: string;
+import { MovieModel } from "./movie.model";
+
+
+export interface ShowtimeResponse {
+  movie: MovieModel;
+  price: number;
+  roomName: string;
+  showtimes: string [];
 }

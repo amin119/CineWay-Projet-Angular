@@ -7,59 +7,56 @@
     Back to Cinemas
   </button>
   @if (error()) {
-    <div class="text-danger">{{ error() }}</div>
-  } @else if (isLoading()) {
+  <div class="text-danger text-center py-4">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    An error occurred while loading the cinema details.
+  </div>
+  } @if (isLoading()) {
+  <div class="text-center py-4">
     <div class="spinner-grow text-light" role="status"></div>
-  } @else if (cinema()) {
-
-    <div>
-      <h1 class="cinema-title mt-2 mb-0 p-4">
-        {{ cinema()?.name }}
-      </h1>
-      <p class="text-secondary px-4">
-        <i class="bi bi-geo-alt-fill"></i> {{ cinema()?.address }}, {{ cinema()?.city }}
-      </p>
-      <div class="amenities-slider">
-        <div class="slider-track">
-          @for (amenity of cinema()?.amenities; track $index){
-            <div class="amenity-card">
-              <i class="bi" [class]="getIcon(amenity)"></i>
-              {{ formatAmenityName(amenity) }}
-            </div>
-          }
-          @for (amenity of cinema()?.amenities; track $index){
-            <div class="amenity-card">
-              <i class="bi" [class]="getIcon(amenity)"></i>
-              {{ formatAmenityName(amenity) }}
-            </div>
-          }
+  </div>
+  } @if (!isLoading() && !error() && cinema(); as c) {
+  <div>
+    <h1 class="cinema-title mt-2 mb-0 p-4">{{ c.name }}</h1>
+    <p class="text-secondary px-4">
+      <i class="bi bi-geo-alt-fill"></i> {{ c.address }}, {{ c.city }}
+    </p>
+    <div class="amenities-slider">
+      <div class="slider-track">
+        @for (amenity of c.amenities; track $index) {
+        <div class="amenity-card">
+          <i class="bi" [class]="getIcon(amenity)"></i>
+          {{ formatAmenityName(amenity) }}
         </div>
-      </div>
-      <div class="mt-4">
-        <h4>Showtimes</h4>
-        <div class="d-flex gap-2 mb-3">
-          <button (click)="onTodayClick()" class="btn btn-primary">Today</button>
-          <button (click)="onTomorrowClick()" class="btn btn-primary">Tomorrow</button>
-          <input
-            type="date"
-            (change)="onDatePickerChange($event.target.value)"
-            class="form-control w-auto"
-          />
+        }
+        @for (amenity of c.amenities; track $index) {
+        <div class="amenity-card">
+          <i class="bi" [class]="getIcon(amenity)"></i>
+          {{ formatAmenityName(amenity) }}
         </div>
-
-        @if (showTimes().length === 0) {
-          <p>No showtimes available for {{ selectedDate }}</p>
-        } @else {
-          @for (s of showTimes(); track $index) {
-            <p>{{ s.screening_time | date:'shortTime' }}</p>
-          }
         }
       </div>
     </div>
 
-  } @else {
-    <div class="text-center py-5">
-      <p class="text-warning fs-5">No cinema found with this ID. Please try again.</p>
+    @if (!isLoadingMovies() && !moviesError() && movies() && movies()!= undefined) {
+    <div class="mt-4">
+      <h3 class="mb-3">Available movies</h3>
+      <div class="row flex-nowrap overflow-x-auto g-3">
+        @for (movie of movies(); track movie.id) {
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <app-movie [movie]="movie"></app-movie>
+        </div>
+        }
+      </div>
     </div>
+    }
+    <div class="mt-4">
+      <app-showtimes [cinemaId]="c.id"></app-showtimes>
+    </div>
+  </div>
+  } @if (!isLoading() && !error() && !cinema()) {
+  <div class="text-center py-5">
+    <p class="text-warning fs-5">No cinema found with this ID. Please try again.</p>
+  </div>
   }
 </div>
