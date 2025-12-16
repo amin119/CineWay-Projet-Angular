@@ -1,0 +1,65 @@
+<div class="container py-5">
+  <button
+    class="btn btn-outline-light d-flex align-items-center gap-2 mx-2 my-4"
+    (click)="goBack()"
+  >
+    <i class="bi bi-arrow-left"></i>
+    Back to Cinemas
+  </button>
+  @if (error()) {
+    <div class="text-danger">{{ error() }}</div>
+  } @else if (isLoading()) {
+    <div class="spinner-grow text-light" role="status"></div>
+  } @else if (cinema()) {
+
+    <div>
+      <h1 class="cinema-title mt-2 mb-0 p-4">
+        {{ cinema()?.name }}
+      </h1>
+      <p class="text-secondary px-4">
+        <i class="bi bi-geo-alt-fill"></i> {{ cinema()?.address }}, {{ cinema()?.city }}
+      </p>
+      <div class="amenities-slider">
+        <div class="slider-track">
+          @for (amenity of cinema()?.amenities; track $index){
+            <div class="amenity-card">
+              <i class="bi" [class]="getIcon(amenity)"></i>
+              {{ formatAmenityName(amenity) }}
+            </div>
+          }
+          @for (amenity of cinema()?.amenities; track $index){
+            <div class="amenity-card">
+              <i class="bi" [class]="getIcon(amenity)"></i>
+              {{ formatAmenityName(amenity) }}
+            </div>
+          }
+        </div>
+      </div>
+      <div class="mt-4">
+        <h4>Showtimes</h4>
+        <div class="d-flex gap-2 mb-3">
+          <button (click)="onTodayClick()" class="btn btn-primary">Today</button>
+          <button (click)="onTomorrowClick()" class="btn btn-primary">Tomorrow</button>
+          <input
+            type="date"
+            (change)="onDatePickerChange($event.target.value)"
+            class="form-control w-auto"
+          />
+        </div>
+
+        @if (showTimes().length === 0) {
+          <p>No showtimes available for {{ selectedDate }}</p>
+        } @else {
+          @for (s of showTimes(); track $index) {
+            <p>{{ s.screening_time | date:'shortTime' }}</p>
+          }
+        }
+      </div>
+    </div>
+
+  } @else {
+    <div class="text-center py-5">
+      <p class="text-warning fs-5">No cinema found with this ID. Please try again.</p>
+    </div>
+  }
+</div>
