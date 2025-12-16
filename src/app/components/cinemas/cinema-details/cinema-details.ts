@@ -1,42 +1,43 @@
-import { Component, input, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CinemaService } from '../../../services/cinema.service';
 import { Cinema } from '../../../models/cinema.model';
 import {
-  AMENITY_ICONS,
-  DEFAULT_AMENITY_ICON,
   formatName,
   getIconAmenity,
 } from '../../../config/amenities.config';
-import { Showtime } from '../../../models/showtime.model';
-import { DatePipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { APP_API } from '../../../config/app-api.config';
+import { APP_ROUTES } from '../../../config/app-routes.confg';
+import { Showtimes } from '../showtimes/showtimes';
+import { MovieModel } from '../../../models/movie.model';
+import { Movie } from "../../movies/movie/movie";
 
 @Component({
   selector: 'app-cinema-details',
   templateUrl: './cinema-details.html',
   styleUrl: './cinema-details.css',
-  imports: [DatePipe],
+  imports: [Showtimes, Movie]
 })
-export class CinemaDetails implements OnInit {
+export class CinemaDetails {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private cinemaService = inject(CinemaService);
-  private cinemaId = Number(this.route.snapshot.paramMap.get('id'));
+  private cinemaId = signal(Number(this.route.snapshot.paramMap.get('id')));
 
-  cinema = computed(() => this.cinemaService.cinemaDetailsRes.value());
-  error = computed(() => this.cinemaService.cinemaDetailsRes.error());
+  readonly cinemaDetailsRes = httpResource<Cinema>(() => ({
+    url: `${APP_API.cinema.list}${this.cinemaId()}`,
+    method: 'GET',
+  }));
+  cinema = computed(() => this.cinemaDetailsRes.value());
+  error = computed(() => this.cinemaDetailsRes.error());
+  isLoading = computed(() => this.cinemaDetailsRes.isLoading());
 
-  isLoading = computed(() => this.cinemaService.cinemaDetailsRes.isLoading());
-  amenityIcons = AMENITY_ICONS;
-  defaultIcon = DEFAULT_AMENITY_ICON;
-
-  ngOnInit() {
-    const cinemaId = Number(this.route.snapshot.paramMap.get('id'));
-    if (cinemaId) {
-      this.cinemaService.getCinemaDetails(cinemaId);
-      this.onTodayClick();
-    }
-  }
+  readonly cinemaMovies = httpResource<MovieModel[]>(() => ({
+    url: `${APP_API.cinema.list}${this.cinemaId()}/movies`,
+    method: 'GET',
+  }));
+  movies = computed(() => this.cinemaMovies.value());
+  moviesError = computed(() => this.cinemaMovies.error());
+  isLoadingMovies = computed(() => this.cinemaMovies.isLoading());
 
   getIcon(amenity: string): string {
     return getIconAmenity(amenity);
@@ -46,35 +47,10 @@ export class CinemaDetails implements OnInit {
     return formatName(amenity);
   }
   goBack() {
-    this.router.navigate(['/cinemas']);
+    this.router.navigate([APP_ROUTES.cinemas]);
   }
 
-  showTimes = computed(() => {
-    const res = this.cinemaService.showTimesRes.value();
-    if (!res) return [];
-    return res.map((item) => ({
-      id: item.id,
-      movie_id: item.movie_id,
-      screening_time: item.screening_time,
-    }));
-  });
-  selectedDate: string | null = null;
-  showtimes: Showtime[] = [];
-
-  onTodayClick() {
-    const today = new Date().toISOString().split('T')[0];
-    this.selectedDate = today;
-    this.cinemaService.getShowTimes(this.cinemaId, this.selectedDate);
-  }
-
-  onTomorrowClick() {
-    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
-    this.selectedDate = tomorrow;
-    this.cinemaService.getShowTimes(this.cinemaId, this.selectedDate);
-  }
-
-  onDatePickerChange(dateString: string) {
-    this.selectedDate = dateString;
-    this.cinemaService.getShowTimes(this.cinemaId, this.selectedDate);
+    getCinemaDetails(cinema_id: number) {
+    this.cinemaId.update(() => cinema_id);
   }
 }
