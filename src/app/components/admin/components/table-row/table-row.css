@@ -1,9 +1,10 @@
 :host {
   display: table-row;
+  transition: all 0.2s ease;
 }
 
 :host:hover td {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(61, 153, 245, 0.05);
 }
 
 :host td {

@@ -1,7 +1,7 @@
-<header class="fixed top-0 right-0 left-0 lg:left-64 h-16 bg-gray-950 border-b border-gray-800 z-40">
+<header class="fixed top-0 right-0 left-0 lg:left-64 h-16 bg-[#101922] border-b border-[#2a3644] z-40">
   <div class="h-full px-6 flex items-center justify-between">
     <div class="flex items-center gap-8 ml-auto">
-      <button class="text-gray-400 hover:text-blue-400 transition">
+      <button class="text-gray-400 hover:text-[#3d99f5] transition-colors">
         <svg
           class="w-6 h-6"
           fill="none"
@@ -19,13 +19,13 @@
 
       <div class="relative">
         <button
-          class="flex items-center gap-2 focus:outline-none hover:bg-gray-900 px-3 py-2 rounded-lg transition"
+          class="flex items-center gap-2 focus:outline-none hover:bg-[#18222c] px-3 py-2 rounded-lg transition-colors"
           (click)="toggleMenu()"
         >
           <img
             [src]="user() && user()!.profile_picture_url ? user()!.profile_picture_url : '/assets/avatar.png'"
             alt="User avatar"
-            class="w-8 h-8 rounded-full object-cover border border-gray-700"
+            class="w-8 h-8 rounded-full object-cover border border-[#2a3644]"
           />
           <span class="hidden sm:block text-sm text-gray-200">
             {{ user() && user()!.full_name }}
@@ -34,16 +34,16 @@
 
         @if (menuOpen) {
         <div
-          class="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-lg shadow-lg py-2"
+          class="absolute right-0 mt-2 w-48 bg-[#18222c] border border-[#2a3644] rounded-lg shadow-xl shadow-black/20 py-2"
         >
           <button
-            class="w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-blue-400 transition"
+            class="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#101922] hover:text-[#3d99f5] transition-colors"
           >
             Profile Settings
           </button>
-          <hr class="border-gray-800 my-2" />
+          <hr class="border-[#2a3644] my-2" />
           <button
-            class="w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-red-400 transition"
+            class="w-full text-left px-4 py-2 text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition-colors"
             (click)="logout()"
           >
             Logout
