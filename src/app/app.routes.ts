@@ -56,7 +56,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayoutComponent,
-    //canActivate: [adminGuard],
+    canActivate: [adminGuard],
     children: [
       {
         path: 'overview',
