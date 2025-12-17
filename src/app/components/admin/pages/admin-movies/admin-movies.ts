@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { SearchInputComponent } from '../../components/search-input/search-input';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { MovieTableComponent } from '../../components/movie-table/movie-table';
 import { PaginationComponent } from '../../components/pagination/pagination';
 import { MovieRow, MovieStatus, StatusChip } from './movie-row.model';
+import { MoviesApi } from '../../../../services/movies-api';
+import { MovieModel } from '../../../../models/movie.model';
 
 @Component({
   selector: 'app-admin-movies',
@@ -21,7 +23,8 @@ import { MovieRow, MovieStatus, StatusChip } from './movie-row.model';
   templateUrl: './admin-movies.html',
   styleUrls: ['./admin-movies.css'],
 })
-export class AdminMoviesComponent {
+export class AdminMoviesComponent implements OnInit {
+  private readonly moviesApi = inject(MoviesApi);
   private readonly pageSize = 5;
 
   readonly statusChips: Record<MovieStatus, StatusChip> = {
@@ -42,69 +45,75 @@ export class AdminMoviesComponent {
       classes: 'bg-gray-500/15 text-gray-400 border border-gray-500/30',
     },
   };
-  readonly movies: MovieRow[] = [
-    {
-      id: 1,
-      title: 'Stellar Odyssey',
-      releaseDate: '2024-08-15',
-      status: 'Published',
-      genre: 'Sci-Fi',
-      runtime: '2h 18m',
-    },
-    {
-      id: 2,
-      title: 'Echoes of the Void',
-      releaseDate: '2024-09-20',
-      status: 'Upcoming',
-      genre: 'Sci-Fi',
-      runtime: '1h 56m',
-    },
-    {
-      id: 3,
-      title: 'Cybernetic City',
-      releaseDate: '2023-11-05',
-      status: 'Draft',
-      genre: 'Action',
-      runtime: '2h 05m',
-    },
-    {
-      id: 4,
-      title: 'The Last Stand',
-      releaseDate: '2022-03-22',
-      status: 'Archived',
-      genre: 'Drama',
-      runtime: '1h 48m',
-    },
-    {
-      id: 5,
-      title: 'Neon Horizons',
-      releaseDate: '2024-12-12',
-      status: 'Upcoming',
-      genre: 'Thriller',
-      runtime: '2h 02m',
-    },
-    {
-      id: 6,
-      title: 'Midnight Pulse',
-      releaseDate: '2023-07-18',
-      status: 'Published',
-      genre: 'Thriller',
-      runtime: '1h 44m',
-    },
-    {
-      id: 7,
-      title: 'Aurora Skies',
-      releaseDate: '2023-01-10',
-      status: 'Archived',
-      genre: 'Drama',
-      runtime: '2h 09m',
-    },
-  ];
 
-  readonly genreOptions = [
-    'all',
-    ...Array.from(new Set(this.movies.map((movie) => movie.genre))),
-  ];
+  readonly movies = signal<MovieRow[]>([]);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+
+  ngOnInit() {
+    this.loadMovies();
+  }
+
+  loadMovies() {
+    this.loading.set(true);
+    this.error.set(null);
+    
+    this.moviesApi.getMovies().subscribe({
+      next: (apiMovies) => {
+        const movieRows = apiMovies.map((movie) => this.mapToMovieRow(movie));
+        this.movies.set(movieRows);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading movies:', err);
+        this.error.set('Failed to load movies. Please try again.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  private mapToMovieRow(apiMovie: MovieModel): MovieRow {
+    return {
+      id: apiMovie.id,
+      title: apiMovie.title,
+      releaseDate: apiMovie.release_date || 'N/A',
+      status: this.determineStatus(apiMovie.release_date),
+      genre: Array.isArray(apiMovie.genre) ? apiMovie.genre[0] || 'Unknown' : apiMovie.genre || 'Unknown',
+      runtime: this.formatRuntime(apiMovie.duration_minutes),
+    };
+  }
+
+  private determineStatus(releaseDate: string | null): MovieStatus {
+    if (!releaseDate) return 'Draft';
+    
+    const release = new Date(releaseDate);
+    const now = new Date();
+    const monthFromNow = new Date();
+    monthFromNow.setMonth(monthFromNow.getMonth() + 1);
+    
+    if (release <= now) {
+      return 'Published';
+    } else if (release <= monthFromNow) {
+      return 'Upcoming';
+    } else {
+      return 'Draft';
+    }
+  }
+
+  private formatRuntime(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  }
+
+  readonly allMovies = computed(() => {
+    return this.movies();
+  });
+
+  readonly genreOptions = computed(() => {
+    const genres = this.movies().map((movie) => movie.genre);
+    return ['all', ...Array.from(new Set(genres))];
+  });
   readonly statusOptions: (MovieStatus | 'all')[] = [
     'all',
     'Published',
@@ -119,11 +128,11 @@ export class AdminMoviesComponent {
   ];
 
   readonly genreDropdownOptions = computed(() =>
-    this.genreOptions.map((g) => ({ value: g, label: g === 'all' ? 'All genres' : g }))
+    this.genreOptions().map((g: string) => ({ value: g, label: g === 'all' ? 'All genres' : g }))
   );
 
   readonly statusDropdownOptions = computed(() =>
-    this.statusOptions.map((s) => ({ value: s, label: s === 'all' ? 'All statuses' : s }))
+    this.statusOptions.map((s: MovieStatus | 'all') => ({ value: s, label: s === 'all' ? 'All statuses' : s }))
   );
 
   readonly searchTerm = signal('');
@@ -138,7 +147,7 @@ export class AdminMoviesComponent {
     const status = this.statusFilter();
     const show = this.showFilter();
 
-    return this.movies.filter((movie) => {
+    return this.allMovies().filter((movie) => {
       const matchesTerm = !term || movie.title.toLowerCase().includes(term);
       const matchesGenre = genre === 'all' || movie.genre === genre;
       const matchesStatus = status === 'all' || movie.status === status;
