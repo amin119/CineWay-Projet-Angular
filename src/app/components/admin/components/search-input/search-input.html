@@ -1,0 +1,20 @@
+<label class="block text-xs font-semibold uppercase tracking-wide text-gray-400">
+  <span class="block">{{ label }}</span>
+  <div class="relative mt-2">
+    <svg
+      class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5a6 6 0 100 12 6 6 0 000-12zm0 0l6 6" />
+    </svg>
+    <input
+      class="w-full rounded-lg border border-gray-800 bg-gray-950/70 py-3 pl-10 pr-3 text-sm text-gray-100 placeholder:text-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+      type="search"
+      [placeholder]="placeholder"
+      [value]="value"
+      (input)="onInput($event)"
+    />
+  </div>
+</label>

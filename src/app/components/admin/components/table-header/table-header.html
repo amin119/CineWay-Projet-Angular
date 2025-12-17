@@ -1,0 +1,14 @@
+<thead class="bg-gray-900/80 text-xs uppercase tracking-wide text-gray-400">
+  <tr>
+    @for (header of headers; track header.label) {
+      <th
+        class="px-6 py-3 font-semibold"
+        [class.text-left]="header.align === 'left' || !header.align"
+        [class.text-center]="header.align === 'center'"
+        [class.text-right]="header.align === 'right'"
+      >
+        {{ header.label }}
+      </th>
+    }
+  </tr>
+</thead>
