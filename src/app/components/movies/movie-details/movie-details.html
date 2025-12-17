@@ -1,0 +1,71 @@
+<section #hero class="relative w-full min-h-screen pt-24 overflow-hidden">
+  
+  <!-- Dark gradient overlay -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
+
+  <!-- Trailer -->
+ @defer (when heroVisible()) {
+    <button
+  class="absolute top-24 right-12 z-30
+         bg-black/60 hover:bg-black/80
+         backdrop-blur
+         text-white px-4 py-2 rounded-full
+         text-sm transition"
+  (click)="toggleAudio()"
+>
+  @if (isMuted()) {
+    🔇 Muted
+  } @else {
+    🔊 Sound On
+  }
+</button>
+
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <video
+            #trailer
+            autoplay
+            loop
+            muted
+            playsinline
+            class="w-full h-full object-cover"
+            >
+  <source
+    [src]="trailerUrl()"
+    type="video/mp4"
+  />
+</video>
+
+    </div>
+  }
+
+
+ 
+
+  <!-- Bottom movie info -->
+  <div class="relative z-20 flex items-end h-full px-12 pb-16">
+    <div class="flex gap-8 items-end">
+
+      <!-- Poster -->
+      <img class="w-48 rounded-xl shadow-2xl translate-y-12" />
+
+      <!-- Info -->
+      <div class="text-white space-y-3">
+        <h1 class="text-4xl font-bold">Movie Title</h1>
+
+        <!-- Genres -->
+        <div class="flex gap-2">
+          <span class="px-3 py-1 bg-white/10 rounded-full text-sm">
+            Action
+          </span>
+        </div>
+
+        <div class="flex items-center gap-4 text-sm text-gray-300">
+          <span>⏱️ 2h 15m</span>
+          <span>⭐ 8.6</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</section>

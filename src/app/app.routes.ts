@@ -19,6 +19,7 @@ import { AdminMoviesComponent } from './components/admin/pages/admin-movies/admi
 import { AdminCinemasComponent } from './components/admin/pages/admin-cinemas/admin-cinemas';
 import { AdminUsersComponent } from './components/admin/pages/admin-users/admin-users';
 import { AdminShowtimesComponent } from './components/admin/pages/admin-showtimes/admin-showtimes';
+import { MovieDetails } from './components/movies/movie-details/movie-details';
 
 export const routes: Routes = [
   {
@@ -49,7 +50,12 @@ export const routes: Routes = [
         path: 'profile',
         component: Profile,
         canActivate: [authGuard],
-      }
+      },
+      {
+      path: 'movies/:id',
+      component: MovieDetails,
+      canActivate: [authGuard],
+  },
     ],
   },
 
