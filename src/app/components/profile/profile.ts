@@ -56,6 +56,9 @@ onUpdateProfile(event: {
   }
 
   onLogout() {
+    this.userApi.clear();
+    this.router.navigate([APP_ROUTES.login]);
+    this.toastr.info('You have been logged out', 'Goodbye!');
     this.authService.logout();
   }
 

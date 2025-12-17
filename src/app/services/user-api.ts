@@ -13,13 +13,13 @@ export class UserApi {
 
     private http = inject(HttpClient);
 
-  private userResource = httpResource<User>(() => ({
-    url: APP_API.user.me,
-  }));
+   private _user = signal<User | null>(null);
+  private _loading = signal(false);
+  private _error = signal<any>(null);
 
-  loading = this.userResource.isLoading;
-  error = this.userResource.error;
-  user = computed(() => this.userResource.value());
+  user = this._user.asReadonly();
+  loading = this._loading.asReadonly();
+  error = this._error.asReadonly();
 
    profile = computed<Profile | null>(() => {
     const u = this.user();
@@ -36,39 +36,68 @@ export class UserApi {
     };
   });
     isReady = computed(() => !!this.user());
-    constructor() {}
+     constructor() {
+    this.loadUser().subscribe();
+  }
 
+loadUser(): Observable<User> {
+    this._loading.set(true);
+    this._error.set(null);
 
+    return this.http.get<User>(APP_API.user.me).pipe(
+      tap((user) => {
+        this._user.set(user);
+      }),
+      catchError((error) => {
+        this._error.set(error);
+        this._user.set(null);
+        return throwError(() => error);
+      }),
+      finalize(() => {
+        this._loading.set(false);
+      })
+    );
+  }
+  reload(): void {
+    this.loadUser().subscribe();
+  }
+  updateProfile(payload: Partial<Profile>): Observable<User> {
 
-   updateProfile(payload: Partial<Profile>) {
-  const isEmailChange = 'email' in payload;
-
-  return this.http.put(APP_API.user.me, payload).pipe(
-    tap(() => {
-      if (!isEmailChange) {
-        
-        this.userResource.reload();
-      }
-    })
+    return this.http.put<User>(APP_API.user.me, payload).pipe(
+      tap((updatedUser) => {
+        if ( payload.email !== undefined) {
+          this._user.set(updatedUser);
+        }
+      })
+    
   );
 }
 
 updatePreferences(payload: {
-  dark_mode?: boolean;
-  notifications_enabled?: boolean;
-  newsletter_subscribed?: boolean;
-}) {
-  return this.http.put(APP_API.user.preferences, payload);
-}
-uploadProfilePicture(file: File) {
-  const formData = new FormData();
-  formData.append('file', file);
+    dark_mode?: boolean;
+    notifications_enabled?: boolean;
+    newsletter_subscribed?: boolean;
+  }): Observable<User> {
+    return this.http.put<User>(APP_API.user.preferences, payload).pipe(
+      tap((updatedUser) => {
+        this._user.set(updatedUser);
+      })
+    );
+  }
+  uploadProfilePicture(file: File): Observable<User> {
+    const formData = new FormData();
+    formData.append('file', file);
 
-  return this.http.put(APP_API.user.profilePicture, formData);
-}
-clear(){
-    this.userResource.set(undefined);
-
-}
+    return this.http.put<User>(APP_API.user.profilePicture, formData).pipe(
+      tap((updatedUser) => {
+        this._user.set(updatedUser);
+      })
+    );
+  }
+  clear(): void {
+    this._user.set(null);
+    this._error.set(null);
+    this._loading.set(false);
+  }
   
 }
