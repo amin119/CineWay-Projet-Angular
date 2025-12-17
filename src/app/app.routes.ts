@@ -17,6 +17,8 @@ import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
 import { adminGuard } from './auth/guards/admin/admin.guard';
 import { NotFound } from './components/not-found/not-found';
+import { MovieDetails } from './components/movies/movie-details/movie-details';
+import { Home } from './components/home/home';
 
 export const routes: Routes = [
   {
@@ -39,6 +41,36 @@ export const routes: Routes = [
       { path: '', component: LandingPageComponent },
       { path: 'auth/login', component: Login },
       { path: 'auth/signup', component: Signup },
+      {
+        path: 'home',
+        component: Home,
+        canActivate: [authGuard],
+      },
+      {
+        path: '',
+        component: LandingPageComponent,
+        canActivate : [guestGuard]
+      },
+      {
+        path: 'cinemas',
+        component : Cinemas,
+        canActivate :[authGuard],
+      },
+      {
+        path: 'cinemas/:id',
+        component: CinemaDetails,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'profile',
+        component: Profile,
+        canActivate: [authGuard],
+      },
+      {
+      path: 'movies/:id',
+      component: MovieDetails,
+      canActivate: [authGuard],
+  },
     ],
   },
   {
