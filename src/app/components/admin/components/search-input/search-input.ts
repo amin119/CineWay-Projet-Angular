@@ -12,6 +12,7 @@ export class SearchInputComponent {
   @Input() label = '';
   @Input() placeholder = '';
   @Input() value = '';
+  @Input() showLabel = true;
   @Output() valueChange = new EventEmitter<string>();
 
   onInput(event: Event) {

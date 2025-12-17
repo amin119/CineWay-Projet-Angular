@@ -1,3 +1,40 @@
 :host {
   display: block;
 }
+
+.table-wrapper {
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid #3b4754;
+  background: #1a242f;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th,
+td {
+  padding: 1rem 1.5rem;
+  box-sizing: border-box;
+}
+
+thead {
+  background: #0d1419;
+}
+
+th {
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  border-bottom: 1px solid #3b4754;
+}
+
+td {
+  border-bottom: 1px solid #3b4754;
+}

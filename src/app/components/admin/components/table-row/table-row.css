@@ -1,3 +1,17 @@
 :host {
   display: table-row;
 }
+
+:host:hover td {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+:host td {
+  vertical-align: middle;
+  color: inherit;
+  box-sizing: border-box;
+}
+
+:host:last-child td {
+  border-bottom: none;
+}

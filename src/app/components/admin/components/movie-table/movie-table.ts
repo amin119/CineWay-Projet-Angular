@@ -29,7 +29,7 @@ export class MovieTableComponent {
     { label: 'Movie Title', align: 'left' as const },
     { label: 'Release Date', align: 'left' as const },
     { label: 'Status', align: 'left' as const },
-    { label: 'Actions', align: 'left' as const },
+    { label: 'Actions', align: 'right' as const },
   ];
 
   onView(movie: MovieRow) {

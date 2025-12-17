@@ -14,6 +14,7 @@ export class FilterDropdownComponent {
   @Input() label = '';
   @Input() value = '';
   @Input() options: FilterOption[] = [];
+  @Input() showLabel = true;
   @Output() valueChange = new EventEmitter<string>();
 
   onChange(event: Event) {

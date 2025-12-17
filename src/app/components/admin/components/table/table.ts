@@ -1,11 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { TableHeader, TableHeaderComponent } from '../table-header/table-header';
+
+export type TableHeader = {
+  label: string;
+  align?: 'left' | 'center' | 'right';
+  width?: string;
+};
 
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [CommonModule, TableHeaderComponent],
+  imports: [CommonModule],
   templateUrl: './table.html',
   styleUrls: ['./table.css'],
 })

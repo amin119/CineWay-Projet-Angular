@@ -1,8 +1,10 @@
-<label class="block text-xs font-semibold uppercase tracking-wide text-gray-400">
-  <span class="block">{{ label }}</span>
+<label class="block">
+  @if (showLabel) {
+    <span class="block text-xs font-semibold uppercase tracking-wide text-gray-400">{{ label }}</span>
+  }
   <div class="relative mt-2">
     <select
-      class="w-full appearance-none rounded-lg border border-gray-800 bg-gray-950/70 px-3 py-3 text-sm text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+      class="w-full appearance-none rounded-lg border border-[#2a3a55] bg-[#0f1724] px-3 py-3 text-sm text-gray-100 placeholder:text-[#5f708f] focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
       [value]="value"
       (change)="onChange($event)"
     >
