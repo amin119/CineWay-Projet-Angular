@@ -1,5 +1,5 @@
 <div class="flex gap-8">
-  <div class="relative flex flex-col w-64">
+  <div class="w-64 overflow-y-auto h-full">
 <app-sidebar  
   (logout)="onLogout()"
   (sectionChange)="onSectionChange($event)"/>  
@@ -12,7 +12,7 @@
   <app-content
     
       [section]="section"
-
+(uploadProfilePicture)="onUploadProfilePicture($event)"
     (updateProfile)="onUpdateProfile($event)">
   </app-content>
 
