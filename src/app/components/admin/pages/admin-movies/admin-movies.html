@@ -99,3 +99,13 @@
     }
   </div>
 </div>
+
+<!-- Add/Edit Movie Modal -->
+@if (showFormModal()) {
+  <app-add-edit-movie-form
+    [movie]="selectedMovie()"
+    [isEditMode]="isEditMode()"
+    (save)="onFormSave($event)"
+    (cancel)="onFormCancel()"
+  ></app-add-edit-movie-form>
+}
