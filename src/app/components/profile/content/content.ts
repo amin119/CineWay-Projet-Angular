@@ -2,6 +2,7 @@ import { Component, effect, EventEmitter, inject, Input, Output } from '@angular
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserApi } from '../../../services/user-api';
 import { Profile } from '../../../models/profile.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-content',
@@ -10,6 +11,7 @@ import { Profile } from '../../../models/profile.model';
   styleUrl: './content.css',
 })
 export class Content {
+
   private fb = inject(FormBuilder);
   private userApi = inject(UserApi);
 
@@ -22,6 +24,8 @@ export class Content {
     payload: Partial<Profile>;
     emailChanged: boolean;
   }>();
+  @Output() uploadProfilePicture = new EventEmitter<File>();
+
 
   profileForm = this.fb.nonNullable.group({
     full_name: ['', Validators.required],
@@ -56,4 +60,14 @@ export class Content {
 
     this.profileForm.markAsPristine();
   }
+ onPictureSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (!input.files || input.files.length === 0) return;
+
+  const file = input.files[0];
+
+  this.uploadProfilePicture.emit(file);
+}
+
+
 }

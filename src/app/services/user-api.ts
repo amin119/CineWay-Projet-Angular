@@ -90,7 +90,7 @@ updatePreferences(payload: {
 
     return this.http.put<User>(APP_API.user.profilePicture, formData).pipe(
       tap((updatedUser) => {
-        this._user.set(updatedUser);
+        this.reload()
       })
     );
   }

@@ -50,6 +50,16 @@ onUpdateProfile(event: {
     },
   });
 }
+onUploadProfilePicture(file: File) {
+  this.userApi.uploadProfilePicture(file).subscribe({
+    next: () => {
+      this.toastr.success('Profile picture updated');
+    },
+    error: () => {
+      this.toastr.error('Failed to upload profile picture');
+    },
+  });
+}
 
   onSectionChange(section: 'profile' | 'preferences' | 'help') {
     this.section = section;
