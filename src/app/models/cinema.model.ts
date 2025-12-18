@@ -5,4 +5,8 @@ export interface Cinema {
   city: string;
   amenities: string[];
   created_at: string;
+  contact_number?: string;
+  email?: string;
+  gallery_image_url?: string;
+  seating_layout?: string;
 }

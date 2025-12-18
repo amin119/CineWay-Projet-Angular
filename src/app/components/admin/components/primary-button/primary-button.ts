@@ -11,9 +11,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class PrimaryButtonComponent {
   @Input() label = '';
   @Input() icon = false;
+  @Input() disabled = false;
   @Output() clicked = new EventEmitter<void>();
 
   onClick() {
-    this.clicked.emit();
+    if (!this.disabled) {
+      this.clicked.emit();
+    }
   }
 }
