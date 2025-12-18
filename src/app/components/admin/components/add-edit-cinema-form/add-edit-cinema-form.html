@@ -1,0 +1,139 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+  <div class="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl bg-[#0f1419] border border-[#2a3644] shadow-xl">
+    <!-- Header -->
+    <div class="sticky top-0 z-10 border-b border-[#2a3644] bg-[#0f1419] px-6 py-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-white">
+          {{ isEditMode ? 'Edit Cinema' : 'Add Cinema' }}
+        </h2>
+        <p class="text-sm text-gray-400 mt-1">
+          {{ isEditMode ? 'Update cinema information and save changes' : 'Manage cinema information and configurations' }}
+        </p>
+      </div>
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="text-gray-400 hover:text-white transition-colors p-2"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form Content -->
+    <form [formGroup]="form" class="p-6 space-y-6">
+      <!-- Cinema Name -->
+      <app-form-input
+        label="Cinema Name"
+        placeholder="e.g., CineWay Downtown"
+        [control]="form.get('name')"
+        [required]="true"
+        [showLabel]="true"
+        (valueChange)="form.get('name')?.setValue($event)"
+      ></app-form-input>
+
+      <!-- Full Address -->
+      <app-form-input
+        label="Full Address"
+        placeholder="123 Movie Lane, Film City, 90210"
+        [control]="form.get('address')"
+        [required]="true"
+        [showLabel]="true"
+        (valueChange)="form.get('address')?.setValue($event)"
+      ></app-form-input>
+
+      <!-- City -->
+      <app-form-input
+        label="City"
+        placeholder="e.g., Los Angeles"
+        [control]="form.get('city')"
+        [required]="true"
+        [showLabel]="true"
+        (valueChange)="form.get('city')?.setValue($event)"
+      ></app-form-input>
+
+      <!-- Contact Number & Email Row -->
+      <div class="grid grid-cols-2 gap-4">
+        <app-form-input
+          label="Contact Number"
+          placeholder="(123) 456-7890"
+          [control]="form.get('contact_number')"
+          [required]="false"
+          [showLabel]="true"
+          (valueChange)="form.get('contact_number')?.setValue($event)"
+        ></app-form-input>
+
+        <app-form-input
+          label="Email"
+          placeholder="contact@cineway.com"
+          type="email"
+          [control]="form.get('email')"
+          [required]="false"
+          [showLabel]="true"
+          (valueChange)="form.get('email')?.setValue($event)"
+        ></app-form-input>
+      </div>
+
+      <!-- Amenities Checkboxes -->
+      <div class="rounded-lg border border-[#2a3644] bg-[#1a232f] p-4">
+        <h3 class="text-sm font-semibold text-white mb-4">Amenities</h3>
+        <div class="grid grid-cols-2 gap-4">
+          @for (amenity of amenities(); track amenity.value) {
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                [checked]="amenity.checked"
+                (change)="toggleAmenity(amenity.value)"
+                class="w-4 h-4 rounded border-[#2a3644] bg-[#0f1419] text-[#3d99f5] cursor-pointer"
+              />
+              <span class="text-sm text-gray-300 group-hover:text-white transition-colors">
+                {{ amenity.label }}
+              </span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <!-- Photo Gallery -->
+      <div class="rounded-lg border border-[#2a3644] bg-[#1a232f] p-4">
+        <app-image-upload
+          label="Photo Gallery"
+          [previewUrl]="galleryPreviewUrl()"
+          [required]="false"
+          [showLabel]="true"
+          (fileSelected)="onGallerySelected($event)"
+          (fileRemoved)="onGalleryRemoved()"
+        ></app-image-upload>
+      </div>
+
+      <!-- Seating Layout Configuration -->
+      <app-form-textarea
+        label="Seating Layout Configuration"
+        placeholder="Describe or upload seating layout file/details..."
+        [control]="form.get('seating_layout')"
+        [required]="false"
+        [showLabel]="true"
+        [rows]="4"
+        (valueChange)="form.get('seating_layout')?.setValue($event)"
+      ></app-form-textarea>
+    </form>
+
+    <!-- Footer -->
+    <div class="sticky bottom-0 border-t border-[#2a3644] bg-[#0f1419] px-6 py-4 flex items-center justify-end gap-3">
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="px-6 py-2.5 text-gray-400 hover:bg-[#1a232f] rounded-lg transition-colors font-medium"
+      >
+        Cancel
+      </button>
+      <app-primary-button
+        [label]="isEditMode ? 'Save Changes' : 'Save Cinema'"
+        [icon]="false"
+        [disabled]="form.invalid || isSubmitting()"
+        (clicked)="onSubmit()"
+      ></app-primary-button>
+    </div>
+  </div>
+</div>
