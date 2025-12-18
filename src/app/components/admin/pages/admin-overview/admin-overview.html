@@ -28,12 +28,16 @@
     ></app-stats-card>
 
     <app-stats-card
-      title="New User Sign-ups"
-      [value]="newUserSignups"
+      title="Total Users"
+      [value]="totalUsers"
       iconPath="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0H5z"
       iconBg="bg-amber-500/15"
       iconColor="text-amber-400"
     ></app-stats-card>
+  </div>
+
+  <div *ngIf="error" class="text-red-400 bg-red-900/30 border border-red-700 rounded-md p-3 mb-4">
+    {{ error }}
   </div>
 
   <div class="mb-4">
