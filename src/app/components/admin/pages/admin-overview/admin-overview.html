@@ -7,33 +7,37 @@
       title="Total Movies"
       [value]="totalMovies"
       iconPath="M4 4h2l2 4h6l2-4h2l-2 4h2v12H4V8h2L4 4zm4 6v6m4-6v6m4-6v6"
-      iconBg="bg-blue-500/15"
-      iconColor="text-blue-400"
+      iconBg="bg-[#3d99f5]/15"
+      iconColor="text-[#3d99f5]"
     ></app-stats-card>
 
     <app-stats-card
       title="Total Cinemas"
       [value]="totalCinemas"
       iconPath="M4 20h16V6H4v14zm3-2v-4h2v4H7zm4 0v-6h2v6h-2zm4 0v-8h2v8h-2zM6 6l6-4 6 4H6z"
-      iconBg="bg-blue-500/15"
-      iconColor="text-blue-400"
+      iconBg="bg-emerald-500/15"
+      iconColor="text-emerald-400"
     ></app-stats-card>
 
     <app-stats-card
       title="Recent Bookings"
       [value]="recentBookings"
       iconPath="M4 7h16v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7zm0-2a2 2 0 012-2h12a2 2 0 012 2v2H4V5zm3 6h4m-4 3h6"
-      iconBg="bg-blue-500/15"
-      iconColor="text-blue-400"
+      iconBg="bg-purple-500/15"
+      iconColor="text-purple-400"
     ></app-stats-card>
 
     <app-stats-card
-      title="New User Sign-ups"
-      [value]="newUserSignups"
+      title="Total Users"
+      [value]="totalUsers"
       iconPath="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0H5z"
-      iconBg="bg-blue-500/15"
-      iconColor="text-blue-400"
+      iconBg="bg-amber-500/15"
+      iconColor="text-amber-400"
     ></app-stats-card>
+  </div>
+
+  <div *ngIf="error" class="text-red-400 bg-red-900/30 border border-red-700 rounded-md p-3 mb-4">
+    {{ error }}
   </div>
 
   <div class="mb-4">

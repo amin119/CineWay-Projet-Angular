@@ -1,0 +1,18 @@
+:host {
+  display: table-row;
+  transition: all 0.2s ease;
+}
+
+:host:hover td {
+  background-color: rgba(61, 153, 245, 0.05);
+}
+
+:host td {
+  vertical-align: middle;
+  color: inherit;
+  box-sizing: border-box;
+}
+
+:host:last-child td {
+  border-bottom: none;
+}

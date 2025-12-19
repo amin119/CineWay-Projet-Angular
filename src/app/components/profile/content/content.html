@@ -37,6 +37,33 @@
         </div>
 
       </form>
+      <!-- Profile picture -->
+
+<div class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y- mb-6 flex items-center justify-between">
+         <h3 class="text-sm font-semibold"> Update Your Profile Picture </h3>
+<img
+    [src]="profile()? 'http://localhost:8000' + profile()?.profile_picture_url
+    : '/assets/avatar.png'"
+    class="w-20 h-20 rounded-full object-cover border border-gray-600"
+    alt="Profile picture"
+  />
+<label class="cw-btn-primary cursor-pointer">
+  Select picture
+  <input
+    type="file"
+    accept="image/*"
+    class="hidden"
+    (change)="onPictureSelected($event)"
+  />
+</label>
+
+
+ <div>
+
+ </div>
+
+</div>
+
       <!-- Change Password -->
       <div class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y-6 mb-2">
 

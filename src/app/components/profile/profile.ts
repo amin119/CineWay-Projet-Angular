@@ -50,12 +50,25 @@ onUpdateProfile(event: {
     },
   });
 }
+onUploadProfilePicture(file: File) {
+  this.userApi.uploadProfilePicture(file).subscribe({
+    next: () => {
+      this.toastr.success('Profile picture updated');
+    },
+    error: () => {
+      this.toastr.error('Failed to upload profile picture');
+    },
+  });
+}
 
   onSectionChange(section: 'profile' | 'preferences' | 'help') {
     this.section = section;
   }
 
   onLogout() {
+    this.userApi.clear();
+    this.router.navigate([APP_ROUTES.login]);
+    this.toastr.info('You have been logged out', 'Goodbye!');
     this.authService.logout();
   }
 

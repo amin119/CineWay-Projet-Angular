@@ -1,0 +1,170 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+  <div class="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl bg-[#0f1419] border border-[#2a3644] shadow-xl">
+    <!-- Header -->
+    <div class="sticky top-0 z-10 border-b border-[#2a3644] bg-[#0f1419] px-6 py-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-white">
+          {{ isEditMode ? 'Edit Movie Details' : 'Add New Movie' }}
+        </h2>
+        <p class="text-sm text-gray-400 mt-1">
+          {{ isEditMode ? 'Update movie information and save changes' : 'Manage movie information for the CineWay platform' }}
+        </p>
+      </div>
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="text-gray-400 hover:text-white transition-colors p-2"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form Content -->
+    <form [formGroup]="form" class="p-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <!-- Left Column -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Title -->
+          <app-form-input
+            label="Title"
+            placeholder="e.g., Inception"
+            [control]="form.get('title')"
+            [required]="true"
+            [showLabel]="true"
+            (valueChange)="form.get('title')?.setValue($event)"
+          ></app-form-input>
+
+          <!-- Synopsis (Description) -->
+          <app-form-textarea
+            label="Synopsis"
+            placeholder="A brief summary of the movie..."
+            [control]="form.get('description')"
+            [required]="true"
+            [showLabel]="true"
+            [rows]="3"
+            (valueChange)="form.get('description')?.setValue($event)"
+          ></app-form-textarea>
+
+          <!-- Release Date & Runtime Row -->
+          <div class="grid grid-cols-2 gap-4">
+            <app-form-date-picker
+              label="Release Date"
+              placeholder="mm/dd/yyyy"
+              [control]="form.get('release_date')"
+              [required]="true"
+              [showLabel]="true"
+              (valueChange)="form.get('release_date')?.setValue($event)"
+            ></app-form-date-picker>
+
+            <app-form-input
+              label="Runtime (minutes)"
+              placeholder="e.g., 148"
+              type="number"
+              [control]="form.get('duration_minutes')"
+              [required]="true"
+              [showLabel]="true"
+              (valueChange)="form.get('duration_minutes')?.setValue($event)"
+            ></app-form-input>
+          </div>
+
+          <!-- Genres -->
+          <app-multi-select-dropdown
+            label="Genres"
+            placeholder="Select genres..."
+            [options]="genreOptions"
+            [control]="form.get('genre')"
+            [required]="true"
+            [showLabel]="true"
+            (valueChange)="form.get('genre')?.setValue($event)"
+          ></app-multi-select-dropdown>
+
+          <!-- Director -->
+          <app-form-input
+            label="Director"
+            placeholder="e.g., Christopher Nolan"
+            [control]="form.get('director')"
+            [required]="true"
+            [showLabel]="true"
+            (valueChange)="form.get('director')?.setValue($event)"
+          ></app-form-input>
+
+          <!-- Cast -->
+          <app-dynamic-input-list
+            label="Cast"
+            [items]="cast"
+            field1Label="Actor"
+            field1Placeholder="e.g., Leonardo DiCaprio"
+            field2Label="Role"
+            field2Placeholder="e.g., Cobb"
+            (itemsChange)="onCastChange($event)"
+          ></app-dynamic-input-list>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-6">
+          <!-- Scores Section -->
+          <div class="rounded-lg border border-[#2a3644] bg-[#1a232f] p-4">
+            <h3 class="text-sm font-semibold text-white mb-4">Scores</h3>
+            <div class="space-y-3">
+              <app-form-input
+                label="Critic Score (%)"
+                placeholder="e.g., 87"
+                type="number"
+                [control]="form.get('critic_score')"
+                [showLabel]="true"
+                (valueChange)="form.get('critic_score')?.setValue($event)"
+              ></app-form-input>
+              <app-form-input
+                label="Audience Score (%)"
+                placeholder="e.g., 91"
+                type="number"
+                [control]="form.get('audience_score')"
+                [showLabel]="true"
+                (valueChange)="form.get('audience_score')?.setValue($event)"
+              ></app-form-input>
+            </div>
+          </div>
+
+          <!-- Movie Poster -->
+          <div class="rounded-lg border border-[#2a3644] bg-[#1a232f] p-4">
+            <app-image-upload
+              label="Movie Poster"
+              [previewUrl]="posterPreviewUrl"
+              [required]="false"
+              [showLabel]="true"
+              (fileSelected)="onPosterSelected($event)"
+              (fileRemoved)="onPosterRemoved()"
+            ></app-image-upload>
+          </div>
+
+          <!-- Trailer URL -->
+          <app-form-input
+            label="Trailer URL"
+            placeholder="https://www.youtube.com/watch?v=..."
+            [control]="form.get('trailer_url')"
+            [showLabel]="true"
+            (valueChange)="form.get('trailer_url')?.setValue($event)"
+          ></app-form-input>
+        </div>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <div class="sticky bottom-0 border-t border-[#2a3644] bg-[#0f1419] px-6 py-4 flex items-center justify-end gap-3">
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="px-6 py-2.5 text-gray-400 hover:bg-[#1a232f] rounded-lg transition-colors font-medium"
+      >
+        Cancel
+      </button>
+      <app-primary-button
+        [label]="isEditMode ? 'Save Movie' : 'Save Movie'"
+        [icon]="false"
+        (clicked)="onSubmit()"
+      ></app-primary-button>
+    </div>
+  </div>
+</div>

@@ -21,5 +21,17 @@ export const APP_API = {
   cinema:{
     list: `${environment.apiUrl}/cinemas/`,
     search :`${environment.apiUrl}/cinemas/search`
+  },
+
+  admin: {
+    stats: {
+      movies: `${environment.apiUrl}/admin/stats/movies`,
+      cinemas: `${environment.apiUrl}/admin/stats/cinemas`,
+      users: `${environment.apiUrl}/admin/stats/users`,
+      recentBookings: `${environment.apiUrl}/admin/stats/bookings/recent`,
+      totalTickets: `${environment.apiUrl}/admin/stats/tickets/total`,
+      revenue: `${environment.apiUrl}/admin/stats/revenue`,
+      today: `${environment.apiUrl}/admin/stats/today`,
+    }
   }
 };

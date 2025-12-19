@@ -18,7 +18,10 @@ private router = inject(Router);
 private toastrService = inject(ToastrService);
 APP_ROUTES = APP_ROUTES;
 menuOpen = false;
-userApi=inject(UserApi)
+
+  userApi=inject(UserApi)
+  user = this.userApi.user;
+
 
 toggleMenu() {
   this.menuOpen = !this.menuOpen;
@@ -31,5 +34,5 @@ logout(){
 isAuth(){
   return this.authService.isAuthenticated();
 }
-  user = this.userApi.user;
+
 }

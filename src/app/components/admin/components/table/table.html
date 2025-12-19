@@ -1,0 +1,26 @@
+<div class="table-wrapper">
+  <table class="w-full text-sm">
+    <colgroup>
+      <col style="width: 35%;">
+      <col style="width: 20%;">
+      <col style="width: 20%;">
+      <col style="width: 25%;">
+    </colgroup>
+    <thead>
+      <tr>
+        @for (header of headers; track $index) {
+          <th
+            [class.text-left]="header.align === 'left' || !header.align"
+            [class.text-center]="header.align === 'center'"
+            [class.text-right]="header.align === 'right'"
+          >
+            {{ header.label }}
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody class="text-gray-200">
+      <ng-content></ng-content>
+    </tbody>
+  </table>
+</div>

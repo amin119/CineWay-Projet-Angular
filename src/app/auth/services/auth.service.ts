@@ -8,6 +8,7 @@ import { LoginResponseDto } from '../dto/login-response.dto';
 import { LoginRequestDto } from '../dto/login-request.dto';
 import { SignupRequestDto } from '../dto/signup-request.dto';
 import { User } from '../model/user';
+import { UserApi } from '../../services/user-api';
 @Injectable({
   providedIn: 'root',
 })
@@ -15,6 +16,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private _loading = signal(false);
   public loading = this._loading.asReadonly();
+  userApi=inject(UserApi)
 isAuthenticated(): boolean {
   return !!localStorage.getItem('token');
 }
@@ -34,6 +36,8 @@ isAuthenticated(): boolean {
       .pipe(
         tap((response) => {
           localStorage.setItem('token', response.access_token);
+                this.userApi.reload();
+
         }),
         
         finalize(() => this._loading.set(false))
