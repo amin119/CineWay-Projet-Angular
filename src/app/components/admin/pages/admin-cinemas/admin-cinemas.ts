@@ -8,6 +8,7 @@ import { SearchInputComponent } from '../../components/search-input/search-input
 import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { AmenityBadgeComponent } from '../../components/amenity-badge/amenity-badge';
+import { PaginationComponent } from '../../components/pagination/pagination';
 import { AddEditCinemaFormComponent } from '../../components/add-edit-cinema-form/add-edit-cinema-form';
 import { Cinema } from '../../../../models/cinema.model';
 import { AdminCinemaService } from '../../../../services/admin-cinema.service';
@@ -24,6 +25,7 @@ import { AdminCinemaService } from '../../../../services/admin-cinema.service';
     FilterDropdownComponent,
     PrimaryButtonComponent,
     AmenityBadgeComponent,
+    PaginationComponent,
     AddEditCinemaFormComponent,
   ],
   templateUrl: './admin-cinemas.html',
@@ -40,20 +42,26 @@ export class AdminCinemasComponent implements OnInit {
     { label: 'Actions', align: 'right' },
   ];
 
-  searchTerm = signal('');
-  amenityFilter = signal('all');
+  private readonly pageSize = 5;
+
+  // Signals for state management
+  readonly searchTerm = signal('');
+  readonly amenityFilter = signal('all');
+  readonly page = signal(1);
 
   // Modal state
-  showModal = signal(false);
-  editingCinema = signal<Cinema | null>(null);
-  isEditMode = signal(false);
+  readonly showModal = signal(false);
+  readonly editingCinema = signal<Cinema | null>(null);
+  readonly isEditMode = signal(false);
 
-  cinemas = this.adminCinemaService.cinemas;
-  loading = this.adminCinemaService.loading;
-  error = this.adminCinemaService.error;
-  deleting = this.adminCinemaService.deleting;
+  // Service state
+  readonly cinemas = this.adminCinemaService.cinemas;
+  readonly loading = this.adminCinemaService.loading;
+  readonly error = this.adminCinemaService.error;
+  readonly deleting = this.adminCinemaService.deleting;
 
-  filteredCinemas = computed(() => {
+  // Computed properties for filtering and pagination
+  readonly filteredCinemas = computed(() => {
     const q = this.searchTerm().toLowerCase().trim();
     const amenity = this.amenityFilter();
 
@@ -70,7 +78,30 @@ export class AdminCinemasComponent implements OnInit {
     });
   });
 
-  amenityOptions = computed(() => {
+  readonly totalPages = computed(() => {
+    const total = this.filteredCinemas().length;
+    return total === 0 ? 1 : Math.ceil(total / this.pageSize);
+  });
+
+  readonly paginatedCinemas = computed(() => {
+    const start = (this.page() - 1) * this.pageSize;
+    return this.filteredCinemas().slice(start, start + this.pageSize);
+  });
+
+  readonly startIndex = computed(() => {
+    const hasItems = this.filteredCinemas().length > 0;
+    return hasItems ? (this.page() - 1) * this.pageSize + 1 : 0;
+  });
+
+  readonly endIndex = computed(() => {
+    const total = this.filteredCinemas().length;
+    if (total === 0) {
+      return 0;
+    }
+    return Math.min(this.page() * this.pageSize, total);
+  });
+
+  readonly amenityOptions = computed(() => {
     const set = new Set<string>();
     this.cinemas().forEach((cinema) => cinema.amenities?.forEach((a) => set.add(a)));
     const options = Array.from(set).sort().map((value) => ({ value, label: value }));
@@ -94,6 +125,19 @@ export class AdminCinemasComponent implements OnInit {
 
   onAmenityChange(value: string): void {
     this.amenityFilter.set(value);
+    this.page.set(1);
+  }
+
+  previousPage(): void {
+    if (this.page() > 1) {
+      this.page.set(this.page() - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.page() < this.totalPages()) {
+      this.page.set(this.page() + 1);
+    }
   }
 
   onAddCinema(): void {
