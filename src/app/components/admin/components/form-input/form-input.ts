@@ -23,9 +23,8 @@ export class FormInputComponent implements ControlValueAccessor {
   @Input() control: any = null;
   @Input() required = false;
   @Input() showLabel = true;
+  @Input() value: string = '';
   @Output() valueChange = new EventEmitter<string>();
-
-  value: string = '';
   disabled = false;
 
   onChange: (value: string) => void = () => {};

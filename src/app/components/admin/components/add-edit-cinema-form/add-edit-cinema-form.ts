@@ -64,8 +64,8 @@ export class AddEditCinemaFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(2)]],
       address: ['', [Validators.required, Validators.minLength(5)]],
       city: ['', [Validators.required, Validators.minLength(2)]],
-      contact_number: ['', [Validators.pattern(/^\d{10,}$/)]],
-      email: ['', [Validators.email]],
+      contact_number: [''],
+      email: [''],
       seating_layout: [''],
     });
   }
@@ -142,6 +142,7 @@ export class AddEditCinemaFormComponent implements OnInit {
     };
 
     this.save.emit(cinemaData);
+    this.isSubmitting.set(false);
   }
 
   onCancel(): void {

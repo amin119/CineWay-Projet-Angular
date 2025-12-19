@@ -30,7 +30,7 @@
         [control]="form.get('name')"
         [required]="true"
         [showLabel]="true"
-        (valueChange)="form.get('name')?.setValue($event)"
+        formControlName="name"
       ></app-form-input>
 
       <!-- Full Address -->
@@ -40,7 +40,7 @@
         [control]="form.get('address')"
         [required]="true"
         [showLabel]="true"
-        (valueChange)="form.get('address')?.setValue($event)"
+        formControlName="address"
       ></app-form-input>
 
       <!-- City -->
@@ -50,7 +50,7 @@
         [control]="form.get('city')"
         [required]="true"
         [showLabel]="true"
-        (valueChange)="form.get('city')?.setValue($event)"
+        formControlName="city"
       ></app-form-input>
 
       <!-- Contact Number & Email Row -->
@@ -61,7 +61,7 @@
           [control]="form.get('contact_number')"
           [required]="false"
           [showLabel]="true"
-          (valueChange)="form.get('contact_number')?.setValue($event)"
+          formControlName="contact_number"
         ></app-form-input>
 
         <app-form-input
@@ -71,7 +71,7 @@
           [control]="form.get('email')"
           [required]="false"
           [showLabel]="true"
-          (valueChange)="form.get('email')?.setValue($event)"
+          formControlName="email"
         ></app-form-input>
       </div>
 
@@ -115,7 +115,7 @@
         [required]="false"
         [showLabel]="true"
         [rows]="4"
-        (valueChange)="form.get('seating_layout')?.setValue($event)"
+        formControlName="seating_layout"
       ></app-form-textarea>
     </form>
 

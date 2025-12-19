@@ -66,7 +66,6 @@ export class AddEditMovieFormComponent implements OnInit {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(1)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      synopsis: ['', [Validators.required]],
       release_date: ['', Validators.required],
       duration_minutes: ['', [Validators.required, Validators.min(1)]],
       genre: [[], Validators.required],
@@ -83,7 +82,6 @@ export class AddEditMovieFormComponent implements OnInit {
     this.form.patchValue({
       title: this.movie.title,
       description: this.movie.description,
-      synopsis: this.movie.description,
       release_date: this.movie.release_date,
       duration_minutes: this.movie.duration_minutes,
       genre: Array.isArray(this.movie.genre) ? this.movie.genre : [this.movie.genre],

@@ -36,15 +36,15 @@
             (valueChange)="form.get('title')?.setValue($event)"
           ></app-form-input>
 
-          <!-- Synopsis -->
+          <!-- Synopsis (Description) -->
           <app-form-textarea
             label="Synopsis"
             placeholder="A brief summary of the movie..."
-            [control]="form.get('synopsis')"
+            [control]="form.get('description')"
             [required]="true"
             [showLabel]="true"
             [rows]="3"
-            (valueChange)="form.get('synopsis')?.setValue($event)"
+            (valueChange)="form.get('description')?.setValue($event)"
           ></app-form-textarea>
 
           <!-- Release Date & Runtime Row -->
