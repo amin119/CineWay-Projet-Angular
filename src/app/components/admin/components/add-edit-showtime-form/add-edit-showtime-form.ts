@@ -1,4 +1,4 @@
-import { Component, input, output, effect, signal, inject } from '@angular/core';
+import { Component, input, output, effect, signal, inject, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ScreeningService, Screening, ScreeningCreate } from '../../../../services/screening.service';
@@ -6,6 +6,8 @@ import { AdminCinemaService } from '../../../../services/admin-cinema.service';
 import { MoviesApi } from '../../../../services/movies-api';
 import { Cinema } from '../../../../models/cinema.model';
 import { MovieModel } from '../../../../models/movie.model';
+import { combineLatest, startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface Room {
   id: number;
@@ -25,6 +27,7 @@ export class AddEditShowtimeFormComponent {
   private readonly screeningService = inject(ScreeningService);
   private readonly cinemaService = inject(AdminCinemaService);
   private readonly movieService = inject(MoviesApi);
+  private readonly destroyRef = inject(DestroyRef);
 
   showtime = input<Screening | null>(null);
   isEditMode = input<boolean>(false);
@@ -38,6 +41,9 @@ export class AddEditShowtimeFormComponent {
   loadingRooms = signal(false);
   saving = signal(false);
   error = signal<string | null>(null);
+  selectionSummary = signal<{ movieId: number | null; roomId: number | null; date: string | null }>(
+    { movieId: null, roomId: null, date: null }
+  );
 
   showtimeForm: FormGroup = this.fb.group({
     cinema_id: ['', Validators.required],
@@ -51,6 +57,19 @@ export class AddEditShowtimeFormComponent {
   constructor() {
     this.loadCinemas();
     this.loadMovies();
+
+    // Track combined selection of movie, room, and date using combineLatest for richer validation/UX.
+    combineLatest([
+      this.showtimeForm.get('movie_id')!.valueChanges.pipe(startWith(this.showtimeForm.value.movie_id)),
+      this.showtimeForm.get('room_id')!.valueChanges.pipe(startWith(this.showtimeForm.value.room_id)),
+      this.showtimeForm.get('screening_date')!.valueChanges.pipe(startWith(this.showtimeForm.value.screening_date)),
+    ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([movieId, roomId, date]) => {
+      this.selectionSummary.set({
+        movieId: movieId ? +movieId : null,
+        roomId: roomId ? +roomId : null,
+        date: date || null,
+      });
+    });
 
     effect(() => {
       const showtime = this.showtime();
