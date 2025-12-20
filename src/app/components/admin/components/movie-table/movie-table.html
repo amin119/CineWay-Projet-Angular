@@ -1,11 +1,11 @@
 <app-table [headers]="headers">
   @for (movie of movies; track movie.id) {
     <app-table-row>
-      <td class="text-base font-medium text-white">{{ movie.title }}</td>
-      <td class="text-sm text-gray-400">{{ movie.releaseDate }}</td>
+      <td class="text-lg font-semibold text-white">{{ movie.title }}</td>
+      <td class="text-base text-gray-300">{{ movie.releaseDate }}</td>
       <td>
         <span
-          class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+          class="inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-semibold"
           [class]="statusChips[movie.status].classes"
         >
           {{ statusChips[movie.status].label }}
@@ -23,7 +23,7 @@
 
   @empty {
     <tr>
-      <td colspan="4" class="p-4 text-center text-gray-500">
+      <td colspan="4" class="text-center text-base text-gray-400">
         No movies found with the current filters.
       </td>
     </tr>

@@ -1,19 +1,18 @@
-<div class="w-full flex-1 px-4 py-8 md:px-8 md:py-12">
-  <div class="flex flex-col gap-8">
-    <!-- Header Section -->
-    <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-wide text-blue-300/80 mb-2">Admin · Cinemas</p>
-        <h1 class="text-3xl font-bold text-white">Cinema Management</h1>
-      </div>
-      <app-primary-button label="Add New Cinema" [icon]="true" (clicked)="onAddCinema()">
-        <svg icon class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
-        </svg>
-      </app-primary-button>
+<div class="page-shell">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Admin · Cinemas</p>
+      <h1 class="page-title">Cinema Management</h1>
+      <p class="page-subtitle">Control every cinema, amenity, and showtime from one sleek panel.</p>
     </div>
+    <app-primary-button label="Add New Cinema" [icon]="true" (clicked)="onAddCinema()">
+      <svg icon class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+      </svg>
+    </app-primary-button>
+  </div>
 
-    <!-- Filters Section -->
+  <div class="section-surface">
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <div class="md:col-span-2">
         <app-search-input
@@ -33,22 +32,23 @@
         ></app-filter-dropdown>
       </div>
     </div>
+  </div>
 
-    <!-- Table Section -->
+  <div class="section-surface table-block">
     <app-table [headers]="headers">
       @if (loading()) {
         <app-table-row>
-          <td class="text-center text-sm text-gray-400" colspan="4">Loading cinemas...</td>
+          <td class="text-center text-base text-gray-400" colspan="4">Loading cinemas...</td>
         </app-table-row>
       } @else if (filteredCinemas().length === 0) {
         <app-table-row>
-          <td class="text-center text-sm text-gray-400" colspan="4">No cinemas found.</td>
+          <td class="text-center text-base text-gray-400" colspan="4">No cinemas found.</td>
         </app-table-row>
       } @else {
         @for (cinema of paginatedCinemas(); track cinema.id) {
           <app-table-row>
-            <td class="font-semibold text-white">{{ cinema.name }}</td>
-            <td class="text-gray-300">{{ cinema.address }}</td>
+            <td class="text-lg font-semibold text-white">{{ cinema.name }}</td>
+            <td class="text-base text-gray-300">{{ cinema.address }}</td>
             <td>
               <div class="flex flex-wrap gap-2">
                 @for (amenity of cinema.amenities; track amenity) {
@@ -67,9 +67,10 @@
         }
       }
     </app-table>
+  </div>
 
-    <!-- Pagination Section -->
-    @if (filteredCinemas().length > 0) {
+  @if (filteredCinemas().length > 0) {
+    <div class="section-surface pagination-surface">
       <app-pagination
         [startIndex]="startIndex()"
         [endIndex]="endIndex()"
@@ -79,15 +80,14 @@
         (previous)="previousPage()"
         (next)="nextPage()"
       ></app-pagination>
-    }
+    </div>
+  }
 
-    <!-- Error State -->
-    @if (error()) {
-      <div class="rounded-lg border border-red-500/30 bg-red-500/10 p-6 text-center">
-        <p class="text-red-400 font-medium">{{ error() }}</p>
-      </div>
-    }
-  </div>
+  @if (error()) {
+    <div class="alert-error">
+      <p class="text-red-200 font-medium">{{ error() }}</p>
+    </div>
+  }
 </div>
 
 <!-- Modal -->

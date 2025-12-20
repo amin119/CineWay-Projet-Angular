@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-2">
   @if (showLabel && label) {
-    <label class="text-sm font-semibold text-white">
+    <label class="text-base font-semibold text-white">
       {{ label }}
       @if (required) {
         <span class="text-red-400">*</span>
@@ -13,7 +13,7 @@
     [disabled]="disabled"
     [rows]="rows"
     [class.error]="control && control.invalid && control.touched"
-    class="w-full rounded-lg bg-[#1a232f] border border-[#2a3644] px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#3d99f5] focus:outline-none transition-colors resize-none"
+    class="w-full rounded-xl bg-[#1a232f] border border-[#2a3644] px-4 py-3 text-white placeholder-gray-500 focus:border-[#3d99f5] focus:outline-none transition-colors resize-none"
     (input)="onInput($event)"
     (blur)="onBlur()"
   ></textarea>
