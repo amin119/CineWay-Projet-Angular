@@ -24,7 +24,7 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [authGuard],
     children: [
-      { path: 'home', component: Home },
+      { path: 'home', component: LandingPageComponent },
       { path: 'cinemas', component: Cinemas },
       { path: 'cinemas/:id', component: CinemaDetails },
       { path: 'profile', component: Profile },

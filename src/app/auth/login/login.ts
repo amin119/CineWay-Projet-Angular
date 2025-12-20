@@ -23,7 +23,7 @@ export class Login {
   isLoading = this.authService.loading;
   loginForm = this.formBuilder.group({
     username: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required]],
   });
   showPass = signal(false);
   togglePass(){

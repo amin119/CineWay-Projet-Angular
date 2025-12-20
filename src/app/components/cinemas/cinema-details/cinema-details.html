@@ -28,8 +28,7 @@
           <i class="bi" [class]="getIcon(amenity)"></i>
           {{ formatAmenityName(amenity) }}
         </div>
-        }
-        @for (amenity of c.amenities; track $index) {
+        } @for (amenity of c.amenities; track $index) {
         <div class="amenity-card">
           <i class="bi" [class]="getIcon(amenity)"></i>
           {{ formatAmenityName(amenity) }}
@@ -38,22 +37,12 @@
       </div>
     </div>
 
-    @if (!isLoadingMovies() && !moviesError() && hasValue()) {
-    <div class="mt-4">
-      <h3 class="mb-3">Available movies</h3>
-      <div class="row flex-nowrap overflow-x-auto g-3">
-        @for (movie of movies(); track movie.id) {
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-          <app-movie [movie]="movie"></app-movie>
-        </div>
-        }
-      </div>
-    </div>
-    }
-    @else
-    {<div class="text-warning mt-4">No movies available in this cinema for the moment.</div>}
-    <div class="mt-4">
-      <app-showtimes [cinemaId]="c.id"></app-showtimes>
+    <app-movies-list [cinemaId]="c.id"></app-movies-list>
+  </div>
+  <div class="mt-4">
+    <div #showtimes class="mt-4">
+      @defer (on viewport(showtimes) ; prefetch on idle) {
+      <app-showtimes [cinemaId]="c.id"></app-showtimes>}
     </div>
   </div>
   }

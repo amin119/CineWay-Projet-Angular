@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams, httpResource } from '@angular/common/http';
 import { Cinema } from '../models/cinema.model';
 import { APP_API } from '../config/app-api.config';
+import { MovieModel } from '../models/movie.model';
 
 @Injectable({
   providedIn: 'root',
@@ -37,4 +38,3 @@ export class CinemaService {
     return this.http.get<Cinema[]>(`${APP_API.cinema.search}`, { params });
   }
 }
-

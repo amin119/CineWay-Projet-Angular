@@ -6,15 +6,14 @@ import { httpResource } from '@angular/common/http';
 import { APP_API } from '../../../config/app-api.config';
 import { APP_ROUTES } from '../../../config/app-routes.confg';
 import { Showtimes } from '../showtimes/showtimes';
-import { MovieModel } from '../../../models/movie.model';
-import { Movie } from '../../movies/movie/movie';
 import { ToastrService } from 'ngx-toastr';
+import { MoviesList } from '../movies-list/movies-list';
 
 @Component({
   selector: 'app-cinema-details',
   templateUrl: './cinema-details.html',
   styleUrl: './cinema-details.css',
-  imports: [Showtimes, Movie],
+  imports: [Showtimes,MoviesList],
 })
 export class CinemaDetails {
   private route = inject(ActivatedRoute);
@@ -29,19 +28,9 @@ export class CinemaDetails {
   error = computed(() => this.cinemaDetailsRes.error());
   isLoading = computed(() => this.cinemaDetailsRes.isLoading());
   hasValue = computed(() => this.cinemaDetailsRes.hasValue());
-  // taaml http request hata kif cinema moush mawjoud : lezem tetbadel ma taamel request ken baad cinema
-  // tetbadel : ma tjibhomch lkol : tant que ma nzelch ala see more wela faza limit hia 6 movies
-  // kif kif lel movies showtimes
-  readonly cinemaMovies = httpResource<MovieModel[]>(() => ({
-    url: `${APP_API.cinema.list}${this.cinemaId()}/movies`,
-    method: 'GET',
-  }));
-  movies = computed(() => this.cinemaMovies.value());
-  moviesError = computed(() => this.cinemaMovies.error());
-  isLoadingMovies = computed(() => this.cinemaMovies.isLoading());
   constructor() {
     effect(() => {
-      if (!this.isLoading() && this.error()) {
+      if (this.error()) {
         this.router.navigate([APP_ROUTES.cinemas]);
         this.toastr.error('An error occurred while loading the cinema details');
       }
@@ -56,9 +45,5 @@ export class CinemaDetails {
   }
   goBack() {
     this.router.navigate([APP_ROUTES.cinemas]);
-  }
-
-  getCinemaDetails(cinema_id: number) {
-    this.cinemaId.update(() => cinema_id);
   }
 }
