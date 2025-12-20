@@ -1,4 +1,11 @@
-<div class="container py-5">
+@if (isSidebarOpen() && selectedShowtimeId() && selectedMovie()) {
+  <app-showtime-sidebar
+    [showtimeId]="selectedShowtimeId()!"
+    [movie]="selectedMovie()!"
+    (onClose)="closeSidebar()"
+  ></app-showtime-sidebar>
+}
+<div class="container py-5" [class.blur-bg]="isSidebarOpen()">
   <button
     class="btn btn-outline-light d-flex align-items-center gap-2 mx-2 my-4"
     (click)="goBack()"
@@ -6,44 +13,22 @@
     <i class="bi bi-arrow-left"></i>
     Back to Cinemas
   </button>
-  @if (error()) {
-  <div class="text-danger text-center py-4">
-    <i class="bi bi-exclamation-triangle-fill"></i>
-    An error occurred while loading the cinema details.
-  </div>
-  } @if (isLoading()) {
-  <div class="text-center py-4">
-    <div class="spinner-grow text-light" role="status"></div>
-  </div>
-  } @if (hasValue() && cinema(); as c) {
-  <div>
+  @if (error()) { ... } @if (isLoading()) { ... } @if (hasValue() && cinema(); as c) {
     <h1 class="cinema-title mt-2 mb-0 p-4">{{ c.name }}</h1>
     <p class="text-secondary px-4">
       <i class="bi bi-geo-alt-fill"></i> {{ c.address }}, {{ c.city }}
     </p>
-    <div class="amenities-slider">
-      <div class="slider-track">
-        @for (amenity of c.amenities; track $index) {
-        <div class="amenity-card">
-          <i class="bi" [class]="getIcon(amenity)"></i>
-          {{ formatAmenityName(amenity) }}
-        </div>
-        } @for (amenity of c.amenities; track $index) {
-        <div class="amenity-card">
-          <i class="bi" [class]="getIcon(amenity)"></i>
-          {{ formatAmenityName(amenity) }}
-        </div>
+    <app-movies-list [cinemaId]="c.id"></app-movies-list>
+
+    <div class="mt-4">
+      <div #showtimes class="mt-4">
+        @defer (on viewport(showtimes) ; prefetch on idle) {
+          <app-showtimes
+            [cinemaId]="c.id"
+            (onShowtimeClick)="openSidebar($event)"
+          ></app-showtimes>
         }
       </div>
     </div>
-
-    <app-movies-list [cinemaId]="c.id"></app-movies-list>
-  </div>
-  <div class="mt-4">
-    <div #showtimes class="mt-4">
-      @defer (on viewport(showtimes) ; prefetch on idle) {
-      <app-showtimes [cinemaId]="c.id"></app-showtimes>}
-    </div>
-  </div>
   }
 </div>
