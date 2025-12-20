@@ -97,6 +97,14 @@ export class AdminCinemaService {
     );
   }
 
+  getCinemas(): Observable<Cinema[]> {
+    return this.http.get<Cinema[]>(APP_API.cinema.list);
+  }
+
+  getCinemaRooms(cinemaId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${APP_API.cinema.list}${cinemaId}/rooms/`);
+  }
+
   private fetchCinemas(request$: Observable<Cinema[]>): void {
     this._loading.set(true);
     this._error.set(null);
