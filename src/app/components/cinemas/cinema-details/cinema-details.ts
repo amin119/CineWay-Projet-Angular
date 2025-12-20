@@ -8,12 +8,14 @@ import { APP_ROUTES } from '../../../config/app-routes.confg';
 import { Showtimes } from '../showtimes/showtimes';
 import { ToastrService } from 'ngx-toastr';
 import { MoviesList } from '../movies-list/movies-list';
+import { ShowtimeSidebar } from "../showtime-sidebar/showtime-sidebar";
+import { MovieModel } from '../../../models/movie.model';
 
 @Component({
   selector: 'app-cinema-details',
   templateUrl: './cinema-details.html',
   styleUrl: './cinema-details.css',
-  imports: [Showtimes,MoviesList],
+  imports: [Showtimes, MoviesList, ShowtimeSidebar],
 })
 export class CinemaDetails {
   private route = inject(ActivatedRoute);
@@ -45,5 +47,21 @@ export class CinemaDetails {
   }
   goBack() {
     this.router.navigate([APP_ROUTES.cinemas]);
+  }
+
+  isSidebarOpen = signal(false);
+  selectedShowtimeId = signal<number | null>(null);
+  selectedMovie= signal<MovieModel | null>(null);
+
+  openSidebar(event: { showtimeId: number; movie: MovieModel }) {
+    this.selectedShowtimeId.set(event.showtimeId);
+    this.selectedMovie.set(event.movie);
+    this.isSidebarOpen.set(true);
+  }
+
+  closeSidebar() {
+    this.isSidebarOpen.set(false);
+    this.selectedShowtimeId.set(null);
+    this.selectedMovie.set(null);
   }
 }
