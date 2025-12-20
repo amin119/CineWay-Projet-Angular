@@ -41,9 +41,6 @@ export class AddEditShowtimeFormComponent {
   loadingRooms = signal(false);
   saving = signal(false);
   error = signal<string | null>(null);
-  selectionSummary = signal<{ movieId: number | null; roomId: number | null; date: string | null }>(
-    { movieId: null, roomId: null, date: null }
-  );
 
   showtimeForm: FormGroup = this.fb.group({
     cinema_id: ['', Validators.required],
@@ -58,18 +55,16 @@ export class AddEditShowtimeFormComponent {
     this.loadCinemas();
     this.loadMovies();
 
-    // Track combined selection of movie, room, and date using combineLatest for richer validation/UX.
+    // Track combined selection changes to clear stale errors responsively.
     combineLatest([
       this.showtimeForm.get('movie_id')!.valueChanges.pipe(startWith(this.showtimeForm.value.movie_id)),
       this.showtimeForm.get('room_id')!.valueChanges.pipe(startWith(this.showtimeForm.value.room_id)),
       this.showtimeForm.get('screening_date')!.valueChanges.pipe(startWith(this.showtimeForm.value.screening_date)),
-    ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([movieId, roomId, date]) => {
-      this.selectionSummary.set({
-        movieId: movieId ? +movieId : null,
-        roomId: roomId ? +roomId : null,
-        date: date || null,
+    ])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.error()) this.error.set(null);
       });
-    });
 
     effect(() => {
       const showtime = this.showtime();
