@@ -1,8 +1,9 @@
-<div class="p-8 space-y-6">
-  <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+<div class="page-shell">
+  <div class="page-header">
     <div>
-      <h1 class="text-3xl font-bold text-white">Cinema Management</h1>
-      <p class="text-gray-400">A list of all cinemas integrated with CineWay.</p>
+      <p class="eyebrow">Admin · Cinemas</p>
+      <h1 class="page-title">Cinema Management</h1>
+      <p class="page-subtitle">Control every cinema, amenity, and showtime from one sleek panel.</p>
     </div>
     <app-primary-button label="Add New Cinema" [icon]="true" (clicked)="onAddCinema()">
       <svg icon class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -11,72 +12,90 @@
     </app-primary-button>
   </div>
 
-  <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-    <div class="md:col-span-2">
-      <app-search-input
-        [showLabel]="false"
-        placeholder="Search by cinema name or address..."
-        [value]="searchTerm()"
-        (valueChange)="onSearch($event)"
-      ></app-search-input>
-    </div>
-    <div class="md:col-span-1">
-      <app-filter-dropdown
-        [showLabel]="false"
-        [label]="'Amenities'"
-        [options]="amenityOptions()"
-        [value]="amenityFilter()"
-        (valueChange)="onAmenityChange($event)"
-      ></app-filter-dropdown>
+  <div class="section-surface">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div class="md:col-span-2">
+        <app-search-input
+          [showLabel]="false"
+          placeholder="Search by cinema name or address..."
+          [value]="searchTerm()"
+          (valueChange)="onSearch($event)"
+        ></app-search-input>
+      </div>
+      <div class="md:col-span-1">
+        <app-filter-dropdown
+          [showLabel]="false"
+          [label]="'Amenities'"
+          [options]="amenityOptions()"
+          [value]="amenityFilter()"
+          (valueChange)="onAmenityChange($event)"
+        ></app-filter-dropdown>
+      </div>
     </div>
   </div>
 
-  <app-table [headers]="headers">
-    @if (loading()) {
-      <app-table-row>
-        <td class="text-center text-sm text-gray-400" colspan="4">Loading cinemas...</td>
-      </app-table-row>
-    } @else if (filteredCinemas().length === 0) {
-      <app-table-row>
-        <td class="text-center text-sm text-gray-400" colspan="4">No cinemas found.</td>
-      </app-table-row>
-    } @else {
-      @for (cinema of filteredCinemas(); track cinema.id) {
+  <div class="section-surface table-block">
+    <app-table [headers]="headers">
+      @if (loading()) {
         <app-table-row>
-          <td class="font-semibold text-white">{{ cinema.name }}</td>
-          <td class="text-gray-300">{{ cinema.address }}</td>
-          <td>
-            <div class="flex flex-wrap gap-2">
-              @for (amenity of cinema.amenities; track amenity) {
-                <app-amenity-badge [amenity]="amenity"></app-amenity-badge>
-              }
-            </div>
-          </td>
-          <td class="text-right">
-            <app-table-actions
-              (view)="onViewShowtimes(cinema)"
-              (edit)="onEdit(cinema)"
-              (delete)="onDelete(cinema)"
-            ></app-table-actions>
-          </td>
+          <td class="text-center text-base text-gray-400" colspan="4">Loading cinemas...</td>
         </app-table-row>
+      } @else if (filteredCinemas().length === 0) {
+        <app-table-row>
+          <td class="text-center text-base text-gray-400" colspan="4">No cinemas found.</td>
+        </app-table-row>
+      } @else {
+        @for (cinema of paginatedCinemas(); track cinema.id) {
+          <app-table-row>
+            <td class="text-lg font-semibold text-white">{{ cinema.name }}</td>
+            <td class="text-base text-gray-300">{{ cinema.address }}</td>
+            <td>
+              <div class="flex flex-wrap gap-2">
+                @for (amenity of cinema.amenities; track amenity) {
+                  <app-amenity-badge [amenity]="amenity"></app-amenity-badge>
+                }
+              </div>
+            </td>
+            <td class="text-right">
+              <app-table-actions
+                (view)="onViewShowtimes(cinema)"
+                (edit)="onEdit(cinema)"
+                (delete)="onDelete(cinema)"
+              ></app-table-actions>
+            </td>
+          </app-table-row>
+        }
       }
-    }
-  </app-table>
+    </app-table>
+  </div>
 
-  @if (error()) {
-    <div class="rounded-md border border-red-700 bg-red-900/30 p-3 text-red-300">
-      {{ error() }}
+  @if (filteredCinemas().length > 0) {
+    <div class="section-surface pagination-surface">
+      <app-pagination
+        [startIndex]="startIndex()"
+        [endIndex]="endIndex()"
+        [totalCount]="filteredCinemas().length"
+        [page]="page()"
+        [totalPages]="totalPages()"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      ></app-pagination>
     </div>
   }
 
-  <!-- Modal -->
-  @if (showModal()) {
-    <app-add-edit-cinema-form
-      [cinema]="editingCinema()"
-      [isEditMode]="isEditMode()"
-      (save)="onFormSave($event)"
-      (cancel)="onFormCancel()"
-    ></app-add-edit-cinema-form>
+  @if (error()) {
+    <div class="alert-error">
+      <p class="text-red-200 font-medium">{{ error() }}</p>
+    </div>
   }
 </div>
+
+<!-- Modal -->
+@if (showModal()) {
+  <app-add-edit-cinema-form
+    [cinema]="editingCinema()"
+    [isEditMode]="isEditMode()"
+    (save)="onFormSave($event)"
+    (cancel)="onFormCancel()"
+  ></app-add-edit-cinema-form>
+}

@@ -3,38 +3,142 @@
 }
 
 .table-wrapper {
-  overflow: hidden;
-  border-radius: 0.75rem;
-  border: 1px solid #2a3644;
-  background: #18222c;
-  overflow-x: auto;
+  width: 100%;
+  overflow: visible;
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at top left, rgba(61, 153, 245, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(117, 73, 248, 0.08), transparent 40%),
+    #0f1724;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 1.1rem;
   table-layout: fixed;
 }
 
-th,
-td {
-  padding: 1rem 1.5rem;
-  box-sizing: border-box;
-}
-
+/* Header */
 thead {
-  background: #101922;
-  border-bottom: 1px solid #2a3644;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: transparent;
 }
 
 th {
-  font-weight: 600;
-  font-size: 0.75rem;
+  padding: 0 1.5rem 1rem 1.5rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #9ca3af;
+  color: #6ea7ff;
+  text-align: left;
+  border: none;
+  box-sizing: border-box;
+}
+
+th:last-child {
+  text-align: right;
+}
+
+/* Rows as floating cards */
+tbody tr {
+  background: linear-gradient(140deg, #162131 0%, #111927 45%, #0d1522 100%);
+  border-radius: 1.1rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(110, 167, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, background 0.4s ease;
+}
+
+tbody tr::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: 1.05rem;
+  background: linear-gradient(120deg, rgba(110, 167, 255, 0.08), rgba(83, 229, 255, 0.04) 50%, rgba(144, 97, 255, 0.06));
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+tbody tr:hover {
+  transform: translateY(-6px) scale(1.005);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(110, 167, 255, 0.35);
+  background: linear-gradient(150deg, #1b2940 0%, #131d2e 55%, #0f1724 100%);
+}
+
+tbody tr:hover::before {
+  opacity: 1;
+}
+
+tbody tr::after {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: -0.7rem;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(110, 167, 255, 0.75), transparent);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+tbody tr:last-child::after {
+  display: none;
 }
 
 td {
-  border-bottom: 1px solid #2a3644;
+  padding: 1.35rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #eaf0f7;
+  border: none;
+  box-sizing: border-box;
+  vertical-align: middle;
+  position: relative;
+  z-index: 1;
+}
+
+td:first-child {
+  border-radius: 1.1rem 0 0 1.1rem;
+  padding-left: 1.9rem;
+}
+
+td:last-child {
+  border-radius: 0 1.1rem 1.1rem 0;
+  text-align: right;
+  padding-right: 1.9rem;
+}
+
+/* Subtle column guides for readability */
+tbody td + td::before {
+  content: '';
+  position: absolute;
+  top: 35%;
+  bottom: 35%;
+  left: 0;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  opacity: 0.4;
+}
+
+/* Remove any inherited hover fill */
+tbody tr:hover td,
+:host-context(app-table) tbody :host:hover td {
+  background-color: transparent;
+}
+
+/* Responsive tweak */
+@media (max-width: 960px) {
+  th,
+  td {
+    font-size: 0.95rem;
+  }
+
+  td {
+    padding: 1.15rem 1.25rem;
+  }
 }

@@ -1,19 +1,19 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-  <div class="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl bg-[#0f1419] border border-[#2a3644] shadow-xl">
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#2a3644] shadow-2xl bg-gradient-to-b from-[#131c26] to-[#0f1419]">
     <!-- Header -->
-    <div class="sticky top-0 z-10 border-b border-[#2a3644] bg-[#0f1419] px-6 py-4 flex items-center justify-between">
+    <div class="sticky top-0 z-10 border-b border-[#2a3644] bg-gradient-to-r from-[#0f1419] to-[#131c26] px-7 py-5 flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-white">
+        <h2 class="text-3xl font-extrabold text-white tracking-tight">
           {{ isEditMode ? 'Edit Movie Details' : 'Add New Movie' }}
         </h2>
-        <p class="text-sm text-gray-400 mt-1">
+        <p class="text-base text-gray-400 mt-1">
           {{ isEditMode ? 'Update movie information and save changes' : 'Manage movie information for the CineWay platform' }}
         </p>
       </div>
       <button
         type="button"
         (click)="onCancel()"
-        class="text-gray-400 hover:text-white transition-colors p-2"
+        class="text-gray-400 hover:text-white transition-colors p-2.5 rounded-lg hover:bg-white/5"
       >
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -22,7 +22,7 @@
     </div>
 
     <!-- Form Content -->
-    <form [formGroup]="form" class="p-6">
+    <form [formGroup]="form" class="p-7">
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Left Column -->
         <div class="lg:col-span-2 space-y-6">
@@ -48,7 +48,7 @@
           ></app-form-textarea>
 
           <!-- Release Date & Runtime Row -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-5">
             <app-form-date-picker
               label="Release Date"
               placeholder="mm/dd/yyyy"
@@ -105,8 +105,8 @@
         <!-- Right Column -->
         <div class="space-y-6">
           <!-- Scores Section -->
-          <div class="rounded-lg border border-[#2a3644] bg-[#1a232f] p-4">
-            <h3 class="text-sm font-semibold text-white mb-4">Scores</h3>
+          <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-5">
+            <h3 class="text-base font-semibold text-white mb-4">Scores</h3>
             <div class="space-y-3">
               <app-form-input
                 label="Critic Score (%)"
@@ -128,7 +128,7 @@
           </div>
 
           <!-- Movie Poster -->
-          <div class="rounded-lg border border-[#2a3644] bg-[#1a232f] p-4">
+          <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-5">
             <app-image-upload
               label="Movie Poster"
               [previewUrl]="posterPreviewUrl"
@@ -152,11 +152,11 @@
     </form>
 
     <!-- Footer -->
-    <div class="sticky bottom-0 border-t border-[#2a3644] bg-[#0f1419] px-6 py-4 flex items-center justify-end gap-3">
+    <div class="sticky bottom-0 border-t border-[#2a3644] bg-gradient-to-r from-[#0f1419] to-[#131c26] px-7 py-5 flex items-center justify-end gap-3">
       <button
         type="button"
         (click)="onCancel()"
-        class="px-6 py-2.5 text-gray-400 hover:bg-[#1a232f] rounded-lg transition-colors font-medium"
+        class="px-6 py-3 text-gray-300 hover:bg-[#1a232f] rounded-xl transition-colors font-medium"
       >
         Cancel
       </button>

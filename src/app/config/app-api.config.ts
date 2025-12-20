@@ -23,6 +23,8 @@ export const APP_API = {
     search :`${environment.apiUrl}/cinemas/search`
   },
 
+  screenings: `${environment.apiUrl}/screenings`,
+
   admin: {
     stats: {
       movies: `${environment.apiUrl}/admin/stats/movies`,
