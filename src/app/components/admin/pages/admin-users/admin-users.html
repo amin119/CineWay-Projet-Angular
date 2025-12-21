@@ -1,0 +1,100 @@
+<div class="min-h-screen space-y-6 pb-8">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-bold text-white">User Management</h1>
+      <p class="mt-2 text-gray-400">Manage all users and administrators</p>
+    </div>
+    <button
+      (click)="openAddAdminForm()"
+      class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-500 hover:to-blue-400"
+    >
+      + Add New Admin
+    </button>
+  </div>
+
+  <div class="section-surface space-y-4 p-6">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <app-search-input
+        placeholder="Search by name or email..."
+        (valueChange)="onSearchChange($event)"
+      ></app-search-input>
+      <div class="flex gap-3">
+        <app-filter-dropdown
+          [options]="statusOptions"
+          placeholder="Filter by Status"
+          (valueChange)="statusFilter.set($event)"
+        ></app-filter-dropdown>
+        <app-filter-dropdown
+          [options]="roleOptions"
+          placeholder="Filter by Role"
+          (valueChange)="roleFilter.set($event)"
+        ></app-filter-dropdown>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="section-surface p-8 text-center">
+      <p class="text-gray-400">Loading users...</p>
+    </div>
+  } @else {
+    <div class="section-surface table-block">
+      <app-table [headers]="headers">
+        @if (filteredUsers().length === 0) {
+          <app-table-row>
+            <td class="text-center text-base text-gray-400" colspan="6">No users found.</td>
+          </app-table-row>
+        } @else {
+          @for (user of paginatedUsers(); track user.id) {
+            <app-table-row>
+              <td class="text-base font-semibold text-white">{{ user.full_name }}</td>
+              <td class="text-base text-gray-300">{{ user.email }}</td>
+              <td class="text-base text-gray-300">{{ user.created_at | date: 'MMM d, yyyy' }}</td>
+              <td class="text-base">
+                @if (user.is_active) {
+                  <span class="inline-block rounded-full bg-green-500/20 px-3 py-1 text-sm font-semibold text-green-400">
+                    Active
+                  </span>
+                } @else {
+                  <span class="inline-block rounded-full bg-yellow-500/20 px-3 py-1 text-sm font-semibold text-yellow-400">
+                    Suspended
+                  </span>
+                }
+              </td>
+              <td class="text-base">
+                <span class="inline-block rounded-full px-3 py-1 text-sm font-semibold" [ngClass]="user.is_admin ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-500/20 text-gray-400'">
+                  {{ user.is_admin ? 'Admin' : 'User' }}
+                </span>
+              </td>
+              <td class="text-right">
+                <app-table-actions
+                  (edit)="onEditUser(user)"
+                  (delete)="onSuspendUser(user)"
+                ></app-table-actions>
+              </td>
+            </app-table-row>
+          }
+        }
+      </app-table>
+    </div>
+
+    @if (filteredUsers().length > 0) {
+      <div class="section-surface pagination-surface">
+        <app-pagination
+          [startIndex]="startIndex()"
+          [endIndex]="endIndex()"
+          [totalCount]="filteredUsers().length"
+          [page]="page()"
+          [totalPages]="totalPages()"
+          (previous)="previousPage()"
+          (next)="nextPage()"
+        ></app-pagination>
+      </div>
+    }
+  }
+</div>
+
+<!-- Add Admin Form Modal -->
+@if (showAddAdminForm()) {
+  <app-add-edit-admin-form (save)="onAdminCreated()" (cancel)="showAddAdminForm.set(false)"></app-add-edit-admin-form>
+}
