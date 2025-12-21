@@ -10,3 +10,8 @@ export interface Cinema {
   gallery_image_url?: string;
   seating_layout?: string;
 }
+
+export default interface CinemaResponse {
+  cinemas: Cinema[];
+  total: number;
+}

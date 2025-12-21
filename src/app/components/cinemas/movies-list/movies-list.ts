@@ -17,7 +17,7 @@ interface CinemaMoviesResponse {
 })
 export class MoviesList {
   cinemaId = input.required<number>();
-  readonly limit = 4;
+  readonly limit = 6;
   private skip = signal(0);
   loadedMovies = signal<MovieModel[]>([]);
 
