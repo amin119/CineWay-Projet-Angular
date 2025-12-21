@@ -1,0 +1,57 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+}
+
+.screen {
+  width: 100%;
+  height: 15px;
+  background-color: #0ff;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 15px;
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 30px;
+}
+
+.seats-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  gap: 10px;
+}
+
+.seats {
+  display: flex;
+  gap: 4px;
+}
+
+.seats {
+  display: flex;
+  gap: 4px;
+}
+
+.seat.selected {
+  color: #fff;
+}
+

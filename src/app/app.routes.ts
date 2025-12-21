@@ -17,6 +17,7 @@ import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
 import { adminGuard } from './auth/guards/admin/admin.guard';
 import { NotFound } from './components/not-found/not-found';
+import { SeatSelection } from './components/seat-selection/seat-selection';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,7 @@ export const routes: Routes = [
       { path: 'cinemas/:id', component: CinemaDetails },
       { path: 'profile', component: Profile },
       { path: 'not-found', component: NotFound },
+      { path: 'book', component: SeatSelection },
     ],
   },
   {
@@ -54,6 +56,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: "**" , redirectTo:'/not-found'
-  }
+    path: '**',
+    redirectTo: '/not-found',
+  },
 ];

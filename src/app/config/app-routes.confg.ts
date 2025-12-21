@@ -3,5 +3,6 @@ export const APP_ROUTES = {
   login: 'auth/login',
   signup: 'auth/signup',
   profile :'/profile',
-  cinemas: '/cinemas'
+  cinemas: '/cinemas',
+  book : '/book',
 };

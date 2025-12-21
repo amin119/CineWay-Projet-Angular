@@ -71,6 +71,7 @@
     [class.btn-warning]="showtime()?.available_seats_count! > 0"
     [class.btn-secondary]="showtime()?.available_seats_count === 0"
     [disabled]="showtime()?.available_seats_count === 0"
+    (click)="goToBooking()"
   >
     <i class="bi bi-ticket-detailed"></i>
     {{ showtime()?.available_seats_count === 0 ? 'Sold Out' : 'Book Now' }}
