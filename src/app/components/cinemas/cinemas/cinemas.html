@@ -1,58 +1,51 @@
 <div class="container py-5">
-  <br>
   <h2 class="my-4">Cinemas</h2>
-  <app-search-bar/>
+
+  <div class="d-flex align-items-center mb-4 gap-2">
+    <app-search-bar class="flex-grow-1"></app-search-bar>
+
+    <button
+      class="btn mx-2"
+      [class.btn-primary]="showFavoritesOnly()"
+      [class.btn-outline-primary]="!showFavoritesOnly()"
+      (click)="toggleFavoritesFilter()"
+    >
+      <i [class]="showFavoritesOnly() ?  'bi bi-x me-2' : 'bi bi-heart-fill me-2' "></i>
+      {{ showFavoritesOnly() ? 'Show all cinemas' : 'Show Favorites Only' }}
+    </button>
+  </div>
+
   @if (error()) {
-    <div class="text-danger">{{ error() }}</div>
+    <div class="text-danger text-center">An error occurred while loading cinemas. Please try again later.</div>
   }
-
-  <div class="row g-4">
-    @if (isLoading()) {
-      @for (i of [0,1,2,3]; track i) {
-        <div class="col-md-3">
-          <div
-            class="d-flex flex-column p-4 rounded-4 border cinema-card bg-dark text-white h-100 placeholder-glow"
-            aria-hidden="true"
-          >
-            <h3 class="fw-bold fs-5 mb-1">
-              <span class="placeholder-wave w-50"></span>
-            </h3>
-            <p class="text-secondary small mb-1">
-              <span class="placeholder-wave w-75"></span>
-            </p>
-
-            <button
-              class="btn btn-outline-primary w-100 fw-semibold mt-auto placeholder"
-              style="height: 38px;"
-              aria-disabled="true"
-            ></button>
-          </div>
-        </div>
-      }
-    } @else {
-      @for (cinema of cinemas(); track cinema.id) {
+  @else {
+    <div class="row g-4">
+      @for (cinema of filteredCinemas(); track cinema.id) {
         <div class="col-md-3">
           <app-cinema-card [cinema]="cinema"></app-cinema-card>
         </div>
       }
-    }
-  </div>
+      @if (isLoading()) {
+        @for (i of [0,1,2,3]; track i) {
+          <div class="col-md-3">
+            <div
+              class="placeholder-glow bg-secondary text-white rounded h-100 p-4"
+              style="min-height: 200px"
+            >
+              <h3 class="placeholder col-8 mb-2"></h3>
+              <p class="placeholder col-6"></p>
+            </div>
+          </div>
+        }
+      }
+    </div>
 
-  <div class="d-flex justify-content-center gap-3 mt-4">
-    <button
-      class="btn btn-outline-secondary"
-      (click)="previous()"
-      [disabled]="!canGoPrevious() || isLoading()"
-    >
-      <i class="bi bi-chevron-left"></i>
-    </button>
-    <!-- to be changed cinema().length < 4 -->
-    <button
-      class="btn btn-outline-primary"
-      (click)="next()"
-      [disabled]="isLoading() || cinemas().length < 4"
-    >
-      <i class="bi bi-chevron-right"></i>
-    </button>
-  </div>
+    @if (hasMore() && !isLoading() && !showFavoritesOnly()) {
+      <div class="d-flex justify-content-center my-4">
+        <button class="btn btn-outline-secondary" (click)="loadMore()">
+         <i class="bi bi-arrow-down me-2"></i> Load More
+        </button>
+      </div>
+    }
+  }
 </div>
