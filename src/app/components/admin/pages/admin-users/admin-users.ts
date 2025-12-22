@@ -97,7 +97,7 @@ export class AdminUsersComponent implements OnInit {
 
   loadUsers(): void {
     this.loading.set(true);
-    this.adminUsersService.listUsers(0, 200).subscribe({
+    this.adminUsersService.listUsers(0, 100).subscribe({
       next: (users) => {
         this.users.set(users);
         this.loading.set(false);

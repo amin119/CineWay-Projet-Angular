@@ -1,21 +1,21 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-  <div class="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#2a3644] shadow-2xl bg-gradient-to-b from-[#131c26] to-[#0f1419]">
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b1220]/60 backdrop-blur-md">
+  <div class="w-full max-w-6xl rounded-2xl border border-blue-500/20 shadow-2xl bg-gradient-to-br from-[#1a2634] to-[#0f1724]">
     <!-- Header -->
-    <div class="sticky top-0 z-10 border-b border-[#2a3644] bg-gradient-to-r from-[#0f1419] to-[#131c26] px-7 py-5 flex items-center justify-between">
+    <div class="border-b border-gray-700/50 bg-[#1a2634]/95 backdrop-blur-sm px-7 py-4 flex items-center justify-between">
       <div>
-        <h2 class="text-3xl font-extrabold text-white tracking-tight">
+        <h2 class="text-2xl font-extrabold text-white tracking-tight">
           {{ isEditMode ? 'Edit Movie Details' : 'Add New Movie' }}
         </h2>
-        <p class="text-base text-gray-400 mt-1">
+        <p class="text-sm text-gray-400 mt-0.5">
           {{ isEditMode ? 'Update movie information and save changes' : 'Manage movie information for the CineWay platform' }}
         </p>
       </div>
       <button
         type="button"
         (click)="onCancel()"
-        class="text-gray-400 hover:text-white transition-colors p-2.5 rounded-lg hover:bg-white/5"
+        class="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
       >
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
@@ -23,9 +23,9 @@
 
     <!-- Form Content -->
     <form [formGroup]="form" class="p-7">
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <!-- Left Column -->
-        <div class="lg:col-span-2 space-y-6">
+      <div class="grid grid-cols-12 gap-5">
+        <!-- Left Column - Main Info -->
+        <div class="col-span-7 space-y-4">
           <!-- Title -->
           <app-form-input
             label="Title"
@@ -36,19 +36,19 @@
             (valueChange)="form.get('title')?.setValue($event)"
           ></app-form-input>
 
-          <!-- Synopsis (Description) -->
+          <!-- Synopsis -->
           <app-form-textarea
             label="Synopsis"
             placeholder="A brief summary of the movie..."
             [control]="form.get('description')"
             [required]="true"
             [showLabel]="true"
-            [rows]="3"
+            [rows]="2"
             (valueChange)="form.get('description')?.setValue($event)"
           ></app-form-textarea>
 
-          <!-- Release Date & Runtime Row -->
-          <div class="grid grid-cols-2 gap-5">
+          <!-- Release Date, Runtime, Genres Row -->
+          <div class="grid grid-cols-3 gap-4">
             <app-form-date-picker
               label="Release Date"
               placeholder="mm/dd/yyyy"
@@ -59,26 +59,27 @@
             ></app-form-date-picker>
 
             <app-form-input
-              label="Runtime (minutes)"
-              placeholder="e.g., 148"
+              label="Runtime (min)"
+              placeholder="148"
               type="number"
               [control]="form.get('duration_minutes')"
               [required]="true"
               [showLabel]="true"
               (valueChange)="form.get('duration_minutes')?.setValue($event)"
             ></app-form-input>
-          </div>
 
-          <!-- Genres -->
-          <app-multi-select-dropdown
-            label="Genres"
-            placeholder="Select genres..."
-            [options]="genreOptions"
-            [control]="form.get('genre')"
-            [required]="true"
-            [showLabel]="true"
-            (valueChange)="form.get('genre')?.setValue($event)"
-          ></app-multi-select-dropdown>
+            <div>
+              <app-multi-select-dropdown
+                label="Genres"
+                placeholder="Select..."
+                [options]="genreOptions"
+                [control]="form.get('genre')"
+                [required]="true"
+                [showLabel]="true"
+                (valueChange)="form.get('genre')?.setValue($event)"
+              ></app-multi-select-dropdown>
+            </div>
+          </div>
 
           <!-- Director -->
           <app-form-input
@@ -102,33 +103,10 @@
           ></app-dynamic-input-list>
         </div>
 
-        <!-- Right Column -->
-        <div class="space-y-6">
-          <!-- Scores Section -->
-          <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-5">
-            <h3 class="text-base font-semibold text-white mb-4">Scores</h3>
-            <div class="space-y-3">
-              <app-form-input
-                label="Critic Score (%)"
-                placeholder="e.g., 87"
-                type="number"
-                [control]="form.get('critic_score')"
-                [showLabel]="true"
-                (valueChange)="form.get('critic_score')?.setValue($event)"
-              ></app-form-input>
-              <app-form-input
-                label="Audience Score (%)"
-                placeholder="e.g., 91"
-                type="number"
-                [control]="form.get('audience_score')"
-                [showLabel]="true"
-                (valueChange)="form.get('audience_score')?.setValue($event)"
-              ></app-form-input>
-            </div>
-          </div>
-
+        <!-- Right Column - Media & Scores -->
+        <div class="col-span-5 space-y-4">
           <!-- Movie Poster -->
-          <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-5">
+          <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-4">
             <app-image-upload
               label="Movie Poster"
               [previewUrl]="posterPreviewUrl"
@@ -147,16 +125,39 @@
             [showLabel]="true"
             (valueChange)="form.get('trailer_url')?.setValue($event)"
           ></app-form-input>
+
+          <!-- Scores Section -->
+          <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-4">
+            <h3 class="text-sm font-semibold text-white mb-3">Scores</h3>
+            <div class="space-y-3">
+              <app-form-input
+                label="Critic Score (%)"
+                placeholder="87"
+                type="number"
+                [control]="form.get('critic_score')"
+                [showLabel]="true"
+                (valueChange)="form.get('critic_score')?.setValue($event)"
+              ></app-form-input>
+              <app-form-input
+                label="Audience Score (%)"
+                placeholder="91"
+                type="number"
+                [control]="form.get('audience_score')"
+                [showLabel]="true"
+                (valueChange)="form.get('audience_score')?.setValue($event)"
+              ></app-form-input>
+            </div>
+          </div>
         </div>
       </div>
     </form>
 
     <!-- Footer -->
-    <div class="sticky bottom-0 border-t border-[#2a3644] bg-gradient-to-r from-[#0f1419] to-[#131c26] px-7 py-5 flex items-center justify-end gap-3">
+    <div class="border-t border-gray-700/50 bg-[#1a2634]/95 px-7 py-4 flex items-center justify-end gap-3">
       <button
         type="button"
         (click)="onCancel()"
-        class="px-6 py-3 text-gray-300 hover:bg-[#1a232f] rounded-xl transition-colors font-medium"
+        class="px-6 py-2.5 text-gray-300 hover:bg-[#222d3b] rounded-xl transition-colors font-medium"
       >
         Cancel
       </button>

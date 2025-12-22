@@ -1,130 +1,138 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-  <div class="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#2a3644] shadow-2xl bg-gradient-to-b from-[#131c26] to-[#0f1419]">
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b1220]/60 backdrop-blur-md">
+  <div class="w-full max-w-5xl rounded-2xl border border-blue-500/20 shadow-2xl bg-gradient-to-br from-[#1a2634] to-[#0f1724]">
     <!-- Header -->
-    <div class="sticky top-0 z-10 border-b border-[#2a3644] bg-gradient-to-r from-[#0f1419] to-[#131c26] px-7 py-5 flex items-center justify-between">
+    <div class="border-b border-gray-700/50 bg-[#1a2634]/95 backdrop-blur-sm px-7 py-4 flex items-center justify-between">
       <div>
-        <h2 class="text-3xl font-extrabold text-white tracking-tight">
+        <h2 class="text-2xl font-extrabold text-white tracking-tight">
           {{ isEditMode ? 'Edit Cinema' : 'Add Cinema' }}
         </h2>
-        <p class="text-base text-gray-400 mt-1">
+        <p class="text-sm text-gray-400 mt-0.5">
           {{ isEditMode ? 'Update cinema information and save changes' : 'Manage cinema information and configurations' }}
         </p>
       </div>
       <button
         type="button"
         (click)="onCancel()"
-        class="text-gray-400 hover:text-white transition-colors p-2.5 rounded-lg hover:bg-white/5"
+        class="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
       >
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
 
     <!-- Form Content -->
-    <form [formGroup]="form" class="p-7 space-y-6">
-      <!-- Cinema Name -->
-      <app-form-input
-        label="Cinema Name"
-        placeholder="e.g., CineWay Downtown"
-        [control]="form.get('name')"
-        [required]="true"
-        [showLabel]="true"
-        formControlName="name"
-      ></app-form-input>
+    <form [formGroup]="form" class="p-7">
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-4">
+          <!-- Cinema Name -->
+          <app-form-input
+            label="Cinema Name"
+            placeholder="e.g., CineWay Downtown"
+            [control]="form.get('name')"
+            [required]="true"
+            [showLabel]="true"
+            formControlName="name"
+          ></app-form-input>
 
-      <!-- Full Address -->
-      <app-form-input
-        label="Full Address"
-        placeholder="123 Movie Lane, Film City, 90210"
-        [control]="form.get('address')"
-        [required]="true"
-        [showLabel]="true"
-        formControlName="address"
-      ></app-form-input>
+          <!-- Full Address -->
+          <app-form-input
+            label="Full Address"
+            placeholder="123 Movie Lane, Film City, 90210"
+            [control]="form.get('address')"
+            [required]="true"
+            [showLabel]="true"
+            formControlName="address"
+          ></app-form-input>
 
-      <!-- City -->
-      <app-form-input
-        label="City"
-        placeholder="e.g., Los Angeles"
-        [control]="form.get('city')"
-        [required]="true"
-        [showLabel]="true"
-        formControlName="city"
-      ></app-form-input>
+          <!-- City -->
+          <app-form-input
+            label="City"
+            placeholder="e.g., Los Angeles"
+            [control]="form.get('city')"
+            [required]="true"
+            [showLabel]="true"
+            formControlName="city"
+          ></app-form-input>
 
-      <!-- Contact Number & Email Row -->
-      <div class="grid grid-cols-2 gap-5">
-        <app-form-input
-          label="Contact Number"
-          placeholder="(123) 456-7890"
-          [control]="form.get('contact_number')"
-          [required]="false"
-          [showLabel]="true"
-          formControlName="contact_number"
-        ></app-form-input>
+          <!-- Contact Number & Email Row -->
+          <div class="grid grid-cols-2 gap-4">
+            <app-form-input
+              label="Contact Number"
+              placeholder="(123) 456-7890"
+              [control]="form.get('contact_number')"
+              [required]="false"
+              [showLabel]="true"
+              formControlName="contact_number"
+            ></app-form-input>
 
-        <app-form-input
-          label="Email"
-          placeholder="contact@cineway.com"
-          type="email"
-          [control]="form.get('email')"
-          [required]="false"
-          [showLabel]="true"
-          formControlName="email"
-        ></app-form-input>
-      </div>
+            <app-form-input
+              label="Email"
+              placeholder="contact@cineway.com"
+              type="email"
+              [control]="form.get('email')"
+              [required]="false"
+              [showLabel]="true"
+              formControlName="email"
+            ></app-form-input>
+          </div>
 
-      <!-- Amenities Checkboxes -->
-      <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-5">
-        <h3 class="text-base font-semibold text-white mb-4">Amenities</h3>
-        <div class="grid grid-cols-2 gap-4">
-          @for (amenity of amenities(); track amenity.value) {
-            <label class="flex items-center gap-3 cursor-pointer group">
-              <input
-                type="checkbox"
-                [checked]="amenity.checked"
-                (change)="toggleAmenity(amenity.value)"
-                class="w-4 h-4 rounded border-[#2a3644] bg-[#0f1419] text-[#3d99f5] cursor-pointer"
-              />
-              <span class="text-sm text-gray-300 group-hover:text-white transition-colors">
-                {{ amenity.label }}
-              </span>
-            </label>
-          }
+          <!-- Seating Layout Configuration -->
+          <app-form-textarea
+            label="Seating Layout"
+            placeholder="Describe seating configuration..."
+            [control]="form.get('seating_layout')"
+            [required]="false"
+            [showLabel]="true"
+            [rows]="3"
+            formControlName="seating_layout"
+          ></app-form-textarea>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-4">
+          <!-- Photo Gallery -->
+          <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-4">
+            <app-image-upload
+              label="Photo Gallery"
+              [previewUrl]="galleryPreviewUrl()"
+              [required]="false"
+              [showLabel]="true"
+              (fileSelected)="onGallerySelected($event)"
+              (fileRemoved)="onGalleryRemoved()"
+            ></app-image-upload>
+          </div>
+
+          <!-- Amenities Checkboxes -->
+          <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-4">
+            <h3 class="text-sm font-semibold text-white mb-3">Amenities</h3>
+            <div class="grid grid-cols-2 gap-3">
+              @for (amenity of amenities(); track amenity.value) {
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    [checked]="amenity.checked"
+                    (change)="toggleAmenity(amenity.value)"
+                    class="w-4 h-4 rounded border-[#2a3644] bg-[#0f1419] text-[#3d99f5] cursor-pointer"
+                  />
+                  <span class="text-sm text-gray-300 group-hover:text-white transition-colors">
+                    {{ amenity.label }}
+                  </span>
+                </label>
+              }
+            </div>
+          </div>
         </div>
       </div>
-
-      <!-- Photo Gallery -->
-      <div class="rounded-xl border border-[#2a3644] bg-[#1a232f] p-5">
-        <app-image-upload
-          label="Photo Gallery"
-          [previewUrl]="galleryPreviewUrl()"
-          [required]="false"
-          [showLabel]="true"
-          (fileSelected)="onGallerySelected($event)"
-          (fileRemoved)="onGalleryRemoved()"
-        ></app-image-upload>
-      </div>
-
-      <!-- Seating Layout Configuration -->
-      <app-form-textarea
-        label="Seating Layout Configuration"
-        placeholder="Describe or upload seating layout file/details..."
-        [control]="form.get('seating_layout')"
-        [required]="false"
-        [showLabel]="true"
-        [rows]="4"
-        formControlName="seating_layout"
-      ></app-form-textarea>
     </form>
 
     <!-- Footer -->
-    <div class="sticky bottom-0 border-t border-[#2a3644] bg-gradient-to-r from-[#0f1419] to-[#131c26] px-7 py-5 flex items-center justify-end gap-3">
+    <div class="border-t border-gray-700/50 bg-[#1a2634]/95 px-7 py-4 flex items-center justify-end gap-3">
       <button
         type="button"
         (click)="onCancel()"
-        class="px-6 py-3 text-gray-300 hover:bg-[#1a232f] rounded-xl transition-colors font-medium"
+        class="px-6 py-2.5 text-gray-300 hover:bg-[#222d3b] rounded-xl transition-colors font-medium"
       >
         Cancel
       </button>

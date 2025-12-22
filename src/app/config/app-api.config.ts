@@ -16,6 +16,7 @@ export const APP_API = {
     me:`${environment.apiUrl}/users/me`,
     preferences: `${environment.apiUrl}/users/me/preferences`,
     profilePicture: `${environment.apiUrl}/users/me/profile-picture`,
+    admin: `${environment.apiUrl}/users`,
   },
 
   cinema:{

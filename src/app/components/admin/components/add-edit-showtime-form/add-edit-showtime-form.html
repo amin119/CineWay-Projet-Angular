@@ -1,144 +1,151 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
-  <div class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-[#1a2634] to-[#0f1724] rounded-2xl shadow-2xl border border-blue-500/20">
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b1220]/60 backdrop-blur-md">
+  <div class="relative w-full max-w-3xl bg-gradient-to-br from-[#1a2634] to-[#0f1724] rounded-2xl shadow-2xl border border-blue-500/20">
     <!-- Header -->
-    <div class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-700/50 bg-[#1a2634]/95 backdrop-blur-sm px-8 py-6">
+    <div class="border-b border-gray-700/50 bg-[#1a2634]/95 backdrop-blur-sm px-8 py-4 flex items-center justify-between">
       <div>
-        <h2 class="text-3xl font-bold text-white">{{ isEditMode() ? 'Edit Showtime' : 'Add New Showtime' }}</h2>
-        <p class="mt-1 text-sm text-gray-400">{{ isEditMode() ? 'Update showtime details' : 'Create a new screening session' }}</p>
+        <h2 class="text-2xl font-bold text-white">{{ isEditMode() ? 'Edit Showtime' : 'Add New Showtime' }}</h2>
+        <p class="mt-0.5 text-sm text-gray-400">{{ isEditMode() ? 'Update showtime details' : 'Create a new screening session' }}</p>
       </div>
       <button
         type="button"
         (click)="onCancel()"
         class="rounded-full p-2 text-gray-400 transition-all hover:bg-red-500/20 hover:text-red-400"
       >
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
 
     <!-- Form -->
-    <form [formGroup]="showtimeForm" (ngSubmit)="onSubmit()" class="space-y-6 px-8 py-6">
-      <!-- Cinema Selection -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">
-          Cinema <span class="text-red-400">*</span>
-        </label>
-        <select
-          formControlName="cinema_id"
-          (change)="onCinemaChange()"
-          class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-        >
-          <option value="">Select Cinema</option>
-          @for (cinema of cinemas(); track cinema.id) {
-            <option [value]="cinema.id">{{ cinema.name }}</option>
-          }
-        </select>
-        @if (showtimeForm.get('cinema_id')?.touched && showtimeForm.get('cinema_id')?.errors?.['required']) {
-          <p class="mt-1 text-sm text-red-400">Cinema is required</p>
-        }
-      </div>
+    <form [formGroup]="showtimeForm" (ngSubmit)="onSubmit()" class="p-7">
+      <div class="grid grid-cols-2 gap-5">
+        <!-- Left Column -->
+        <div class="space-y-4">
+          <!-- Cinema Selection -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-300 mb-2">
+              Cinema <span class="text-red-400">*</span>
+            </label>
+            <select
+              formControlName="cinema_id"
+              (change)="onCinemaChange()"
+              class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            >
+              <option value="">Select Cinema</option>
+              @for (cinema of cinemas(); track cinema.id) {
+                <option [value]="cinema.id">{{ cinema.name }}</option>
+              }
+            </select>
+            @if (showtimeForm.get('cinema_id')?.touched && showtimeForm.get('cinema_id')?.errors?.['required']) {
+              <p class="mt-1 text-sm text-red-400">Cinema is required</p>
+            }
+          </div>
 
-      <!-- Room Selection -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">
-          Screen / Room <span class="text-red-400">*</span>
-        </label>
-        <select
-          formControlName="room_id"
-          [disabled]="!showtimeForm.value.cinema_id || loadingRooms()"
-          class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <option value="">{{ loadingRooms() ? 'Loading rooms...' : 'Select Screen' }}</option>
-          @for (room of rooms(); track room.id) {
-            <option [value]="room.id">{{ room.name }} (Capacity: {{ room.capacity }})</option>
-          }
-        </select>
-        @if (showtimeForm.get('room_id')?.touched && showtimeForm.get('room_id')?.errors?.['required']) {
-          <p class="mt-1 text-sm text-red-400">Screen is required</p>
-        }
-      </div>
+          <!-- Room Selection -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-300 mb-2">
+              Screen / Room <span class="text-red-400">*</span>
+            </label>
+            <select
+              formControlName="room_id"
+              [disabled]="!showtimeForm.value.cinema_id || loadingRooms()"
+              class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">{{ loadingRooms() ? 'Loading rooms...' : 'Select Screen' }}</option>
+              @for (room of rooms(); track room.id) {
+                <option [value]="room.id">{{ room.name }} ({{ room.capacity }})</option>
+              }
+            </select>
+            @if (showtimeForm.get('room_id')?.touched && showtimeForm.get('room_id')?.errors?.['required']) {
+              <p class="mt-1 text-sm text-red-400">Screen is required</p>
+            }
+          </div>
 
-      <!-- Movie Selection -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">
-          Movie <span class="text-red-400">*</span>
-        </label>
-        <select
-          formControlName="movie_id"
-          class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-        >
-          <option value="">Select Movie</option>
-          @for (movie of movies(); track movie.id) {
-            <option [value]="movie.id">{{ movie.title }} ({{ movie.release_date | date:'yyyy' }})</option>
-          }
-        </select>
-        @if (showtimeForm.get('movie_id')?.touched && showtimeForm.get('movie_id')?.errors?.['required']) {
-          <p class="mt-1 text-sm text-red-400">Movie is required</p>
-        }
-      </div>
-
-      <!-- Date & Time -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-semibold text-gray-300 mb-2">
-            Date <span class="text-red-400">*</span>
-          </label>
-          <input
-            type="date"
-            formControlName="screening_date"
-            class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-          />
-          @if (showtimeForm.get('screening_date')?.touched && showtimeForm.get('screening_date')?.errors?.['required']) {
-            <p class="mt-1 text-sm text-red-400">Date is required</p>
-          }
+          <!-- Movie Selection -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-300 mb-2">
+              Movie <span class="text-red-400">*</span>
+            </label>
+            <select
+              formControlName="movie_id"
+              class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            >
+              <option value="">Select Movie</option>
+              @for (movie of movies(); track movie.id) {
+                <option [value]="movie.id">{{ movie.title }}</option>
+              }
+            </select>
+            @if (showtimeForm.get('movie_id')?.touched && showtimeForm.get('movie_id')?.errors?.['required']) {
+              <p class="mt-1 text-sm text-red-400">Movie is required</p>
+            }
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-semibold text-gray-300 mb-2">
-            Time <span class="text-red-400">*</span>
-          </label>
-          <input
-            type="time"
-            formControlName="screening_time"
-            class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-          />
-          @if (showtimeForm.get('screening_time')?.touched && showtimeForm.get('screening_time')?.errors?.['required']) {
-            <p class="mt-1 text-sm text-red-400">Time is required</p>
-          }
-        </div>
-      </div>
+        <!-- Right Column -->
+        <div class="space-y-4">
+          <!-- Date -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-300 mb-2">
+              Date <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="date"
+              formControlName="screening_date"
+              class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            />
+            @if (showtimeForm.get('screening_date')?.touched && showtimeForm.get('screening_date')?.errors?.['required']) {
+              <p class="mt-1 text-sm text-red-400">Date is required</p>
+            }
+          </div>
 
-      <!-- Price -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">
-          Ticket Price ($) <span class="text-red-400">*</span>
-        </label>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          formControlName="price"
-          placeholder="15.00"
-          class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-        />
-        @if (showtimeForm.get('price')?.touched && showtimeForm.get('price')?.errors?.['required']) {
-          <p class="mt-1 text-sm text-red-400">Price is required</p>
-        }
-        @if (showtimeForm.get('price')?.touched && showtimeForm.get('price')?.errors?.['min']) {
-          <p class="mt-1 text-sm text-red-400">Price must be greater than 0</p>
-        }
+          <!-- Time -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-300 mb-2">
+              Time <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="time"
+              formControlName="screening_time"
+              class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            />
+            @if (showtimeForm.get('screening_time')?.touched && showtimeForm.get('screening_time')?.errors?.['required']) {
+              <p class="mt-1 text-sm text-red-400">Time is required</p>
+            }
+          </div>
+
+          <!-- Price -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-300 mb-2">
+              Ticket Price ($) <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              formControlName="price"
+              placeholder="15.00"
+              class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            />
+            @if (showtimeForm.get('price')?.touched && showtimeForm.get('price')?.errors?.['required']) {
+              <p class="mt-1 text-sm text-red-400">Price is required</p>
+            }
+            @if (showtimeForm.get('price')?.touched && showtimeForm.get('price')?.errors?.['min']) {
+              <p class="mt-1 text-sm text-red-400">Price must be greater than 0</p>
+            }
+          </div>
+        </div>
       </div>
 
       <!-- Error Message -->
       @if (error()) {
-        <div class="rounded-lg border border-red-500/30 bg-red-500/10 p-4">
+        <div class="rounded-lg border border-red-500/30 bg-red-500/10 p-3 mt-4">
           <p class="text-sm text-red-400">{{ error() }}</p>
         </div>
       }
 
       <!-- Action Buttons -->
-      <div class="flex items-center justify-end gap-4 border-t border-gray-700/50 pt-6">
+      <div class="flex items-center justify-end gap-4 border-t border-gray-700/50 pt-5 mt-5">
         <button
           type="button"
           (click)="onCancel()"
