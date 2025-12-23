@@ -21,7 +21,8 @@ export const APP_API = {
 
   cinema:{
     list: `${environment.apiUrl}/cinemas/`,
-    search :`${environment.apiUrl}/cinemas/search`
+    search :`${environment.apiUrl}/cinemas/search`,
+    favorites: `${environment.apiUrl}/cinemas/favorites`,
   },
 
   screenings: `${environment.apiUrl}/screenings`,

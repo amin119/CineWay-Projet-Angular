@@ -1,9 +1,10 @@
-import { Component, computed, input, OnInit, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, computed, input, OnInit, output, signal } from '@angular/core';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { APP_API } from '../../../config/app-api.config';
 import { ShowtimeResponse } from '../../../models/showtime.model';
 import { TimeToHoursPipe } from '../../../pipes/time-tohours-pipe';
+import { MovieModel } from '../../../models/movie.model';
 
 @Component({
   selector: 'app-showtimes',
@@ -14,6 +15,7 @@ import { TimeToHoursPipe } from '../../../pipes/time-tohours-pipe';
 export class Showtimes implements OnInit {
   chosenDate = signal('');
   cinemaId = input.required<number | undefined>();
+  onShowtimeClick = output<{ showtimeId: number; movie: MovieModel }>();
 
   readonly showTimesRes = httpResource<ShowtimeResponse[]>(() => ({
     url: `${APP_API.cinema.list}${this.cinemaId()}/showtimes`,
@@ -27,6 +29,9 @@ export class Showtimes implements OnInit {
   isLoading = computed(() => this.showTimesRes.isLoading());
   ngOnInit() {
     this.onTodayClick();
+  }
+  chooseShowtime(showtimeId: number, movie: MovieModel) {
+    this.onShowtimeClick.emit({ showtimeId, movie });
   }
 
   onTodayClick() {
