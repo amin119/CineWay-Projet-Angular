@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { TableComponent, TableHeader } from '../../components/table/table';
 import { TableRowComponent } from '../../components/table-row/table-row';
 import { TableActionsComponent } from '../../components/table-actions/table-actions';
@@ -33,7 +32,6 @@ import { AdminCinemaService } from '../../../../services/admin-cinema.service';
 })
 export class AdminCinemasComponent implements OnInit {
   private adminCinemaService = inject(AdminCinemaService);
-  private router = inject(Router);
 
   readonly headers: TableHeader[] = [
     { label: 'Cinema Name', align: 'left' },
@@ -58,7 +56,6 @@ export class AdminCinemasComponent implements OnInit {
   readonly cinemas = this.adminCinemaService.cinemas;
   readonly loading = this.adminCinemaService.loading;
   readonly error = this.adminCinemaService.error;
-  readonly deleting = this.adminCinemaService.deleting;
 
   // Computed properties for filtering and pagination
   readonly filteredCinemas = computed(() => {
@@ -152,9 +149,6 @@ export class AdminCinemasComponent implements OnInit {
     this.showModal.set(true);
   }
 
-  onViewShowtimes(cinema: Cinema): void {
-    this.router.navigate(['/admin/showtimes'], { queryParams: { cinemaId: cinema.id } });
-  }
 
   onDelete(cinema: Cinema): void {
     const confirmed = confirm(`Are you sure you want to delete "${cinema.name}"? This action cannot be undone.`);

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, DestroyRef } from '@angular/core';
 import { mergeMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { SearchInputComponent } from '../../components/search-input/search-input';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
@@ -28,6 +29,7 @@ import { MovieModel } from '../../../../models/movie.model';
 })
 export class AdminMoviesComponent implements OnInit {
   private readonly moviesApi = inject(MoviesApi);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly pageSize = 5;
 
   readonly statusChips: Record<MovieStatus, StatusChip> = {
@@ -49,8 +51,8 @@ export class AdminMoviesComponent implements OnInit {
     },
   };
 
-  readonly movies = signal<MovieRow[]>([]);
   readonly allMoviesData = signal<MovieModel[]>([]);
+  readonly movies = signal<MovieRow[]>([]);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly showFormModal = signal(false);
@@ -89,17 +91,13 @@ export class AdminMoviesComponent implements OnInit {
     this.statusOptions.map((s: MovieStatus | 'all') => ({ value: s, label: s === 'all' ? 'All statuses' : s }))
   );
 
-  readonly allMovies = computed(() => {
-    return this.movies();
-  });
-
   readonly filteredMovies = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
     const genre = this.genreFilter();
     const status = this.statusFilter();
     const show = this.showFilter();
 
-    return this.allMovies().filter((movie) => {
+    return this.movies().filter((movie) => {
       const matchesTerm = !term || movie.title.toLowerCase().includes(term);
       const matchesGenre = genre === 'all' || movie.genre === genre;
       const matchesStatus = status === 'all' || movie.status === status;
@@ -145,19 +143,22 @@ export class AdminMoviesComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     
-    this.moviesApi.getMovies().subscribe({
-      next: (apiMovies) => {
-        this.allMoviesData.set(apiMovies);
-        const movieRows = apiMovies.map((movie) => this.mapToMovieRow(movie));
-        this.movies.set(movieRows);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading movies:', err);
-        this.error.set('Failed to load movies. Please try again.');
-        this.loading.set(false);
-      }
-    });
+    this.moviesApi.getMovies()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (apiMovies) => {
+          this.allMoviesData.set(apiMovies);
+          // Transform data at load time, not in computed
+          const movieRows = apiMovies.map((movie) => this.mapToMovieRow(movie));
+          this.movies.set(movieRows);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          console.error('Error loading movies:', err);
+          this.error.set('Failed to load movies. Please try again.');
+          this.loading.set(false);
+        }
+      });
   }
 
   private mapToMovieRow(apiMovie: MovieModel): MovieRow {
@@ -188,10 +189,11 @@ export class AdminMoviesComponent implements OnInit {
     }
   }
 
-  private formatRuntime(minutes: number): string {
+  private formatRuntime(minutes: number | undefined): string {
+    if (!minutes || minutes <= 0) return 'N/A';
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return `${hours}h ${mins}m`;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
   }
 
   updateSearch(value: string) {
@@ -232,12 +234,7 @@ export class AdminMoviesComponent implements OnInit {
     this.showFormModal.set(true);
   }
 
-  viewMovie(movie: MovieRow) {
-    console.info('View movie', movie.title);
-  }
-
   editMovie(movie: MovieRow) {
-    // Find the full movie object from allMoviesData
     const fullMovie = this.allMoviesData().find(m => m.id === movie.id);
     if (fullMovie) {
       this.isEditMode.set(true);
@@ -248,24 +245,26 @@ export class AdminMoviesComponent implements OnInit {
 
   deleteMovie(movie: MovieRow) {
     if (confirm(`Are you sure you want to delete "${movie.title}"?`)) {
-      this.moviesApi.deleteMovie(movie.id).subscribe({
-        next: () => {
-          this.loadMovies();
-        },
-        error: (err) => {
-          console.error('Error deleting movie:', err);
-          this.error.set('Failed to delete movie. Please try again.');
-        }
-      });
+      this.moviesApi.deleteMovie(movie.id)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.loadMovies();
+          },
+          error: (err) => {
+            console.error('Error deleting movie:', err);
+            this.error.set('Failed to delete movie. Please try again.');
+          }
+        });
     }
   }
 
   onFormSave(movie: MovieModel) {
     if (this.isEditMode()) {
-      // Update existing movie using mergeMap pattern: update → refresh list
       this.moviesApi.updateMovie(movie.id, movie)
         .pipe(
-          mergeMap(() => this.moviesApi.getMovies())
+          mergeMap(() => this.moviesApi.getMovies()),
+          takeUntilDestroyed(this.destroyRef)
         )
         .subscribe({
           next: (apiMovies) => {
@@ -281,10 +280,10 @@ export class AdminMoviesComponent implements OnInit {
           }
         });
     } else {
-      // Create new movie using mergeMap pattern: create → refresh list
       this.moviesApi.createMovie(movie)
         .pipe(
-          mergeMap(() => this.moviesApi.getMovies())
+          mergeMap(() => this.moviesApi.getMovies()),
+          takeUntilDestroyed(this.destroyRef)
         )
         .subscribe({
           next: (apiMovies) => {

@@ -21,7 +21,6 @@ export class MovieTableComponent {
     Archived: { label: 'Archived', classes: '' },
   };
 
-  @Output() view = new EventEmitter<MovieRow>();
   @Output() edit = new EventEmitter<MovieRow>();
   @Output() delete = new EventEmitter<MovieRow>();
 
