@@ -1,75 +1,70 @@
-import { AfterViewInit, Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { httpResource } from '@angular/common/http';
 
+import { rxResource } from '@angular/core/rxjs-interop';
+import { MoviesApi } from '../../../services/movies-api';
+import { MovieModel } from '../../../models/movie.model';
+import { APP_API } from '../../../config/app-api.config';
+import { TimeToHoursPipe } from "../../../pipes/time-tohours-pipe";
+import { ReviewsService } from '../../../services/reviews-service';
+import { ReviewListResponse, ReviewRead } from '../../../models/review.model';
+import { map } from 'rxjs/operators';
+import { ReviewsSection } from "./reviews-section/reviews-section";
+
+const DEFAULT_TRAILER =
+  'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ?autoplay=1&mute=1&playsinline=1&rel=0';
 
 @Component({
   selector: 'app-movie-details',
-  imports: [],
   templateUrl: './movie-details.html',
   styleUrl: './movie-details.css',
+  imports: [TimeToHoursPipe, ReviewsSection],
 })
-export class MovieDetails implements AfterViewInit {
+export class MovieDetails {
   private route = inject(ActivatedRoute);
+  private sanitizer = inject(DomSanitizer);
+isMuted = signal(true);
 
-  movieId = this.route.snapshot.paramMap.get('id');
-  heroVisible = signal(false);
-  autoplayEnabled = signal(false);
-  isMuted = signal(true);
+  movieId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
 
-@ViewChild('hero') hero!: ElementRef;
-@ViewChild('trailer') trailer?: ElementRef<HTMLVideoElement>;
-  trailerUrl = computed<SafeResourceUrl>(() => {
-  const url =
-    'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4'
+    movieResource = httpResource<MovieModel>(() => ({
+    url:`${APP_API.movies.movies}/${this.movieId()}`,
+  }));
+  movie = computed(() => this.movieResource.value());
+  loading = this.movieResource.isLoading;
+  error = this.movieResource.error;
 
-  return this.sanitizer.bypassSecurityTrustResourceUrl(url);
-});
-private sanitizer = inject(DomSanitizer);
-
- ngAfterViewInit() {
-  
-    this.observeHero();
-    this.setupAutoplayDelay();
-  }
-
-  playPauseEffect = effect(() => {
-    const video = this.trailer?.nativeElement;
-    if (!video) return;
-    if (!this.autoplayEnabled()) return;
-    if (this.heroVisible()) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-    }
+  trailerUrl = computed(() => {
+    const url = this.movie()?.trailer_url?.trim();
+    return url ? url : DEFAULT_TRAILER;
   });
 
+  safeTrailerUrl = computed<SafeResourceUrl>(() =>
+    this.sanitizer.bypassSecurityTrustResourceUrl(   this.trailerUrl() +'?autoplay=1&mute=1&playsinline=1&enablejsapi=1'
+)
+  );
+@ViewChild('ytFrame') ytFrame?: ElementRef<HTMLIFrameElement>;
 
-   private observeHero() {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        this.heroVisible.set(entry.isIntersecting);
-      },
-      { threshold: 0.6 } // 60% visible
-    );
+private ytCommand(func: 'mute' | 'unMute') {
+  const iframe = this.ytFrame?.nativeElement;
+  if (!iframe?.contentWindow) return;
 
-    observer.observe(this.hero.nativeElement);
-  }
-
-  private setupAutoplayDelay() {
-    setTimeout(() => {
-      this.autoplayEnabled.set(true);
-    }, 3000);
-  }
-
-
-
-toggleAudio() {
-  const video = this.trailer?.nativeElement;
-  if (!video) return;
-
-  video.muted = !video.muted;
-  this.isMuted.set(video.muted);
+  iframe.contentWindow.postMessage(
+    JSON.stringify({ event: 'command', func, args: [] }),
+    '*'
+  );
 }
 
+toggleSound() {
+  const nextMuted = !this.isMuted();
+  this.isMuted.set(nextMuted);
+
+  this.ytCommand(nextMuted ? 'mute' : 'unMute');
+}
+
+
+
+ 
 }
