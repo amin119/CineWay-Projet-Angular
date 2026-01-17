@@ -1,5 +1,48 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-primary: #3b82f6;
+  --color-primary-600: #2563eb;
+  
+  --color-text-light-primary: #111827;
+  --color-text-light-secondary: #4b5563;
+  --color-text-dark-primary: #f9fafb;
+  --color-text-dark-secondary: #9ca3af;
+  
+  --color-background-light: #ffffff;
+  --color-background-dark: #030712;
+  
+  --color-surface-light: #f3f4f6;
+  --color-surface-dark: #111827;
+}
+
+
+/* Override Bootstrap and default browser styles with higher priority */
+html.dark body {
+  background-color: var(--color-background-dark) !important;
+  color: var(--color-text-dark-primary) !important;
+}
+
+html.dark h1, 
+html.dark h2, 
+html.dark h3, 
+html.dark h4, 
+html.dark h5, 
+html.dark h6 {
+  color: var(--color-text-dark-primary) !important;
+}
+
+html.dark p,
+html.dark span,
+html.dark a {
+  color: var(--color-text-dark-secondary) !important;
+}
+
+html.dark .text-white {
+  color: white !important;
+}
+
+
 
 @layer components {
 

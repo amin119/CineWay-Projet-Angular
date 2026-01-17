@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Signup } from './auth/signup/signup';
 import { Login } from './auth/login/login';
-import { Home } from './components/home/home';
+import { Explore } from './components/explore/explore';
 
 import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
@@ -26,19 +26,24 @@ export const routes: Routes = [
     component: MainLayout,
     children: [
       {
-        path: 'home',
-        component: Home,
+        path: 'explore',
+        component: Explore,
         canActivate: [authGuard],
+      },
+      {
+        path: 'search',
+        redirectTo: 'explore',
+        pathMatch: 'full',
       },
       {
         path: '',
         component: LandingPageComponent,
-        canActivate : [guestGuard]
+        canActivate: [guestGuard]
       },
       {
         path: 'cinemas',
-        component : Cinemas,
-        canActivate :[authGuard],
+        component: Cinemas,
+        canActivate: [authGuard],
       },
       {
         path: 'cinemas/:id',
