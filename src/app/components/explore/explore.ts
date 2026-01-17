@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../auth/services/auth.service';
 import { MoviesApi } from '../../services/movies-api';
 import { MovieModel } from '../../models/movie.model';
+import { ToastrService } from 'ngx-toastr';
 
 interface SearchHistory {
   query: string;
@@ -26,6 +27,7 @@ export class Explore implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly moviesApi = inject(MoviesApi);
   private readonly router = inject(Router);
+  private readonly toastr = inject(ToastrService);
 
   private readonly destroy$ = new Subject<void>();
   private readonly searchSubject$ = new Subject<string>();
@@ -98,7 +100,7 @@ export class Explore implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading movies:', error);
           this.isLoadingMovies$.next(false);
-          // TODO: Show user-friendly error message via toast/snackbar
+          this.toastr.error('Failed to load movies. Please try again later.', 'Error');
         },
       });
   }
@@ -262,25 +264,26 @@ export class Explore implements OnInit, OnDestroy {
   }
 
   onMovieClick(movieId: number): void {
-    // TODO: Implement movie details route when available
+    // Navigate to cinema details as a fallback if movie details aren't ready
+    // Or just show a toast
+    this.toastr.info('Movie details view is coming soon!', 'Coming Soon');
     console.log('Movie clicked:', movieId);
   }
 
   onGetTickets(): void {
     if (this.featuredMovie) {
-      // TODO: Implement cinema selection or showtime navigation
-      console.log('Get tickets for:', this.featuredMovie.title);
+      this.router.navigate(['/cinemas']);
+      this.toastr.success(`Finding cinemas for ${this.featuredMovie.title}...`);
     }
   }
 
   onSeeAllNowShowing(): void {
-    // TODO: Implement all movies page navigation with filter
-    console.log('See all now showing movies');
+    this.router.navigate(['/home']);
+    this.toastr.info('Viewing all now showing movies on home page.');
   }
 
   onSeeAllComingSoon(): void {
-    // TODO: Implement all movies page navigation with filter
-    console.log('See all coming soon movies');
+    this.toastr.info('Coming soon movies full list is under development!', 'Coming Soon');
   }
 
   trackByMovieId(_: number, movie: MovieModel): number {

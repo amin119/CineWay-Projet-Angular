@@ -9,6 +9,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./table-actions.css'],
 })
 export class TableActionsComponent {
+  @Output() view = new EventEmitter<void>();
   @Output() edit = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
 }

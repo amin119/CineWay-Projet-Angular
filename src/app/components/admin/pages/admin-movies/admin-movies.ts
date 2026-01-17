@@ -12,6 +12,8 @@ import { MovieRow, MovieStatus, StatusChip } from './movie-row.model';
 import { MoviesApi } from '../../../../services/movies-api';
 import { MovieModel } from '../../../../models/movie.model';
 
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-admin-movies',
   standalone: true,
@@ -29,6 +31,7 @@ import { MovieModel } from '../../../../models/movie.model';
 })
 export class AdminMoviesComponent implements OnInit {
   private readonly moviesApi = inject(MoviesApi);
+  private readonly toastr = inject(ToastrService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly pageSize = 5;
 
@@ -142,7 +145,7 @@ export class AdminMoviesComponent implements OnInit {
   loadMovies() {
     this.loading.set(true);
     this.error.set(null);
-    
+
     this.moviesApi.getMovies()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -174,12 +177,12 @@ export class AdminMoviesComponent implements OnInit {
 
   private determineStatus(releaseDate: string | null): MovieStatus {
     if (!releaseDate) return 'Draft';
-    
+
     const release = new Date(releaseDate);
     const now = new Date();
     const monthFromNow = new Date();
     monthFromNow.setMonth(monthFromNow.getMonth() + 1);
-    
+
     if (release <= now) {
       return 'Published';
     } else if (release <= monthFromNow) {
@@ -232,6 +235,11 @@ export class AdminMoviesComponent implements OnInit {
     this.isEditMode.set(false);
     this.selectedMovie.set(null);
     this.showFormModal.set(true);
+  }
+
+  viewMovie(movie: MovieRow) {
+    this.toastr.info(`Movie details view for "${movie.title}" is coming soon!`, 'Coming Soon');
+    console.log('Viewing movie:', movie);
   }
 
   editMovie(movie: MovieRow) {

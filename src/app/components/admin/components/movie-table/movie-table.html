@@ -1,30 +1,25 @@
 <app-table [headers]="headers">
   @for (movie of movies; track movie.id) {
-    <app-table-row>
-      <td class="text-lg font-semibold text-white">{{ movie.title }}</td>
-      <td class="text-base text-gray-300">{{ movie.releaseDate }}</td>
-      <td>
-        <span
-          class="inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-semibold"
-          [class]="statusChips[movie.status].classes"
-        >
-          {{ statusChips[movie.status].label }}
-        </span>
-      </td>
-      <td class="text-right">
-        <app-table-actions
-          (edit)="onEdit(movie)"
-          (delete)="onDelete(movie)"
-        ></app-table-actions>
-      </td>
-    </app-table-row>
+  <app-table-row>
+    <td class="text-lg font-semibold text-white">{{ movie.title }}</td>
+    <td class="text-base text-gray-300">{{ movie.releaseDate }}</td>
+    <td>
+      <span class="inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-semibold"
+        [class]="statusChips[movie.status].classes">
+        {{ statusChips[movie.status].label }}
+      </span>
+    </td>
+    <td class="text-right">
+      <app-table-actions (view)="onView(movie)" (edit)="onEdit(movie)" (delete)="onDelete(movie)"></app-table-actions>
+    </td>
+  </app-table-row>
   }
 
   @empty {
-    <tr>
-      <td colspan="4" class="text-center text-base text-gray-400">
-        No movies found with the current filters.
-      </td>
-    </tr>
+  <tr>
+    <td colspan="4" class="text-center text-base text-gray-400">
+      No movies found with the current filters.
+    </td>
+  </tr>
   }
 </app-table>
