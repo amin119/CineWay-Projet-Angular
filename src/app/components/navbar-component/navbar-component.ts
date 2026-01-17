@@ -13,26 +13,25 @@ import { UserApi } from '../../services/user-api';
   styleUrl: './navbar-component.css',
 })
 export class NavbarComponent {
-private authService = inject(AuthService)
-private router = inject(Router);
-private toastrService = inject(ToastrService);
-APP_ROUTES = APP_ROUTES;
-menuOpen = false;
+  private authService = inject(AuthService)
+  private router = inject(Router);
+  private toastrService = inject(ToastrService);
+  APP_ROUTES = APP_ROUTES;
+  menuOpen = false;
+  userApi = inject(UserApi)
 
-  userApi=inject(UserApi)
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
+    this.toastrService.warning('Good bye!');
+  }
+  isAuth() {
+    return this.authService.isAuthenticated();
+  }
   user = this.userApi.user;
 
-
-toggleMenu() {
-  this.menuOpen = !this.menuOpen;
-}
-logout(){
-  this.authService.logout();
-  this.router.navigate(['/']);
-  this.toastrService.warning('Good bye!');
-}
-isAuth(){
-  return this.authService.isAuthenticated();
-}
 
 }

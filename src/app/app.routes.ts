@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Signup } from './auth/signup/signup';
 import { Login } from './auth/login/login';
-import { Home } from './components/home/home';
+import { Explore } from './components/explore/explore';
 import { LandingPageComponent } from './components/landingPage/landing-page-component/landing-page-component';
 import { MainLayout } from './components/layouts/main-layout/main-layout';
 import { Cinemas } from './components/cinemas/cinemas/cinemas';
@@ -25,6 +25,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'home', component: LandingPageComponent },
+      { path: 'explore', component: Explore },
       { path: 'cinemas', component: Cinemas },
       { path: 'cinemas/:id', component: CinemaDetails },
       { path: 'profile', component: Profile },
@@ -54,6 +55,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: "**" , redirectTo:'/not-found'
+    path: "**", redirectTo: '/not-found'
   }
 ];
+
