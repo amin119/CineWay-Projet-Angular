@@ -74,6 +74,7 @@ nextReview() { if (this.hasNextReview()) this.reviewIndex.update(i => i + 1); }
       ).subscribe({
     next: () => {
       this.modalOpen.set(false);
+        this.reviewIndex.set(0);
       this.reviewsRxResource.reload();
       this.submitting.set(false);
     },

@@ -18,7 +18,6 @@ import { guestGuard } from './auth/guards/guest.guard';
 import { adminGuard } from './auth/guards/admin/admin.guard';
 import { NotFound } from './components/not-found/not-found';
 import { MovieDetails } from './components/movies/movie-details/movie-details';
-import { Home } from './components/home/home';
 
 export const routes: Routes = [
   {
@@ -32,6 +31,7 @@ export const routes: Routes = [
       { path: 'cinemas/:id', component: CinemaDetails },
       { path: 'profile', component: Profile },
       { path: 'not-found', component: NotFound },
+      { path: 'movies/:id',component: MovieDetails},
     ],
   },
   {
@@ -43,7 +43,7 @@ export const routes: Routes = [
       { path: 'auth/signup', component: Signup },
       {
         path: 'home',
-        component: Home,
+        component: Explore,
         canActivate: [authGuard],
       },
       {
@@ -66,11 +66,7 @@ export const routes: Routes = [
         component: Profile,
         canActivate: [authGuard],
       },
-      {
-      path: 'movies/:id',
-      component: MovieDetails,
-      canActivate: [authGuard],
-  },
+      
     ],
   },
   {

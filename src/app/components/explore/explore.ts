@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, BehaviorSubject } from 'rxjs';
@@ -20,7 +20,7 @@ interface SearchHistory {
   selector: 'app-explore',
   templateUrl: './explore.html',
   styleUrls: ['./explore.css'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterLink],
   standalone: true,
 })
 export class Explore implements OnInit, OnDestroy {
@@ -263,13 +263,7 @@ export class Explore implements OnInit, OnDestroy {
     }
   }
 
-  onMovieClick(movieId: number): void {
-    // Navigate to cinema details as a fallback if movie details aren't ready
-    // Or just show a toast
-    this.toastr.info('Movie details view is coming soon!', 'Coming Soon');
-    console.log('Movie clicked:', movieId);
-  }
-
+ 
   onGetTickets(): void {
     if (this.featuredMovie) {
       this.router.navigate(['/cinemas']);

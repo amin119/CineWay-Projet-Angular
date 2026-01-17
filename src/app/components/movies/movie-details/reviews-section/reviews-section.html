@@ -50,15 +50,16 @@
           </div>
 
           <div class="flex items-center gap-1">
-            @for (s of [1,2,3,4,5]; track s) {
-              <span
-                class="text-lg"
-                [class.text-yellow-400]="currentReview()!.rating >= s"
-                [class.text-gray-500]="currentReview()!.rating < s"
-              >
-                ★
-              </span>
-            }
+           @for (s of [1,2,3,4,5]; track s) {
+  <span
+    class="text-lg"
+    [ngClass]="+currentReview()!.rating >= s ? '!text-yellow-400' : '!text-gray-500'"
+
+  >
+    ★
+  </span>
+}
+
           </div>
         </div>
 

@@ -142,7 +142,7 @@
       } @else {
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
         @for (movie of searchResults; track trackByMovieId($index, movie)) {
-        <button (click)="onMovieClick(movie.id)" [attr.aria-label]="'View ' + movie.title + ' details'"
+        <button [routerLink]="['/movies', movie.id]" [attr.aria-label]="'View ' + movie.title + ' details'"
           class="group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark rounded-lg transition-all duration-200">
           <div class="aspect-2/3 rounded-lg overflow-hidden mb-3 bg-surface-light dark:bg-surface-dark">
             <img [src]="movie.image_url" [alt]="movie.title + ' movie poster'" loading="lazy"
@@ -196,7 +196,7 @@
         <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-text-dark-primary">Trending Now</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
           @for (movie of trendingMovies; track trackByMovieId($index, movie)) {
-          <button (click)="onMovieClick(movie.id)" [attr.aria-label]="'View ' + movie.title + ' details'"
+          <button [routerLink]="['/movies', movie.id]" [attr.aria-label]="'View ' + movie.title + ' details'"
             class="group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark rounded-lg transition-all duration-200">
             <div class="aspect-2/3 rounded-lg overflow-hidden mb-3 bg-surface-light dark:bg-surface-dark">
               <img [src]="movie.image_url" [alt]="movie.title + ' movie poster'" loading="lazy"
@@ -238,7 +238,7 @@
         <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
           <div class="flex gap-4 sm:gap-6 pb-4 min-w-full sm:min-w-0 carousel-container">
             @for (movie of nowShowingMovies; track trackByMovieId($index, movie)) {
-            <button (click)="onMovieClick(movie.id)" [attr.aria-label]="'View ' + movie.title + ' details'"
+            <button [routerLink]="['/movies', movie.id]" [attr.aria-label]="'View ' + movie.title + ' details'"
               class="group shrink-0 w-56 sm:w-64 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark rounded-lg transition-all duration-200">
               <div class="aspect-2/3 rounded-lg overflow-hidden mb-3 bg-surface-light dark:bg-surface-dark">
                 <img [src]="movie.image_url" [alt]="movie.title + ' movie poster'" loading="lazy"
@@ -282,7 +282,7 @@
         <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
           <div class="flex gap-4 sm:gap-6 pb-4 min-w-full sm:min-w-0 carousel-container">
             @for (movie of comingSoonMovies; track trackByMovieId($index, movie)) {
-            <button (click)="onMovieClick(movie.id)" [attr.aria-label]="'View ' + movie.title + ' details'"
+            <button [routerLink]="['/movies', movie.id]" [attr.aria-label]="'View ' + movie.title + ' details'"
               class="group shrink-0 w-56 sm:w-64 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark rounded-lg transition-all duration-200">
               <div class="aspect-2/3 rounded-lg overflow-hidden mb-3 bg-surface-light dark:bg-surface-dark">
                 <img [src]="movie.image_url" [alt]="movie.title + ' movie poster'" loading="lazy"
