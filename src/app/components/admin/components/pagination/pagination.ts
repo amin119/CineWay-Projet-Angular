@@ -1,20 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-pagination',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './pagination.html',
   styleUrls: ['./pagination.css'],
 })
 export class PaginationComponent {
-  @Input() startIndex = 0;
-  @Input() endIndex = 0;
-  @Input() totalCount = 0;
-  @Input() page = 1;
-  @Input() totalPages = 1;
+  startIndex = input(0);
+  endIndex = input(0);
+  totalCount = input(0);
+  page = input(1);
+  totalPages = input(1);
 
-  @Output() previous = new EventEmitter<void>();
-  @Output() next = new EventEmitter<void>();
+  previous = output<void>();
+  next = output<void>();
 }

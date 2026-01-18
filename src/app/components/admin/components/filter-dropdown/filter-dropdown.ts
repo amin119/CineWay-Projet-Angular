@@ -1,21 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 export type FilterOption = { value: string; label: string };
 
 @Component({
   selector: 'app-filter-dropdown',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './filter-dropdown.html',
   styleUrls: ['./filter-dropdown.css'],
 })
 export class FilterDropdownComponent {
-  @Input() label = '';
-  @Input() value = '';
-  @Input() options: FilterOption[] = [];
-  @Input() showLabel = true;
-  @Output() valueChange = new EventEmitter<string>();
+  label = input('');
+  value = input('');
+  options = input<FilterOption[]>([]);
+  showLabel = input(true);
+  valueChange = output<string>();
 
   onChange(event: Event) {
     const target = event.target as HTMLSelectElement;

@@ -1,14 +1,14 @@
 <label class="block">
-  @if (showLabel) {
-    <span class="block text-xs font-semibold uppercase tracking-wide text-gray-400">{{ label }}</span>
+  @if (showLabel()) {
+    <span class="block text-xs font-semibold uppercase tracking-wide text-gray-400">{{ label() }}</span>
   }
   <div class="relative mt-2">
     <select
       class="w-full appearance-none rounded-xl border border-[#2a3644] bg-[#18222c] px-4 py-3.5 text-base text-gray-100 focus:border-[#3d99f5] focus:outline-none focus:ring-2 focus:ring-[#3d99f5]/30 transition-all"
-      [value]="value"
+      [value]="value()"
       (change)="onChange($event)"
     >
-      @for (option of options; track option.value) {
+      @for (option of options(); track option.value) {
         <option [value]="option.value">{{ option.label }}</option>
       }
     </select>

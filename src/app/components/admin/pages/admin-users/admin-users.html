@@ -5,30 +5,39 @@
       <h1 class="page-title">User Management</h1>
       <p class="page-subtitle">Manage all users and administrators</p>
     </div>
-    <button
-      (click)="openAddAdminForm()"
-      class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-500 hover:to-blue-400"
-    >
-      + Add New Admin
-    </button>
+    <app-primary-button label="Add New User" [icon]="true" (clicked)="onAddUser()">
+      <svg icon class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+      </svg>
+    </app-primary-button>
   </div>
 
-  <div class="section-surface space-y-4 p-6">
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <app-search-input
-        placeholder="Search by name or email..."
-        (valueChange)="onSearchChange($event)"
-      ></app-search-input>
-      <div class="flex gap-3">
+  <div class="section-surface">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div class="md:col-span-1">
+        <app-search-input
+          [showLabel]="false"
+          placeholder="Search by name or email..."
+          [value]="searchQuery()"
+          (valueChange)="onSearch($event)"
+        ></app-search-input>
+      </div>
+      <div class="md:col-span-1">
         <app-filter-dropdown
+          [showLabel]="false"
+          [label]="'Status'"
           [options]="statusOptions"
-          placeholder="Filter by Status"
-          (valueChange)="statusFilter.set($event)"
+          [value]="statusFilter()"
+          (valueChange)="onStatusChange($event)"
         ></app-filter-dropdown>
+      </div>
+      <div class="md:col-span-1">
         <app-filter-dropdown
+          [showLabel]="false"
+          [label]="'Role'"
           [options]="roleOptions"
-          placeholder="Filter by Role"
-          (valueChange)="roleFilter.set($event)"
+          [value]="roleFilter()"
+          (valueChange)="onRoleChange($event)"
         ></app-filter-dropdown>
       </div>
     </div>
@@ -37,51 +46,18 @@
   @if (loading()) {
     <div class="section-surface loading-surface">
       <div class="flex items-center justify-center py-10">
-        <div class="flex flex-col items-center gap-4">
-          <div class="h-12 w-12 animate-spin rounded-full border-4 border-[#2a3644] border-t-[#3d99f5]"></div>
-          <p class="text-sm text-gray-300">Loading users...</p>
-        </div>
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-[#2a3644] border-t-[#3d99f5]"></div>
       </div>
     </div>
   } @else {
     <div class="section-surface table-block">
-      <app-table [headers]="headers">
-        @if (filteredUsers().length === 0) {
-          <app-table-row>
-            <td class="text-center text-base text-gray-400" colspan="6">No users found.</td>
-          </app-table-row>
-        } @else {
-          @for (user of paginatedUsers(); track user.id) {
-            <app-table-row>
-              <td class="text-base font-semibold text-white">{{ user.full_name }}</td>
-              <td class="text-base text-gray-300">{{ user.email }}</td>
-              <td class="text-base text-gray-300">{{ user.created_at | date: 'MMM d, yyyy' }}</td>
-              <td class="text-base">
-                @if (user.is_active) {
-                  <span class="inline-block rounded-full bg-green-500/20 px-3 py-1 text-sm font-semibold text-green-400">
-                    Active
-                  </span>
-                } @else {
-                  <span class="inline-block rounded-full bg-yellow-500/20 px-3 py-1 text-sm font-semibold text-yellow-400">
-                    Suspended
-                  </span>
-                }
-              </td>
-              <td class="text-base">
-                <span class="inline-block rounded-full px-3 py-1 text-sm font-semibold" [ngClass]="user.is_admin ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-500/20 text-gray-400'">
-                  {{ user.is_admin ? 'Admin' : 'User' }}
-                </span>
-              </td>
-              <td class="text-right">
-                <app-table-actions
-                  (edit)="onEditUser(user)"
-                  (delete)="onSuspendUser(user)"
-                ></app-table-actions>
-              </td>
-            </app-table-row>
-          }
-        }
-      </app-table>
+      <app-admin-data-table
+        [data]="paginatedUsers()"
+        [columns]="tableColumns"
+        [actions]="tableActions"
+        [loading]="loading()"
+        (actionClicked)="onTableAction($event)"
+      ></app-admin-data-table>
     </div>
 
     @if (filteredUsers().length > 0) {
@@ -97,10 +73,11 @@
         ></app-pagination>
       </div>
     }
+
+    @if (error()) {
+      <div class="alert-error">
+        <p class="text-red-200 font-medium">{{ error() }}</p>
+      </div>
+    }
   }
 </div>
-
-<!-- Add Admin Form Modal -->
-@if (showAddAdminForm()) {
-  <app-add-edit-admin-form (save)="onAdminCreated()" (cancel)="showAddAdminForm.set(false)"></app-add-edit-admin-form>
-}

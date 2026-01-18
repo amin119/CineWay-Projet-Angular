@@ -1,19 +1,19 @@
-import { HttpClient, httpResource } from '@angular/common/http';
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
-import { AuthService } from '../auth/services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { User } from '../auth/model/user';
 import { catchError, finalize, Observable, tap, throwError } from 'rxjs';
 import { APP_API } from '../config/app-api.config';
 import { Profile } from '../models/profile.model';
+import { UserModel } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserApi {
 
-    private http = inject(HttpClient);
+  private http = inject(HttpClient);
 
-   private _user = signal<User | null>(null);
+  private _user = signal<User | null>(null);
   private _loading = signal(false);
   private _error = signal<any>(null);
 
@@ -21,7 +21,7 @@ export class UserApi {
   loading = this._loading.asReadonly();
   error = this._error.asReadonly();
 
-   profile = computed<Profile | null>(() => {
+  profile = computed<Profile | null>(() => {
     const u = this.user();
     if (!u) return null;
 
@@ -35,12 +35,13 @@ export class UserApi {
       newsletter_subscribed: u.newsletter_subscribed,
     };
   });
-    isReady = computed(() => !!this.user());
-     constructor() {
+  isReady = computed(() => !!this.user());
+
+  constructor() {
     this.loadUser().subscribe();
   }
 
-loadUser(): Observable<User> {
+  loadUser(): Observable<User> {
     this._loading.set(true);
     this._error.set(null);
 
@@ -58,22 +59,42 @@ loadUser(): Observable<User> {
       })
     );
   }
+
   reload(): void {
     this.loadUser().subscribe();
   }
-  updateProfile(payload: Partial<Profile>): Observable<User> {
 
+  getUsers(): Observable<UserModel[]> {
+    return this.http.get<UserModel[]>(APP_API.user.admin);
+  }
+
+  getUserById(id: number): Observable<UserModel> {
+    return this.http.get<UserModel>(`${APP_API.user.admin}/${id}`);
+  }
+
+  createUser(payload: Partial<UserModel>): Observable<UserModel> {
+    return this.http.post<UserModel>(APP_API.user.admin, payload);
+  }
+
+  updateUser(id: number, payload: Partial<UserModel>): Observable<UserModel> {
+    return this.http.put<UserModel>(`${APP_API.user.admin}/${id}`, payload);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${APP_API.user.admin}/${id}`);
+  }
+
+  updateProfile(payload: Partial<Profile>): Observable<User> {
     return this.http.put<User>(APP_API.user.me, payload).pipe(
       tap((updatedUser) => {
-        if ( payload.email !== undefined) {
+        if (payload.email !== undefined) {
           this._user.set(updatedUser);
         }
       })
-    
-  );
-}
+    );
+  }
 
-updatePreferences(payload: {
+  updatePreferences(payload: {
     dark_mode?: boolean;
     notifications_enabled?: boolean;
     newsletter_subscribed?: boolean;
@@ -84,20 +105,21 @@ updatePreferences(payload: {
       })
     );
   }
+
   uploadProfilePicture(file: File): Observable<User> {
     const formData = new FormData();
     formData.append('file', file);
 
     return this.http.put<User>(APP_API.user.profilePicture, formData).pipe(
-      tap((updatedUser) => {
-        this.reload()
+      tap(() => {
+        this.reload();
       })
     );
   }
+
   clear(): void {
     this._user.set(null);
     this._error.set(null);
     this._loading.set(false);
   }
-  
 }

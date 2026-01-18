@@ -5,50 +5,7 @@
       <h1 class="page-title">Showtime Management</h1>
       <p class="page-subtitle">Schedule and manage movie screenings across all cinemas.</p>
     </div>
-    <app-primary-button label="Add Showtime" [icon]="true" (clicked)="onAddShowtime()">
-      <svg icon class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
-      </svg>
-    </app-primary-button>
-  </div>
-
-  <div class="section-surface">
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <app-filter-dropdown
-        label="Cinema"
-        [options]="cinemaDropdownOptions()"
-        [value]="cinemaFilter()"
-        [showLabel]="false"
-        (valueChange)="updateCinemaFilter($event)"
-      ></app-filter-dropdown>
-
-      <app-filter-dropdown
-        label="Movie"
-        [options]="movieDropdownOptions()"
-        [value]="movieFilter()"
-        [showLabel]="false"
-        (valueChange)="updateMovieFilter($event)"
-      ></app-filter-dropdown>
-
-      <div>
-        <input
-          type="date"
-          [value]="dateFilter()"
-          (change)="updateDateFilter($event)"
-          class="w-full rounded-lg border border-gray-600 bg-[#0f1724] px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-        />
-      </div>
-
-      <button
-        (click)="applyFilters()"
-        class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-500 hover:to-blue-400 flex items-center justify-center gap-2"
-      >
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-        </svg>
-        Apply Filters
-      </button>
-    </div>
+    <app-primary-button [label]="'Add Showtime'" (clicked)="onAddShowtime()"></app-primary-button>
   </div>
 
   @if (loading()) {
@@ -78,58 +35,13 @@
   }
 
   @else {
-    <div class="section-surface table-block">
-      <app-table [headers]="headers">
-        @if (filteredShowtimes().length === 0) {
-          <app-table-row>
-            <td class="text-center text-base text-gray-400" colspan="5">No showtimes found.</td>
-          </app-table-row>
-        } @else {
-          @for (showtime of paginatedShowtimes(); track showtime.id) {
-            <app-table-row>
-              <td class="text-base text-gray-200">
-                <div class="font-semibold">{{ showtime.screening_time | date:'MMM d, yyyy' }}</div>
-                <div class="text-sm text-gray-400">{{ showtime.screening_time | date:'h:mm a' }}</div>
-              </td>
-              <td class="text-base font-semibold text-white">{{ showtime.movie?.title || 'N/A' }}</td>
-              <td class="text-base text-gray-300">
-                <div>{{ showtime.room?.name || 'N/A' }}</div>
-                <div class="text-sm text-gray-500">{{ showtime.room?.cinema?.name || '' }}</div>
-              </td>
-              <td class="text-base font-semibold text-blue-400">\${{ showtime.price.toFixed(2) }}</td>
-              <td class="text-right">
-                <app-table-actions
-                  (edit)="onEdit(showtime)"
-                  (delete)="onDelete(showtime)"
-                ></app-table-actions>
-              </td>
-            </app-table-row>
-          }
-        }
-      </app-table>
-    </div>
-
-    @if (filteredShowtimes().length > 0) {
-      <div class="section-surface pagination-surface">
-        <app-pagination
-          [startIndex]="startIndex()"
-          [endIndex]="endIndex()"
-          [totalCount]="filteredShowtimes().length"
-          [page]="page()"
-          [totalPages]="totalPages()"
-          (previous)="previousPage()"
-          (next)="nextPage()"
-        ></app-pagination>
-      </div>
-    }
+    <app-admin-data-table
+      [columns]="columns"
+      [data]="paginatedShowtimes()"
+      [actions]="actions"
+      [loading]="loading()"
+      (actionClicked)="onAction({ action: $event.action, item: $event.row })"
+    ></app-admin-data-table>
   }
 </div>
 
-@if (showModal()) {
-  <app-add-edit-showtime-form
-    [showtime]="editingShowtime()"
-    [isEditMode]="isEditMode()"
-    (save)="onFormSave()"
-    (cancel)="onFormCancel()"
-  ></app-add-edit-showtime-form>
-}

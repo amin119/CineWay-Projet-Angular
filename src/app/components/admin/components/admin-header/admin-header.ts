@@ -6,7 +6,6 @@ import { UserApi } from '../../../../services/user-api';
 
 @Component({
   selector: 'app-admin-header',
-  standalone: true,
   imports: [],
   templateUrl: './admin-header.html',
   styleUrl: './admin-header.css',

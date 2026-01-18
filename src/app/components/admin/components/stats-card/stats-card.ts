@@ -1,17 +1,16 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-stats-card',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './stats-card.html',
   styleUrls: ['./stats-card.css'],
 })
 export class StatsCard {
-  @Input() title!: string;
-  @Input() value!: string | number;
-  @Input() iconPath = '';
-  @Input() iconBg = 'bg-blue-500/15';
-  @Input() iconColor = 'text-blue-400';
+  title = input.required<string>();
+  value = input.required<string | number>();
+  iconPath = input('');
+  iconBg = input('bg-blue-500/15');
+  iconColor = input('text-blue-400');
 }

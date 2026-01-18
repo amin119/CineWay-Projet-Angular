@@ -13,59 +13,26 @@
   </div>
 
   <div class="section-surface">
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <div class="md:col-span-2">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
+      <div>
         <app-search-input
           [showLabel]="false"
-          placeholder="Search by cinema name or address..."
+          placeholder="Search by cinema name, city or address..."
           [value]="searchTerm()"
           (valueChange)="onSearch($event)"
         ></app-search-input>
-      </div>
-      <div class="md:col-span-1">
-        <app-filter-dropdown
-          [showLabel]="false"
-          [label]="'Amenities'"
-          [options]="amenityOptions()"
-          [value]="amenityFilter()"
-          (valueChange)="onAmenityChange($event)"
-        ></app-filter-dropdown>
       </div>
     </div>
   </div>
 
   <div class="section-surface table-block">
-    <app-table [headers]="headers">
-      @if (loading()) {
-        <app-table-row>
-          <td class="text-center text-base text-gray-400" colspan="4">Loading cinemas...</td>
-        </app-table-row>
-      } @else if (filteredCinemas().length === 0) {
-        <app-table-row>
-          <td class="text-center text-base text-gray-400" colspan="4">No cinemas found.</td>
-        </app-table-row>
-      } @else {
-        @for (cinema of paginatedCinemas(); track cinema.id) {
-          <app-table-row>
-            <td class="text-lg font-semibold text-white">{{ cinema.name }}</td>
-            <td class="text-base text-gray-300">{{ cinema.address }}</td>
-            <td>
-              <div class="flex flex-wrap gap-2">
-                @for (amenity of cinema.amenities; track amenity) {
-                  <app-amenity-badge [amenity]="amenity"></app-amenity-badge>
-                }
-              </div>
-            </td>
-            <td class="text-right">
-              <app-table-actions
-                (edit)="onEdit(cinema)"
-                (delete)="onDelete(cinema)"
-              ></app-table-actions>
-            </td>
-          </app-table-row>
-        }
-      }
-    </app-table>
+    <app-admin-data-table
+      [data]="paginatedCinemas()"
+      [columns]="tableColumns"
+      [actions]="tableActions"
+      [loading]="loading()"
+      (actionClicked)="onTableAction($event)"
+    ></app-admin-data-table>
   </div>
 
   @if (filteredCinemas().length > 0) {
@@ -88,13 +55,3 @@
     </div>
   }
 </div>
-
-<!-- Modal -->
-@if (showModal()) {
-  <app-add-edit-cinema-form
-    [cinema]="editingCinema()"
-    [isEditMode]="isEditMode()"
-    (save)="onFormSave($event)"
-    (cancel)="onFormCancel()"
-  ></app-add-edit-cinema-form>
-}

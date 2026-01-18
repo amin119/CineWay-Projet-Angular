@@ -45,4 +45,25 @@ export class CinemaService {
     method: 'GET',
   }));
   favorites = computed(() => this.favoriteCinemas.value());
+
+  
+  getCinemaById(id: number) {
+    return this.http.get<Cinema>(`${APP_API.cinema.list}${id}`);
+  }
+
+  createCinema(payload: Partial<Cinema>) {
+    return this.http.post<Cinema>(`${APP_API.cinema.list}`, payload);
+  }
+
+  updateCinema(id: number, payload: Partial<Cinema>) {
+    return this.http.put<Cinema>(`${APP_API.cinema.list}${id}`, payload);
+  }
+  
+  getCinemas() {
+    return this.http.get<CinemaResponse>(`${APP_API.cinema.list}`);
+  }
+
+  deleteCinema(id: number) {
+    return this.http.delete(`${APP_API.cinema.list}${id}`);
+  }
 }

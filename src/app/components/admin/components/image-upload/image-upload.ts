@@ -3,7 +3,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-image-upload',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './image-upload.html',
   styleUrls: ['./image-upload.css'],

@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
+import { Component, input, output, signal, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-form-textarea',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './form-textarea.html',
   styleUrls: ['./form-textarea.css'],
@@ -17,22 +16,22 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
   ],
 })
 export class FormTextareaComponent implements ControlValueAccessor {
-  @Input() label = '';
-  @Input() placeholder = '';
-  @Input() control: any = null;
-  @Input() required = false;
-  @Input() showLabel = true;
-  @Input() rows = 4;
-  @Output() valueChange = new EventEmitter<string>();
+  label = input('');
+  placeholder = input('');
+  control = input<any>(null);
+  required = input(false);
+  showLabel = input(true);
+  rows = input(4);
+  valueChange = output<string>();
 
-  value: string = '';
-  disabled = false;
+  value = signal('');
+  disabled = signal(false);
 
   onChange: (value: string) => void = () => {};
   onTouched: () => void = () => {};
 
   writeValue(value: string): void {
-    this.value = value || '';
+    this.value.set(value || '');
   }
 
   registerOnChange(fn: (value: string) => void): void {
@@ -44,14 +43,14 @@ export class FormTextareaComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 
   onInput(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
-    this.value = target.value;
-    this.onChange(this.value);
-    this.valueChange.emit(this.value);
+    this.value.set(target.value);
+    this.onChange(target.value);
+    this.valueChange.emit(target.value);
   }
 
   onBlur(): void {

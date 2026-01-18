@@ -8,7 +8,6 @@ import { AdminStatsService } from '../../../../services/admin-stats.service';
 
 @Component({
   selector: 'app-admin-overview',
-  standalone: true,
   imports: [CommonModule, StatsCard, QuickNavCard],
   templateUrl: './admin-overview.html',
   styleUrls: ['./admin-overview.css'],

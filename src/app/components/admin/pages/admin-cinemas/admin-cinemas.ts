@@ -1,78 +1,59 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { TableComponent, TableHeader } from '../../components/table/table';
-import { TableRowComponent } from '../../components/table-row/table-row';
-import { TableActionsComponent } from '../../components/table-actions/table-actions';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchInputComponent } from '../../components/search-input/search-input';
-import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
-import { AmenityBadgeComponent } from '../../components/amenity-badge/amenity-badge';
 import { PaginationComponent } from '../../components/pagination/pagination';
-import { AddEditCinemaFormComponent } from '../../components/add-edit-cinema-form/add-edit-cinema-form';
+import { AdminDataTableComponent, TableColumn, TableAction } from '../../components/admin-data-table/admin-data-table';
 import { Cinema } from '../../../../models/cinema.model';
-import { AdminCinemaService } from '../../../../services/admin-cinema.service';
+import { CinemaService } from '../../../../services/cinema.service';
 
 @Component({
   selector: 'app-admin-cinemas',
-  standalone: true,
   imports: [
     CommonModule,
-    TableComponent,
-    TableRowComponent,
-    TableActionsComponent,
     SearchInputComponent,
-    FilterDropdownComponent,
     PrimaryButtonComponent,
-    AmenityBadgeComponent,
     PaginationComponent,
-    AddEditCinemaFormComponent,
+    AdminDataTableComponent,
   ],
   templateUrl: './admin-cinemas.html',
   styleUrls: ['./admin-cinemas.css'],
 })
 export class AdminCinemasComponent implements OnInit {
-  private adminCinemaService = inject(AdminCinemaService);
+  private router = inject(Router);
+  private cinemasApi = inject(CinemaService);
+  private destroyRef = inject(DestroyRef);
 
-  readonly headers: TableHeader[] = [
-    { label: 'Cinema Name', align: 'left' },
-    { label: 'Address', align: 'left' },
-    { label: 'Amenities', align: 'left' },
-    { label: 'Actions', align: 'right' },
+  readonly tableColumns: TableColumn[] = [
+    { key: 'name', label: 'Cinema Name', width: '25%' },
+    { key: 'city', label: 'City', width: '15%' },
+    { key: 'address', label: 'Address', width: '35%' },
+    { key: 'contact_number', label: 'Contact', width: '15%' },
+  ];
+
+  readonly tableActions: TableAction[] = [
+    { type: 'edit', label: 'Edit' },
+    { type: 'delete', label: 'Delete' },
   ];
 
   private readonly pageSize = 5;
 
   // Signals for state management
+  readonly cinemas = signal<Cinema[]>([]);
   readonly searchTerm = signal('');
-  readonly amenityFilter = signal('all');
   readonly page = signal(1);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
-  // Modal state
-  readonly showModal = signal(false);
-  readonly editingCinema = signal<Cinema | null>(null);
-  readonly isEditMode = signal(false);
-
-  // Service state
-  readonly cinemas = this.adminCinemaService.cinemas;
-  readonly loading = this.adminCinemaService.loading;
-  readonly error = this.adminCinemaService.error;
-
-  // Computed properties for filtering and pagination
   readonly filteredCinemas = computed(() => {
     const q = this.searchTerm().toLowerCase().trim();
-    const amenity = this.amenityFilter();
-
-    return this.cinemas().filter((cinema) => {
-      const matchesQuery = !q
-        || cinema.name.toLowerCase().includes(q)
-        || cinema.address.toLowerCase().includes(q)
-        || cinema.city.toLowerCase().includes(q);
-
-      const matchesAmenity = amenity === 'all'
-        || cinema.amenities?.some((a) => a === amenity);
-
-      return matchesQuery && matchesAmenity;
-    });
+    return this.cinemas().filter((cinema) =>
+      cinema.name.toLowerCase().includes(q)
+      || cinema.city.toLowerCase().includes(q)
+      || cinema.address.toLowerCase().includes(q)
+    );
   });
 
   readonly totalPages = computed(() => {
@@ -98,30 +79,29 @@ export class AdminCinemasComponent implements OnInit {
     return Math.min(this.page() * this.pageSize, total);
   });
 
-  readonly amenityOptions = computed(() => {
-    const set = new Set<string>();
-    this.cinemas().forEach((cinema) => cinema.amenities?.forEach((a) => set.add(a)));
-    const options = Array.from(set).sort().map((value) => ({ value, label: value }));
-    return [{ value: 'all', label: 'All Amenities' }, ...options];
-  });
-
   ngOnInit(): void {
-    this.adminCinemaService.loadAll();
+    this.loadCinemas();
+  }
+
+  private loadCinemas(): void {
+    this.loading.set(true);
+    this.cinemasApi.getCinemas()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.cinemas.set(response.cinemas || []);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set('Failed to load cinemas');
+          this.loading.set(false);
+          console.error(err);
+        },
+      });
   }
 
   onSearch(term: string): void {
     this.searchTerm.set(term);
-    const trimmed = term.trim();
-    if (!trimmed) {
-      this.adminCinemaService.loadAll();
-      return;
-    }
-
-    this.adminCinemaService.search(trimmed);
-  }
-
-  onAmenityChange(value: string): void {
-    this.amenityFilter.set(value);
     this.page.set(1);
   }
 
@@ -138,63 +118,32 @@ export class AdminCinemasComponent implements OnInit {
   }
 
   onAddCinema(): void {
-    this.editingCinema.set(null);
-    this.isEditMode.set(false);
-    this.showModal.set(true);
+    this.router.navigate(['/admin/cinemas/add']);
   }
 
-  onEdit(cinema: Cinema): void {
-    this.editingCinema.set(cinema);
-    this.isEditMode.set(true);
-    this.showModal.set(true);
-  }
-
-
-  onDelete(cinema: Cinema): void {
-    const confirmed = confirm(`Are you sure you want to delete "${cinema.name}"? This action cannot be undone.`);
-    if (!confirmed) return;
-
-    this.adminCinemaService.delete(cinema.id).subscribe({
-      next: () => {
-        // Cinema removed from signal, list auto-updates
-      },
-      error: (err) => {
-        console.error('Delete failed:', err);
-      },
-    });
-  }
-
-  onFormSave(data: Partial<Cinema>): void {
-    if (this.isEditMode() && this.editingCinema()) {
-      const cinemaId = this.editingCinema()!.id;
-      this.adminCinemaService.update(cinemaId, data).subscribe({
-        next: () => {
-          this.closeModal();
-        },
-        error: (err) => {
-          console.error('Update failed:', err);
-        },
-      });
-    } else {
-      this.adminCinemaService.create(data).subscribe({
-        next: () => {
-          this.closeModal();
-        },
-        error: (err) => {
-          console.error('Create failed:', err);
-        },
-      });
+  onTableAction(event: { action: 'edit' | 'delete', row: Cinema }): void {
+    if (event.action === 'edit') {
+      this.router.navigate(['/admin/cinemas/edit', event.row.id]);
+    } else if (event.action === 'delete') {
+      this.onDelete(event.row);
     }
   }
 
-  onFormCancel(): void {
-    this.closeModal();
-  }
+  private onDelete(cinema: Cinema): void {
+    const confirmed = confirm(`Are you sure you want to delete "${cinema.name}"? This action cannot be undone.`);
+    if (!confirmed) return;
 
-  private closeModal(): void {
-    this.showModal.set(false);
-    this.editingCinema.set(null);
-    this.isEditMode.set(false);
+    this.cinemasApi.deleteCinema(cinema.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.cinemas.update(cinemas => cinemas.filter(c => c.id !== cinema.id));
+        },
+        error: (err) => {
+          this.error.set('Failed to delete cinema');
+          console.error('Delete failed:', err);
+        },
+      });
   }
 }
 

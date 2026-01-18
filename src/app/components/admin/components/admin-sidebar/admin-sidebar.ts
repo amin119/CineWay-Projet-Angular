@@ -5,7 +5,6 @@ import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-admin-sidebar',
-  standalone: true,
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './admin-sidebar.html',
   styleUrl: './admin-sidebar.css',

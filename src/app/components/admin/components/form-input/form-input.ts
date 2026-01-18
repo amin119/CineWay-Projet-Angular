@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
+import { Component, input, output, signal, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-form-input',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './form-input.html',
   styleUrls: ['./form-input.css'],
@@ -17,21 +16,21 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
   ],
 })
 export class FormInputComponent implements ControlValueAccessor {
-  @Input() label = '';
-  @Input() placeholder = '';
-  @Input() type: string = 'text';
-  @Input() control: any = null;
-  @Input() required = false;
-  @Input() showLabel = true;
-  @Input() value: string = '';
-  @Output() valueChange = new EventEmitter<string>();
-  disabled = false;
+  label = input('');
+  placeholder = input('');
+  type = input('text');
+  control = input<any>(null);
+  required = input(false);
+  showLabel = input(true);
+  value = signal('');
+  valueChange = output<string>();
+  disabled = signal(false);
 
   onChange: (value: string) => void = () => {};
   onTouched: () => void = () => {};
 
   writeValue(value: string): void {
-    this.value = value || '';
+    this.value.set(value || '');
   }
 
   registerOnChange(fn: (value: string) => void): void {
@@ -43,14 +42,15 @@ export class FormInputComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 
   onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.value = target.value;
-    this.onChange(this.value);
-    this.valueChange.emit(this.value);
+    const v = target.value;
+    this.value.set(v);
+    this.onChange(v);
+    this.valueChange.emit(v);
   }
 
   onBlur(): void {

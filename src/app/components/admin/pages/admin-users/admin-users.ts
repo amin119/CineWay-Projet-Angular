@@ -1,65 +1,69 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminUsersService } from '../../../../services/admin-users.service';
+import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserModel } from '../../../../models/user.model';
-import { TableComponent, TableHeader } from '../../components/table/table';
-import { TableRowComponent } from '../../components/table-row/table-row';
-import { TableActionsComponent } from '../../components/table-actions/table-actions';
+import { UserApi } from '../../../../services/user-api';
 import { PaginationComponent } from '../../components/pagination/pagination';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { SearchInputComponent } from '../../components/search-input/search-input';
-import { AddEditAdminFormComponent } from '../../components/add-edit-admin-form/add-edit-admin-form';
+import { AdminDataTableComponent, TableColumn, TableAction } from '../../components/admin-data-table/admin-data-table';
 
 @Component({
   selector: 'app-admin-users',
-  standalone: true,
   imports: [
     CommonModule,
-    TableComponent,
-    TableRowComponent,
-    TableActionsComponent,
     PaginationComponent,
+    PrimaryButtonComponent,
     FilterDropdownComponent,
     SearchInputComponent,
-    AddEditAdminFormComponent,
+    AdminDataTableComponent,
   ],
   templateUrl: './admin-users.html',
-  styleUrl: './admin-users.css',
+  styleUrls: ['./admin-users.css'],
 })
 export class AdminUsersComponent implements OnInit {
-  private readonly adminUsersService = inject(AdminUsersService);
+  private router = inject(Router);
+  private usersApi = inject(UserApi);
+  private destroyRef = inject(DestroyRef);
 
-  headers: TableHeader[] = [
-    { label: 'User Name' },
-    { label: 'Email' },
-    { label: 'Registration Date' },
-    { label: 'Status' },
-    { label: 'Role' },
-    { label: 'Actions' },
+  readonly tableColumns: TableColumn[] = [
+    { key: 'full_name', label: 'User Name', width: '20%' },
+    { key: 'email', label: 'Email', width: '25%' },
+    { key: 'created_at', label: 'Joined', width: '15%', format: 'date' },
+    { key: 'is_active', label: 'Status', width: '15%', format: 'status' },
+    { key: 'is_admin', label: 'Role', width: '10%', format: 'role' },
   ];
 
-  users = signal<UserModel[]>([]);
-  searchQuery = signal<string>('');
-  statusFilter = signal<string>('');
-  roleFilter = signal<string>('');
-  loading = signal(true);
-  showAddAdminForm = signal(false);
+  readonly tableActions: TableAction[] = [
+    { type: 'edit', label: 'Edit' },
+    { type: 'delete', label: 'Delete' },
+  ];
 
-  page = signal(1);
-  itemsPerPage = signal(10);
+  readonly users = signal<UserModel[]>([]);
+  readonly searchQuery = signal<string>('');
+  readonly statusFilter = signal<string>('all');
+  readonly roleFilter = signal<string>('all');
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
 
-  statusOptions = [
+  readonly page = signal(1);
+  private readonly itemsPerPage = 10;
+
+  readonly statusOptions = [
+    { label: 'All Status', value: 'all' },
     { label: 'Active', value: 'active' },
-    { label: 'Suspended', value: 'suspended' },
+    { label: 'Inactive', value: 'inactive' },
   ];
 
-  roleOptions = [
+  readonly roleOptions = [
+    { label: 'All Roles', value: 'all' },
     { label: 'User', value: 'user' },
     { label: 'Admin', value: 'admin' },
   ];
 
-  filteredUsers = computed(() => {
+  readonly filteredUsers = computed(() => {
     const query = this.searchQuery().toLowerCase();
     const status = this.statusFilter();
     const role = this.roleFilter();
@@ -69,79 +73,93 @@ export class AdminUsersComponent implements OnInit {
         user.full_name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query);
 
       const matchesStatus =
-        !status ||
+        status === 'all' ||
         (status === 'active' && user.is_active) ||
-        (status === 'suspended' && !user.is_active);
+        (status === 'inactive' && !user.is_active);
 
       const matchesRole =
-        !role || (role === 'admin' && user.is_admin) || (role === 'user' && !user.is_admin);
+        role === 'all' || (role === 'admin' && user.is_admin) || (role === 'user' && !user.is_admin);
 
       return matchesSearch && matchesStatus && matchesRole;
     });
   });
 
-  totalPages = computed(() => Math.ceil(this.filteredUsers().length / this.itemsPerPage()));
+  readonly totalPages = computed(() => Math.ceil(this.filteredUsers().length / this.itemsPerPage));
 
-  paginatedUsers = computed(() => {
-    const start = (this.page() - 1) * this.itemsPerPage();
-    const end = start + this.itemsPerPage();
+  readonly paginatedUsers = computed(() => {
+    const start = (this.page() - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
     return this.filteredUsers().slice(start, end);
   });
 
-  startIndex = computed(() => (this.page() - 1) * this.itemsPerPage() + 1);
-  endIndex = computed(() => Math.min(this.page() * this.itemsPerPage(), this.filteredUsers().length));
+  readonly startIndex = computed(() => (this.page() - 1) * this.itemsPerPage + 1);
+  readonly endIndex = computed(() => Math.min(this.page() * this.itemsPerPage, this.filteredUsers().length));
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
-  loadUsers(): void {
+  private loadUsers(): void {
     this.loading.set(true);
-    this.adminUsersService.listUsers(0, 100).subscribe({
-      next: (users) => {
-        this.users.set(users);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Failed to load users:', err);
-        this.loading.set(false);
-      },
-    });
+    this.error.set(null);
+
+    this.usersApi.getUsers()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (users) => {
+          this.users.set(users);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set('Failed to load users');
+          console.error(err);
+          this.loading.set(false);
+        },
+      });
   }
 
-  onSearchChange(query: string): void {
+  onSearch(query: string): void {
     this.searchQuery.set(query);
     this.page.set(1);
   }
 
-  openAddAdminForm(): void {
-    this.showAddAdminForm.set(true);
+  onStatusChange(status: string): void {
+    this.statusFilter.set(status);
+    this.page.set(1);
   }
 
-  onAdminCreated(): void {
-    this.showAddAdminForm.set(false);
-    this.loadUsers();
+  onRoleChange(role: string): void {
+    this.roleFilter.set(role);
+    this.page.set(1);
   }
 
-  onEditUser(user: UserModel): void {
-    console.log('Edit user:', user);
+  onAddUser(): void {
+    this.router.navigate(['/admin/users/add']);
   }
 
-  onSuspendUser(user: UserModel): void {
-    const newStatus = !user.is_active;
-    const action = newStatus ? 'activate' : 'suspend';
-    const confirmed = confirm(`Are you sure you want to ${action} this user?`);
+  onTableAction(event: { action: 'edit' | 'delete', row: UserModel }): void {
+    if (event.action === 'edit') {
+      this.router.navigate(['/admin/users/edit', event.row.id]);
+    } else if (event.action === 'delete') {
+      this.onDeleteUser(event.row);
+    }
+  }
 
-    if (confirmed) {
-      this.adminUsersService.updateUserStatus(user.id, newStatus).subscribe({
+  private onDeleteUser(user: UserModel): void {
+    const confirmed = confirm(`Are you sure you want to delete "${user.full_name}"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    this.usersApi.deleteUser(user.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
-          this.loadUsers();
+          this.users.update(users => users.filter(u => u.id !== user.id));
         },
         error: (err) => {
-          console.error('Failed to update user status:', err);
+          this.error.set('Failed to delete user');
+          console.error('Delete failed:', err);
         },
       });
-    }
   }
 
   previousPage(): void {

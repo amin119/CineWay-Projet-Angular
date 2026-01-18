@@ -10,6 +10,10 @@ import { Profile } from './components/profile/profile';
 import { AdminLayoutComponent } from './components/admin/layouts/admin-layout/admin-layout';
 import { AdminOverviewComponent } from './components/admin/pages/admin-overview/admin-overview';
 import { AdminMoviesComponent } from './components/admin/pages/admin-movies/admin-movies';
+import { AddEditMoviePageComponent } from './components/admin/pages/add-edit-movie-page/add-edit-movie-page';
+import { AddEditCinemaPageComponent } from './components/admin/pages/add-edit-cinema-page/add-edit-cinema-page';
+import { AddEditUserPageComponent } from './components/admin/pages/add-edit-user-page/add-edit-user-page';
+import { AddEditShowtimePageComponent } from './components/admin/pages/add-edit-showtime-page/add-edit-showtime-page';
 import { AdminCinemasComponent } from './components/admin/pages/admin-cinemas/admin-cinemas';
 import { AdminUsersComponent } from './components/admin/pages/admin-users/admin-users';
 import { AdminShowtimesComponent } from './components/admin/pages/admin-showtimes/admin-showtimes';
@@ -48,9 +52,17 @@ export const routes: Routes = [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: AdminOverviewComponent },
       { path: 'movies', component: AdminMoviesComponent },
+      { path: 'movies/add', component: AddEditMoviePageComponent },
+      { path: 'movies/edit/:id', component: AddEditMoviePageComponent },
       { path: 'cinemas', component: AdminCinemasComponent },
+      { path: 'cinemas/add', component: AddEditCinemaPageComponent },
+      { path: 'cinemas/edit/:id', component: AddEditCinemaPageComponent },
       { path: 'users', component: AdminUsersComponent },
+      { path: 'users/add', component: AddEditUserPageComponent },
+      { path: 'users/edit/:id', component: AddEditUserPageComponent },
       { path: 'showtimes', component: AdminShowtimesComponent },
+      { path: 'showtimes/add', component: AddEditShowtimePageComponent },
+      { path: 'showtimes/edit/:id', component: AddEditShowtimePageComponent },
     ],
   },
   {

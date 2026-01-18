@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
+import { Component, input, output, signal, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 export interface MultiSelectOption {
@@ -9,7 +9,6 @@ export interface MultiSelectOption {
 
 @Component({
   selector: 'app-multi-select-dropdown',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './multi-select-dropdown.html',
   styleUrls: ['./multi-select-dropdown.css'],
@@ -22,23 +21,23 @@ export interface MultiSelectOption {
   ],
 })
 export class MultiSelectDropdownComponent implements ControlValueAccessor {
-  @Input() label = '';
-  @Input() placeholder = 'Select items...';
-  @Input() options: MultiSelectOption[] = [];
-  @Input() control: any = null;
-  @Input() required = false;
-  @Input() showLabel = true;
-  @Output() valueChange = new EventEmitter<string[]>();
+  label = input('');
+  placeholder = input('Select items...');
+  options = input<MultiSelectOption[]>([]);
+  control = input<any>(null);
+  required = input(false);
+  showLabel = input(true);
+  valueChange = output<string[]>();
 
-  selectedValues: string[] = [];
-  disabled = false;
-  isOpen = false;
+  selectedValues = signal<string[]>([]);
+  disabled = signal(false);
+  isOpen = signal(false);
 
   onChange: (value: string[]) => void = () => {};
   onTouched: () => void = () => {};
 
   writeValue(value: string | string[]): void {
-    this.selectedValues = Array.isArray(value) ? value : value ? [value] : [];
+    this.selectedValues.set(Array.isArray(value) ? value : value ? [value] : []);
   }
 
   registerOnChange(fn: (value: string[]) => void): void {
@@ -50,24 +49,29 @@ export class MultiSelectDropdownComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 
   toggleDropdown(): void {
-    if (!this.disabled) {
-      this.isOpen = !this.isOpen;
+    if (!this.disabled()) {
+      this.isOpen.update(val => !val);
     }
   }
 
   toggleOption(value: string): void {
-    const index = this.selectedValues.indexOf(value);
+    const currentValues = this.selectedValues();
+    const index = currentValues.indexOf(value);
+    let newValues: string[];
+    
     if (index > -1) {
-      this.selectedValues.splice(index, 1);
+      newValues = currentValues.filter((_, i) => i !== index);
     } else {
-      this.selectedValues.push(value);
+      newValues = [...currentValues, value];
     }
-    this.onChange(this.selectedValues);
-    this.valueChange.emit(this.selectedValues);
+    
+    this.selectedValues.set(newValues);
+    this.onChange(newValues);
+    this.valueChange.emit(newValues);
   }
 
   removeTag(value: string, event: Event): void {
@@ -76,21 +80,21 @@ export class MultiSelectDropdownComponent implements ControlValueAccessor {
   }
 
   isSelected(value: string): boolean {
-    return this.selectedValues.includes(value);
+    return this.selectedValues().includes(value);
   }
 
   getSelectedLabels(): string {
-    return this.selectedValues
-      .map(val => this.options.find(opt => opt.value === val)?.label || val)
+    return this.selectedValues()
+      .map(val => this.options().find(opt => opt.value === val)?.label || val)
       .join(', ');
   }
 
   getSelectedLabel(value: string): string {
-    return this.options.find(opt => opt.value === value)?.label || value;
+    return this.options().find(opt => opt.value === value)?.label || value;
   }
 
   closeDropdown(): void {
-    this.isOpen = false;
+    this.isOpen.set(false);
     this.onTouched();
   }
 }
