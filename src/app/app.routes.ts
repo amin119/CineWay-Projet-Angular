@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Signup } from './auth/signup/signup';
 import { Login } from './auth/login/login';
-import { Home } from './components/home/home';
+import { Explore } from './components/explore/explore';
 import { LandingPageComponent } from './components/landingPage/landing-page-component/landing-page-component';
 import { MainLayout } from './components/layouts/main-layout/main-layout';
 import { Cinemas } from './components/cinemas/cinemas/cinemas';
@@ -21,6 +21,7 @@ import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
 import { adminGuard } from './auth/guards/admin/admin.guard';
 import { NotFound } from './components/not-found/not-found';
+import { MovieDetails } from './components/movies/movie-details/movie-details';
 
 export const routes: Routes = [
   {
@@ -29,10 +30,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'home', component: LandingPageComponent },
+      { path: 'explore', component: Explore },
       { path: 'cinemas', component: Cinemas },
       { path: 'cinemas/:id', component: CinemaDetails },
       { path: 'profile', component: Profile },
       { path: 'not-found', component: NotFound },
+      { path: 'movies/:id',component: MovieDetails},
     ],
   },
   {
@@ -42,6 +45,32 @@ export const routes: Routes = [
       { path: '', component: LandingPageComponent },
       { path: 'auth/login', component: Login },
       { path: 'auth/signup', component: Signup },
+      {
+        path: 'home',
+        component: Explore,
+        canActivate: [authGuard],
+      },
+      {
+        path: '',
+        component: LandingPageComponent,
+        canActivate : [guestGuard]
+      },
+      {
+        path: 'cinemas',
+        component : Cinemas,
+        canActivate :[authGuard],
+      },
+      {
+        path: 'cinemas/:id',
+        component: CinemaDetails,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'profile',
+        component: Profile,
+        canActivate: [authGuard],
+      },
+      
     ],
   },
   {
@@ -66,6 +95,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: "**" , redirectTo:'/not-found'
+    path: "**", redirectTo: '/not-found'
   }
 ];
+
