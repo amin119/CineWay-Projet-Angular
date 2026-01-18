@@ -33,28 +33,35 @@ private http = inject(HttpClient);
     return this.http.delete(`${APP_API.movies.movies}/${id}`);
   }
 
-  private prepareMoviePayload(movie: MovieModel) {
+  private prepareMoviePayload(movie: any) {
+    // Helper function to convert comma-separated string to array
+    const stringToArray = (value: string | string[] | null | undefined): string[] | null => {
+      if (!value) return null;
+      if (Array.isArray(value)) return value;
+      return value.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    };
+
     return {
       title: movie.title,
-      description: movie.description,
-      duration_minutes: movie.duration_minutes,
+      description: movie.description || null,
+      duration_minutes: parseInt(movie.duration_minutes, 10),
       genre: Array.isArray(movie.genre) ? movie.genre : [movie.genre],
-      rating: movie.rating,
-      cast: movie.cast,
-      director: movie.director,
-      writers: movie.writers,
-      producers: movie.producers,
-      release_date: movie.release_date,
-      country: movie.country,
-      language: movie.language,
-      budget: movie.budget,
-      revenue: movie.revenue,
-      production_company: movie.production_company,
-      distributor: movie.distributor,
-      image_url: movie.image_url,
-      trailer_url: movie.trailer_url,
-      awards: movie.awards,
-      details: movie.details,
+      rating: movie.rating ? String(movie.rating) : null,
+      cast: stringToArray(movie.cast),
+      director: movie.director || null,
+      writers: stringToArray(movie.writers),
+      producers: stringToArray(movie.producers),
+      release_date: movie.release_date || null,
+      country: movie.country || null,
+      language: movie.language || null,
+      budget: movie.budget ? parseFloat(movie.budget) : null,
+      revenue: movie.revenue ? parseFloat(movie.revenue) : null,
+      production_company: movie.production_company || null,
+      distributor: movie.distributor || null,
+      image_url: movie.poster_url || movie.image_url || null,
+      trailer_url: movie.trailer_url || null,
+      awards: stringToArray(movie.awards),
+      details: movie.details || null,
     };
   }
 

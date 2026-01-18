@@ -56,11 +56,7 @@ export class AddEditCinemaPageComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       address: ['', [Validators.required, Validators.minLength(5)]],
       city: ['', Validators.required],
-      contact_number: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      amenities: [[]],
-      gallery_image_url: [''],
-      seating_layout: [''],
+      amenities: [''],
     });
   }
 

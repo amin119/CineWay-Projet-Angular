@@ -51,12 +51,30 @@ export class CinemaService {
     return this.http.get<Cinema>(`${APP_API.cinema.list}${id}`);
   }
 
-  createCinema(payload: Partial<Cinema>) {
-    return this.http.post<Cinema>(`${APP_API.cinema.list}`, payload);
+  createCinema(payload: any) {
+    const preparedPayload = this.prepareCinemaPayload(payload);
+    return this.http.post<Cinema>(`${APP_API.cinema.list}`, preparedPayload);
   }
 
-  updateCinema(id: number, payload: Partial<Cinema>) {
-    return this.http.put<Cinema>(`${APP_API.cinema.list}${id}`, payload);
+  updateCinema(id: number, payload: any) {
+    const preparedPayload = this.prepareCinemaPayload(payload);
+    return this.http.put<Cinema>(`${APP_API.cinema.list}${id}`, preparedPayload);
+  }
+  
+  private prepareCinemaPayload(cinema: any) {
+    // Helper function to convert comma-separated string to array
+    const stringToArray = (value: string | string[] | null | undefined): string[] | null => {
+      if (!value) return null;
+      if (Array.isArray(value)) return value;
+      return value.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    };
+
+    return {
+      name: cinema.name,
+      address: cinema.address,
+      city: cinema.city,
+      amenities: stringToArray(cinema.amenities) || [],
+    };
   }
   
   getCinemas() {
