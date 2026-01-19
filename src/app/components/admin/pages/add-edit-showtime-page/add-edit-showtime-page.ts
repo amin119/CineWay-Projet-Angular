@@ -6,8 +6,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScreeningService, Screening } from '../../../../services/screening.service';
 import { MoviesApi } from '../../../../services/movies-api';
 import { CinemaService } from '../../../../services/cinema.service';
-import { FormInputComponent } from '../../components/form-input/form-input';
-import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { MovieModel } from '../../../../models/movie.model';
 import { Cinema } from '../../../../models/cinema.model';
 
@@ -19,12 +17,7 @@ interface Room {
 
 @Component({
   selector: 'app-add-edit-showtime-page',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormInputComponent,
-    PrimaryButtonComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-edit-showtime-page.html',
   styleUrls: ['./add-edit-showtime-page.css'],
 })
@@ -67,7 +60,8 @@ export class AddEditShowtimePageComponent implements OnInit {
 
   private loadData() {
     this.loading.set(true);
-    this.moviesApi.getMovies()
+    this.moviesApi
+      .getMovies()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (movies) => {
@@ -81,7 +75,8 @@ export class AddEditShowtimePageComponent implements OnInit {
         },
       });
 
-    this.cinemasApi.getCinemas()
+    this.cinemasApi
+      .getCinemas()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -105,7 +100,8 @@ export class AddEditShowtimePageComponent implements OnInit {
 
   private loadShowtime(id: number) {
     this.loading.set(true);
-    this.screeningService.getScreening(id)
+    this.screeningService
+      .getScreening(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (showtime: Screening) => {
@@ -139,7 +135,8 @@ export class AddEditShowtimePageComponent implements OnInit {
       return;
     }
 
-    this.cinemasApi.getCinemaById(cinemaId)
+    this.cinemasApi
+      .getCinemaById(cinemaId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cinema: Cinema & { rooms?: Room[] }) => {
@@ -161,7 +158,7 @@ export class AddEditShowtimePageComponent implements OnInit {
 
     this.loading.set(true);
     const formValue = this.form.value;
-    
+
     const dateTime = `${formValue.screening_date}T${formValue.screening_time}:00`;
     const showtimeData = {
       movie_id: formValue.movie_id,
@@ -174,19 +171,17 @@ export class AddEditShowtimePageComponent implements OnInit {
       ? this.screeningService.updateScreening(this.showtimeId()!, showtimeData)
       : this.screeningService.createScreening(showtimeData);
 
-    request
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.router.navigate(['/admin/showtimes']);
-        },
-        error: (err) => {
-          this.error.set('Failed to save showtime');
-          this.loading.set(false);
-          console.error(err);
-        },
-      });
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/admin/showtimes']);
+      },
+      error: (err) => {
+        this.error.set('Failed to save showtime');
+        this.loading.set(false);
+        console.error(err);
+      },
+    });
   }
 
   onCancel() {
@@ -206,7 +201,7 @@ export class AddEditShowtimePageComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });
