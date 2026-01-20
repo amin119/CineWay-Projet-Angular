@@ -8,6 +8,7 @@ interface TicketType {
   id: string;
   name: string;
   description?: string;
+  ageRange?: string;
   price: number;
   count: number;
 }
@@ -37,20 +38,32 @@ export class ShowtimeSelectionComponent implements OnInit {
     {
       id: 'adult',
       name: 'Adult',
+      ageRange: 'Ages 18+',
+      description: 'Standard adult ticket',
       price: 15.0,
       count: 0,
     },
     {
       id: 'child',
       name: 'Child',
-      description: 'Ages 3-11',
+      ageRange: 'Ages 3-11',
+      description: 'Discounted rate for children',
       price: 12.0,
+      count: 0,
+    },
+    {
+      id: 'student',
+      name: 'Student',
+      ageRange: 'Ages 12-17',
+      description: 'Student discount with valid ID',
+      price: 13.0,
       count: 0,
     },
     {
       id: 'senior',
       name: 'Senior',
-      description: 'Ages 60+',
+      ageRange: 'Ages 60+',
+      description: 'Senior citizen discount',
       price: 13.0,
       count: 0,
     },
@@ -105,16 +118,27 @@ export class ShowtimeSelectionComponent implements OnInit {
     return date.toLocaleDateString('en-US', options);
   }
   private loadOtherShowtimes(movieId: number, excludeId: number): void {
+    console.log(
+      'Loading other showtimes for movie ID:',
+      movieId,
+      'excluding screening ID:',
+      excludeId,
+    );
     this.screeningService
       .getScreenings({ movie_id: movieId })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (showtimes) => {
+          console.log('Other showtimes data received:', showtimes);
           const other = showtimes.filter((s) => s.id !== excludeId);
+          console.log('Filtered other showtimes:', other);
           this.otherShowtimes.set(other);
         },
         error: (err) => {
           console.error('Error loading other showtimes:', err);
+          console.error('Error details:', err.error);
+          console.error('Error status:', err.status);
+          console.error('Error message:', err.message);
           // Don't set error, just leave empty
         },
       });
@@ -144,6 +168,7 @@ export class ShowtimeSelectionComponent implements OnInit {
     const id = this.screeningId();
     if (!id) return;
 
+    console.log('Loading screening with ID:', id);
     this.loading.set(true);
     this.error.set(null);
 
@@ -152,6 +177,9 @@ export class ShowtimeSelectionComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (screening) => {
+          console.log('Screening data received:', screening);
+          console.log('Movie data:', screening.movie);
+          console.log('Room data:', screening.room);
           this.screening.set(screening);
           this.loading.set(false);
 
@@ -170,6 +198,9 @@ export class ShowtimeSelectionComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error loading screening:', err);
+          console.error('Error details:', err.error);
+          console.error('Error status:', err.status);
+          console.error('Error message:', err.message);
           this.error.set('Failed to load showtime details');
           this.loading.set(false);
         },

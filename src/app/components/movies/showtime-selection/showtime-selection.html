@@ -44,9 +44,7 @@
               <!-- Movie Poster -->
               <div
                 class="w-full sm:w-40 h-60 sm:h-auto shrink-0 bg-cover bg-center rounded-lg bg-white/5"
-                [style.background-image]="
-                  'url(' + (screening()?.movie?.poster_url || '/assets/default-poster.jpg') + ')'
-                "
+                [style.background-image]="'url(' + screening()?.movie?.image_url + ')'"
               ></div>
 
               <!-- Movie Details -->
@@ -92,12 +90,12 @@
               <div class="flex flex-col gap-4">
                 @for (ticket of ticketTypes(); track ticket.id) {
                   <div
-                    class="flex justify-between items-center py-4"
+                    class="flex justify-between items-center"
                     [class.border-b]="!$last"
                     [class.border-white/10]="!$last"
                   >
                     <div>
-                      <p class="text-white font-medium">{{ ticket.name }}</p>
+                      <p class="text-white font-medium text-xl">{{ ticket.name }}</p>
                       @if (ticket.description) {
                         <p class="text-gray-400 text-sm">{{ ticket.description }}</p>
                       }

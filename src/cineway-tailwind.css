@@ -23,6 +23,9 @@
 
   /* Admin form colors */
   --color-bg-form: #1a252f;
+
+  /* Additional utility colors */
+  --color-very-dark: #0f0f0f;
 }
 
 /* Override Bootstrap and default browser styles with higher priority */
