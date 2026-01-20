@@ -90,15 +90,18 @@
       </div>
     </div>
     <div class="lg:col-span-4 offset-1">
-      <div class="space-y-4">
+      <div class="bg-gray-950 text-white rounded-2xl p-4 shadow-xl space-y-4">
         <button
           type="button"
           (click)="viewShowtimes()"
-          class="my-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-xl transition"
+          class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-xl transition"
         >
           View Showtimes
         </button>
       </div>
+
+
+     
 
       <app-reviews-section
         [movieId]="movieId()"
