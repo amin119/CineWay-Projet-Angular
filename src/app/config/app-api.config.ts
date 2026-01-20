@@ -7,6 +7,7 @@ export const APP_API = {
     logout: `${environment.apiUrl}/auth/logout`,
     checkmail: `${environment.apiUrl}/auth/check-email`,
     me : `${environment.apiUrl}/auth/me`,
+    changePassword: `${environment.apiUrl}/auth/change-password`,
   },
   movies:{
     movies: `${environment.apiUrl}/movies`,

@@ -9,6 +9,15 @@ import { LoginRequestDto } from '../dto/login-request.dto';
 import { SignupRequestDto } from '../dto/signup-request.dto';
 import { User } from '../model/user';
 import { UserApi } from '../../services/user-api';
+
+export type ChangePasswordRequestDto = {
+  current_password: string;
+  new_password: string;
+};
+
+export type ChangePasswordResponseDto = {
+  message: string;
+};
 @Injectable({
   providedIn: 'root',
 })
@@ -68,5 +77,11 @@ isAuthenticated(): boolean {
     return localStorage.getItem('token');
   }
 
+  changePassword(payload: ChangePasswordRequestDto): Observable<ChangePasswordResponseDto> {
+    this._loading.set(true);
+    return this.http
+      .put<ChangePasswordResponseDto>(APP_API.auth.changePassword, payload)
+      .pipe(finalize(() => this._loading.set(false)));
+  }
 
 }
