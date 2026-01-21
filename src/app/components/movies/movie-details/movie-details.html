@@ -26,9 +26,7 @@
       }
     </button>
 
-    <div
-      class="absolute inset-0 z-10 bg-linear-to-t from-black via-black/40 to-transparent"
-    ></div>
+    <div class="absolute inset-0 z-10 bg-linear-to-t from-black via-black/40 to-transparent"></div>
 
     <div class="relative z-20 flex items-end min-h-[calc(100vh-6rem)] px-12 pb-16">
       <div class="flex items-end gap-8">
@@ -38,7 +36,7 @@
           alt="poster"
         />
 
-        <div class="text-white rounded-2xl px-5 py-4 max-w-md">
+        <div class="text-white rounded-2xl px-4">
           <h2 class="text-3xl font-bold leading-tight">
             {{ movie()?.title }}
           </h2>
@@ -50,9 +48,15 @@
 
           <div class="mt-3 flex gap-2 flex-wrap">
             @for (g of movie()?.genre ?? []; track g) {
-              <span class="px-3 py-1 rounded-full bg-white/10 text-sm">
+              <span class="px-3 rounded-full bg-white/10 text-sm">
                 {{ g }}
               </span>
+            }
+          </div>
+
+          <div class="mt-3 text-sm text-gray-200">
+            @if (movie()?.director) {
+              <p class="mb-1"><strong>Director:</strong> {{ movie()?.director }}</p>
             }
           </div>
         </div>
@@ -61,8 +65,8 @@
   </section>
 }
 
-<div class="relative z-20 px-12 pb-16 pt-4">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="relative z-20 px-12 pb-16 pt-12">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
     <div class="lg:col-span-8">
       <h3 class="text-sm font-semibold text-gray-100 mb-3">Description</h3>
 
@@ -78,13 +82,57 @@
             <div class="flex flex-col items-center gap-2 px-3 py-2 shrink-0">
               <img
                 class="w-14 h-14 rounded-full object-cover bg-white/20"
-                [src]="'/assets/avatar.png'"
+                [src]="
+                  'https://ui-avatars.com/api/?name=' +
+                  actor +
+                  '&size=56&background=cccccc&color=000000'
+                "
                 alt="actor"
               />
               <span class="text-xs text-gray-100 whitespace-nowrap">
                 {{ actor }}
               </span>
             </div>
+          }
+        </div>
+      </div>
+
+      <div class="mt-5 bg-gray-800 rounded-lg p-4">
+        <h3 class="text-sm font-semibold text-gray-100 mb-3">Additional Information</h3>
+        <div class="space-y-1 text-sm text-gray-200">
+          @if (movie()?.details?.['imdb_rating']) {
+            <p><strong>IMDB Rating:</strong> {{ movie()?.details?.['imdb_rating'] }}</p>
+          }
+          @if (movie()?.writers?.length) {
+            <p><strong>Writers:</strong> {{ movie()!.writers!.join(', ') }}</p>
+          }
+          @if (movie()?.producers?.length) {
+            <p><strong>Producers:</strong> {{ movie()!.producers!.join(', ') }}</p>
+          }
+
+          @if (movie()?.production_company) {
+            <p><strong>Production Company:</strong> {{ movie()?.production_company }}</p>
+          }
+          @if (movie()?.release_date) {
+            <p><strong>Release Date:</strong> {{ movie()?.release_date | date }}</p>
+          }
+          @if (movie()?.language) {
+            <p><strong>Language:</strong> {{ movie()?.language }}</p>
+          }
+          @if (movie()?.country) {
+            <p><strong>Country:</strong> {{ movie()?.country }}</p>
+          }
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <h3 class="text-sm font-semibold text-gray-100 mb-3">Awards</h3>
+
+        <div class="flex gap-2 flex-wrap">
+          @for (award of movie()?.awards ?? []; track award) {
+            <span class="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-sm">
+              {{ award }}
+            </span>
           }
         </div>
       </div>
@@ -99,9 +147,6 @@
           View Showtimes
         </button>
       </div>
-
-
-     
 
       <app-reviews-section
         [movieId]="movieId()"

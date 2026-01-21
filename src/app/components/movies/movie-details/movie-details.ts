@@ -1,6 +1,7 @@
 import { Component, computed, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -13,14 +14,13 @@ import { ReviewListResponse, ReviewRead } from '../../../models/review.model';
 import { map } from 'rxjs/operators';
 import { ReviewsSection } from './reviews-section/reviews-section';
 
-const DEFAULT_TRAILER =
-  'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ?autoplay=1&mute=1&playsinline=1&rel=0';
+const DEFAULT_TRAILER = 'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ';
 
 @Component({
   selector: 'app-movie-details',
   templateUrl: './movie-details.html',
   styleUrl: './movie-details.css',
-  imports: [TimeToHoursPipe, ReviewsSection],
+  imports: [TimeToHoursPipe, ReviewsSection, DatePipe],
 })
 export class MovieDetails {
   private route = inject(ActivatedRoute);
@@ -39,14 +39,30 @@ export class MovieDetails {
 
   trailerUrl = computed(() => {
     const url = this.movie()?.trailer_url?.trim();
-    return url ? url : DEFAULT_TRAILER;
+    if (!url) return DEFAULT_TRAILER;
+
+    if (url.includes('youtube.com/embed/')) return url;
+
+    if (url.includes('youtube.com/watch?v=')) {
+      const videoId = url.split('v=')[1]?.split('&')[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : DEFAULT_TRAILER;
+    }
+
+    if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : DEFAULT_TRAILER;
+    }
+
+    return url;
   });
 
-  safeTrailerUrl = computed<SafeResourceUrl>(() =>
-    this.sanitizer.bypassSecurityTrustResourceUrl(
-      this.trailerUrl() + '?autoplay=1&mute=1&playsinline=1&enablejsapi=1',
-    ),
-  );
+  safeTrailerUrl = computed<SafeResourceUrl>(() => {
+    const baseUrl = this.trailerUrl();
+    const separator = baseUrl.includes('?') ? '&' : '?';
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      baseUrl + separator + 'autoplay=1&mute=1&playsinline=1&enablejsapi=1&rel=0',
+    );
+  });
   @ViewChild('ytFrame') ytFrame?: ElementRef<HTMLIFrameElement>;
 
   private ytCommand(func: 'mute' | 'unMute') {

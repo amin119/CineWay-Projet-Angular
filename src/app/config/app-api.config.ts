@@ -16,8 +16,8 @@ export const APP_API = {
   },
 
   reviews: {
-    reviewById: (reviewId: number) => `${environment.apiUrl}/reviews/${reviewId}`,
-    reaction: (reviewId: number) => `${environment.apiUrl}/reviews/${reviewId}/reaction`,
+    reviewById: (reviewId: number) => `${environment.apiUrl}/movies/reviews/${reviewId}`,
+    reaction: (reviewId: number) => `${environment.apiUrl}/movies/reviews/${reviewId}/react`,
   },
 
   user: {
