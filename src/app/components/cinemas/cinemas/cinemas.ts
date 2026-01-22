@@ -16,20 +16,25 @@ export class Cinemas {
   cinemas = signal<Cinema[]>([]);
   error = this.cinemaService.error;
   isLoading = this.cinemaService.isLoading;
-  total = this.cinemaService.total;
 
-  hasMore = computed(() => {
-    const currentTotal = this.cinemas().length;
-    const totalAvailable = this.total();
-    return totalAvailable !== undefined && totalAvailable > currentTotal;
-  });
+  hasMore = computed(() => !this.isLoading());
 
   constructor() {
     effect(() => {
       const loadedCinemas = this.cinemaService.cinemas();
-      if (loadedCinemas && loadedCinemas.length > 0) {
+
+      if (loadedCinemas.length > 0) {
         this.cinemas.update((current) => {
-          return [...current, ...loadedCinemas];
+          const ids = new Set(current.map((c) => c.id));
+          const merged = [...current];
+
+          for (const cinema of loadedCinemas) {
+            if (!ids.has(cinema.id)) {
+              merged.push(cinema);
+            }
+          }
+
+          return merged;
         });
       }
     });
@@ -42,9 +47,10 @@ export class Cinemas {
 
   showFavoritesOnly = signal(false);
 
-  filteredCinemas = computed(() =>
-    this.showFavoritesOnly() ? this.cinemaService.favorites() || [] : this.cinemas()
-  );
+  filteredCinemas = computed(() => {
+    const result = this.showFavoritesOnly() ? this.cinemaService.favorites() || [] : this.cinemas();
+    return result;
+  });
 
   toggleFavoritesFilter() {
     this.showFavoritesOnly.update((v) => !v);

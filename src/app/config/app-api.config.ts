@@ -31,12 +31,15 @@ export const APP_API = {
     list: `${environment.apiUrl}/cinemas/`,
     search: `${environment.apiUrl}/cinemas/search`,
     favorites: `${environment.apiUrl}/cinemas/favorites`,
+    movies: (cinemaId: number) => `${environment.apiUrl}/cinemas/${cinemaId}/movies`,
+    movieShowtimes: (cinemaId: number, movieId: number) =>
+      `${environment.apiUrl}/cinemas/${cinemaId}/movies/${movieId}/showtimes`,
   },
 
   screenings: `${environment.apiUrl}/screenings`,
   showtimes: `${environment.apiUrl}/showtimes`,
   rooms: {
-    list : `${environment.apiUrl}/rooms`
+    list: `${environment.apiUrl}/rooms`,
   },
   admin: {
     stats: {
