@@ -2,7 +2,8 @@ export const APP_ROUTES = {
   home: '/home',
   login: 'auth/login',
   signup: 'auth/signup',
-  profile: '/profile',
+  profile :'/profile',
   cinemas: '/cinemas',
-  explore: '/explore'
+  book: '/book',
+  explore: '/explore',
 };

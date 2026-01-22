@@ -34,7 +34,10 @@ export const APP_API = {
   },
 
   screenings: `${environment.apiUrl}/screenings`,
-
+  showtimes: `${environment.apiUrl}/showtimes`,
+  rooms: {
+    list : `${environment.apiUrl}/rooms`
+  },
   admin: {
     stats: {
       movies: `${environment.apiUrl}/admin/stats/movies`,

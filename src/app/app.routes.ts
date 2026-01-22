@@ -24,6 +24,7 @@ import { NotFound } from './components/not-found/not-found';
 import { MovieDetails } from './components/movies/movie-details/movie-details';
 import { ShowtimeSelectionComponent } from './components/movies/showtime-selection/showtime-selection';
 import { MovieShowtimesComponent } from './components/movies/movie-showtimes/movie-showtimes';
+import { SeatSelection } from './components/seat-selection/seat-selection';
 
 export const routes: Routes = [
   {
@@ -40,6 +41,7 @@ export const routes: Routes = [
       { path: 'movies/:id', component: MovieDetails },
       { path: 'movies/:id/showtimes', component: MovieShowtimesComponent },
       { path: 'screenings/:id', component: ShowtimeSelectionComponent },
+      { path: 'book', component: SeatSelection },
     ],
   },
   {

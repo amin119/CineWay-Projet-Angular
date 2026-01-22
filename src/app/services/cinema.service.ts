@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams, httpResource } from '@angular/common/http';
 import CinemaResponse, { Cinema } from '../models/cinema.model';
+import CinemaResponse, { Cinema } from '../models/cinema.model';
 import { APP_API } from '../config/app-api.config';
 
 @Injectable({
@@ -18,13 +19,17 @@ export class CinemaService {
       limit: this.limit,
       skip: this.skip(),
     }
+    }
   }));
+  cinemas = computed(() => this.cinemaResource.value()?.cinemas);
+  total = computed(() => this.cinemaResource.value()?.total);
   cinemas = computed(() => this.cinemaResource.value()?.cinemas);
   total = computed(() => this.cinemaResource.value()?.total);
   error = computed(() => this.cinemaResource.error() as HttpErrorResponse);
   isLoading = this.cinemaResource.isLoading;
 
   next() {
+    if(this.skip() + this.limit >= (this.total() || 0)) return;
     if(this.skip() + this.limit >= (this.total() || 0)) return;
     this.skip.update((s) => s + this.limit);
   }
