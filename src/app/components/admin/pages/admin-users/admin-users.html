@@ -13,71 +13,72 @@
   </div>
 
   <div class="section-surface">
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <div class="md:col-span-1">
-        <app-search-input
-          [showLabel]="false"
-          placeholder="Search by name or email..."
-          [value]="searchQuery()"
-          (valueChange)="onSearch($event)"
-        ></app-search-input>
-      </div>
-      <div class="md:col-span-1">
-        <app-filter-dropdown
-          [showLabel]="false"
-          [label]="'Status'"
-          [options]="statusOptions"
-          [value]="statusFilter()"
-          (valueChange)="onStatusChange($event)"
-        ></app-filter-dropdown>
-      </div>
-      <div class="md:col-span-1">
-        <app-filter-dropdown
-          [showLabel]="false"
-          [label]="'Role'"
-          [options]="roleOptions"
-          [value]="roleFilter()"
-          (valueChange)="onRoleChange($event)"
-        ></app-filter-dropdown>
-      </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <app-search-input
+        label="Search users"
+        placeholder="Search by name or email..."
+        [value]="searchQuery()"
+        [showLabel]="false"
+        (valueChange)="onSearch($event)"
+      ></app-search-input>
+
+      <app-filter-dropdown
+        label="Filter by Status"
+        [options]="statusOptions"
+        [value]="statusFilter()"
+        [showLabel]="false"
+        (valueChange)="onStatusChange($event)"
+      ></app-filter-dropdown>
+
+      <app-filter-dropdown
+        label="Filter by Role"
+        [options]="roleOptions"
+        [value]="roleFilter()"
+        [showLabel]="false"
+        (valueChange)="onRoleChange($event)"
+      ></app-filter-dropdown>
     </div>
   </div>
 
   @if (loading()) {
     <div class="section-surface loading-surface">
       <div class="flex items-center justify-center py-10">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-[#2a3644] border-t-[#3d99f5]"></div>
+        <div class="flex flex-col items-center gap-4">
+          <div class="h-12 w-12 animate-spin rounded-full border-4 border-[#2a3644] border-t-[#3d99f5]"></div>
+          <p class="text-sm text-gray-300">Loading users...</p>
+        </div>
       </div>
+    </div>
+  } @else if (error()) {
+    <div class="section-surface alert-error text-center">
+      <svg class="mx-auto h-12 w-12 text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p class="text-red-200 font-medium mb-3">{{ error() }}</p>
+      <button class="retry-btn" (click)="loadUsers()">
+        Retry
+      </button>
     </div>
   } @else {
     <div class="section-surface table-block">
       <app-admin-data-table
         [data]="paginatedUsers()"
         [columns]="tableColumns"
-        [actions]="tableActions"
         [loading]="loading()"
         (actionClicked)="onTableAction($event)"
       ></app-admin-data-table>
     </div>
 
-    @if (filteredUsers().length > 0) {
-      <div class="section-surface pagination-surface">
-        <app-pagination
-          [startIndex]="startIndex()"
-          [endIndex]="endIndex()"
-          [totalCount]="filteredUsers().length"
-          [page]="page()"
-          [totalPages]="totalPages()"
-          (previous)="previousPage()"
-          (next)="nextPage()"
-        ></app-pagination>
-      </div>
-    }
-
-    @if (error()) {
-      <div class="alert-error">
-        <p class="text-red-200 font-medium">{{ error() }}</p>
-      </div>
-    }
+    <div class="section-surface pagination-surface">
+      <app-pagination
+        [startIndex]="startIndex()"
+        [endIndex]="endIndex()"
+        [totalCount]="filteredUsers().length"
+        [page]="page()"
+        [totalPages]="totalPages()"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      ></app-pagination>
+    </div>
   }
 </div>

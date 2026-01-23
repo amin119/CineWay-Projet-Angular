@@ -99,7 +99,7 @@ export class AdminUsersComponent implements OnInit {
     this.loadUsers();
   }
 
-  private loadUsers(): void {
+  loadUsers(): void {
     this.loading.set(true);
     this.error.set(null);
 
