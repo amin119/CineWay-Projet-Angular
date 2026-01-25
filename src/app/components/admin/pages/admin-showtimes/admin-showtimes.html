@@ -35,13 +35,27 @@
   }
 
   @else {
-    <app-admin-data-table
-      [columns]="columns"
-      [data]="paginatedShowtimes()"
-      [actions]="actions"
-      [loading]="loading()"
-      (actionClicked)="onAction({ action: $event.action, item: $event.row })"
-    ></app-admin-data-table>
+    <div class="section-surface table-block">
+      <app-admin-data-table
+        [columns]="columns"
+        [data]="paginatedShowtimes()"
+        [actions]="actions"
+        [loading]="loading()"
+        (actionClicked)="onAction({ action: $event.action, item: $event.row })"
+      ></app-admin-data-table>
+    </div>
+
+    <div class="section-surface pagination-surface">
+      <app-pagination
+        [startIndex]="startIndex()"
+        [endIndex]="endIndex()"
+        [totalCount]="showtimes().length"
+        [page]="page()"
+        [totalPages]="totalPages()"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      ></app-pagination>
+    </div>
   }
 </div>
 

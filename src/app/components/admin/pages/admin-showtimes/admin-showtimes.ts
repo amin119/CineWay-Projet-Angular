@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScreeningService, Screening } from '../../../../services/screening.service';
 import { AdminDataTableComponent, TableColumn, TableAction } from '../../components/admin-data-table/admin-data-table';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
+import { PaginationComponent } from '../../components/pagination/pagination';
 
 @Component({
   selector: 'app-admin-showtimes',
@@ -12,6 +13,7 @@ import { PrimaryButtonComponent } from '../../components/primary-button/primary-
     CommonModule,
     AdminDataTableComponent,
     PrimaryButtonComponent,
+    PaginationComponent,
   ],
   templateUrl: './admin-showtimes.html',
   styleUrl: './admin-showtimes.css',
@@ -46,6 +48,9 @@ export class AdminShowtimesComponent implements OnInit {
   });
 
   totalPages = computed(() => Math.ceil(this.showtimes().length / this.itemsPerPage));
+
+  startIndex = computed(() => (this.page() - 1) * this.itemsPerPage + 1);
+  endIndex = computed(() => Math.min(this.page() * this.itemsPerPage, this.showtimes().length));
 
   ngOnInit(): void {
     this.loadShowtimes();
