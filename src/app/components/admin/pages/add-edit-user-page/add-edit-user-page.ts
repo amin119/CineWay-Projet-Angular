@@ -3,20 +3,13 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { UserModel } from '../../../../models/user.model';
 import { UserApi } from '../../../../services/user-api';
-import { FormInputComponent } from '../../components/form-input/form-input';
-import { FormDatePickerComponent } from '../../components/form-date-picker/form-date-picker';
-import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 
 @Component({
   selector: 'app-add-edit-user-page',
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormInputComponent,
-    FormDatePickerComponent,
-    PrimaryButtonComponent,
   ],
   templateUrl: './add-edit-user-page.html',
   styleUrls: ['./add-edit-user-page.css'],

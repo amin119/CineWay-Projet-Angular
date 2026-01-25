@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 export interface TableColumn {
   key: string;
@@ -19,6 +19,7 @@ export interface TableAction {
   imports: [CommonModule],
   templateUrl: './admin-data-table.html',
   styleUrls: ['./admin-data-table.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDataTableComponent {
   // Inputs

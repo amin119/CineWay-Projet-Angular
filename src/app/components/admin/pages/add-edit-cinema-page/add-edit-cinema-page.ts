@@ -5,18 +5,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Cinema } from '../../../../models/cinema.model';
 import { CinemaService } from '../../../../services/cinema.service';
-import { FormInputComponent } from '../../components/form-input/form-input';
-import { FormTextareaComponent } from '../../components/form-textarea/form-textarea';
-import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 
 @Component({
   selector: 'app-add-edit-cinema-page',
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormInputComponent,
-    FormTextareaComponent,
-    PrimaryButtonComponent,
   ],
   templateUrl: './add-edit-cinema-page.html',
   styleUrls: ['./add-edit-cinema-page.css'],

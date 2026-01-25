@@ -6,8 +6,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScreeningService, Screening } from '../../../../services/screening.service';
 import { MoviesApi } from '../../../../services/movies-api';
 import { CinemaService } from '../../../../services/cinema.service';
-import { FormInputComponent } from '../../components/form-input/form-input';
-import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { MovieModel } from '../../../../models/movie.model';
 import { Cinema } from '../../../../models/cinema.model';
 
@@ -22,8 +20,6 @@ interface Room {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormInputComponent,
-    PrimaryButtonComponent,
   ],
   templateUrl: './add-edit-showtime-page.html',
   styleUrls: ['./add-edit-showtime-page.css'],
@@ -161,7 +157,7 @@ export class AddEditShowtimePageComponent implements OnInit {
 
     this.loading.set(true);
     const formValue = this.form.value;
-    
+
     const dateTime = `${formValue.screening_date}T${formValue.screening_time}:00`;
     const showtimeData = {
       movie_id: formValue.movie_id,
