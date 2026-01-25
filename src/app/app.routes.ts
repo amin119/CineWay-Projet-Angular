@@ -41,7 +41,7 @@ export const routes: Routes = [
       { path: 'movies/:id', component: MovieDetails },
       { path: 'movies/:id/showtimes', component: MovieShowtimesComponent },
       { path: 'screenings/:id', component: ShowtimeSelectionComponent },
-      { path: 'book', component: SeatSelection },
+      { path: 'seats/:id', component: SeatSelection },
     ],
   },
   {

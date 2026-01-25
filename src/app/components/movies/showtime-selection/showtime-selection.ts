@@ -118,12 +118,7 @@ export class ShowtimeSelectionComponent implements OnInit {
     return date.toLocaleDateString('en-US', options);
   }
   private loadOtherShowtimes(movieId: number, excludeId: number): void {
-    console.log(
-      'Loading other showtimes for movie ID:',
-      movieId,
-      'excluding screening ID:',
-      excludeId,
-    );
+    console.log('Loading other showtimes for movie ID:', movieId, 'excluding screening ID:', excludeId);
     this.screeningService
       .getScreenings({ movie_id: movieId })
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -247,9 +242,13 @@ export class ShowtimeSelectionComponent implements OnInit {
     const screeningId = this.screeningId();
     if (!screeningId) return;
 
-    // Navigate to seat selection page
-    // For now, just show an alert
-    alert('Proceeding to seat selection...');
+    // Navigate to seat selection page with state
+    this.router.navigate(['/seats', screeningId], {
+      state: {
+        movie: this.screening()?.movie,
+        ticketCount: this.totalTickets()
+      }
+    });
   }
 
   selectOtherShowtime(showtimeId: number): void {

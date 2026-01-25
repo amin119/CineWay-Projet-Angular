@@ -5,19 +5,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Cinema } from '../../../../models/cinema.model';
 import { CinemaService } from '../../../../services/cinema.service';
-import { FormInputComponent } from '../../components/form-input/form-input';
-import { FormTextareaComponent } from '../../components/form-textarea/form-textarea';
-import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 
 @Component({
   selector: 'app-add-edit-cinema-page',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormInputComponent,
-    FormTextareaComponent,
-    PrimaryButtonComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-edit-cinema-page.html',
   styleUrls: ['./add-edit-cinema-page.css'],
 })
@@ -71,7 +62,8 @@ export class AddEditCinemaPageComponent implements OnInit {
 
   private loadCinema(id: number) {
     this.loading.set(true);
-    this.cinemasApi.getCinemaById(id)
+    this.cinemasApi
+      .getCinemaById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cinema: Cinema) => {
@@ -99,19 +91,17 @@ export class AddEditCinemaPageComponent implements OnInit {
       ? this.cinemasApi.updateCinema(this.cinemaId()!, cinemaData)
       : this.cinemasApi.createCinema(cinemaData);
 
-    request
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.router.navigate(['/admin/cinemas']);
-        },
-        error: (err) => {
-          this.error.set('Failed to save cinema');
-          this.loading.set(false);
-          console.error(err);
-        },
-      });
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/admin/cinemas']);
+      },
+      error: (err) => {
+        this.error.set('Failed to save cinema');
+        this.loading.set(false);
+        console.error(err);
+      },
+    });
   }
 
   onCancel() {
@@ -136,7 +126,7 @@ export class AddEditCinemaPageComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });
