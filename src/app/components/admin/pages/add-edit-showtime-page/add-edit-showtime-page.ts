@@ -70,7 +70,6 @@ export class AddEditShowtimePageComponent implements OnInit {
         },
         error: (err) => {
           this.error.set('Failed to load movies');
-          console.error(err);
           this.loading.set(false);
         },
       });
@@ -84,7 +83,6 @@ export class AddEditShowtimePageComponent implements OnInit {
         },
         error: (err) => {
           this.error.set('Failed to load cinemas');
-          console.error(err);
         },
       });
   }
@@ -123,7 +121,6 @@ export class AddEditShowtimePageComponent implements OnInit {
         error: (err) => {
           this.error.set('Failed to load showtime');
           this.loading.set(false);
-          console.error(err);
         },
       });
   }
@@ -145,7 +142,6 @@ export class AddEditShowtimePageComponent implements OnInit {
         },
         error: (err) => {
           this.error.set('Failed to load cinema rooms');
-          console.error(err);
         },
       });
   }
@@ -179,7 +175,6 @@ export class AddEditShowtimePageComponent implements OnInit {
       error: (err) => {
         this.error.set('Failed to save showtime');
         this.loading.set(false);
-        console.error(err);
       },
     });
   }

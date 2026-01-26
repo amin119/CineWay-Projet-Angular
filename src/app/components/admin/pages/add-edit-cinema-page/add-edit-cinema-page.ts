@@ -73,7 +73,6 @@ export class AddEditCinemaPageComponent implements OnInit {
         error: (err) => {
           this.error.set('Failed to load cinema');
           this.loading.set(false);
-          console.error(err);
         },
       });
   }
@@ -99,7 +98,6 @@ export class AddEditCinemaPageComponent implements OnInit {
       error: (err) => {
         this.error.set('Failed to save cinema');
         this.loading.set(false);
-        console.error(err);
       },
     });
   }

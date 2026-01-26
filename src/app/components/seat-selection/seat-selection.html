@@ -27,7 +27,7 @@
           <div class="seat-row">
             <span class="row-label">{{ row.key }}</span>
             <div class="seats">
-              @for (seat of row.value; track seat.id) {
+              @for (seat of row.value; track seat.id; let i = $index) {
                 <button
                   class="seat"
                   [class.available]="isAvailable(seat) && !selectedSeats().has(seat)"
@@ -40,6 +40,9 @@
                 >
                   <i class="bi bi-square-fill"></i>
                 </button>
+                @if (i === 2 || i === 6) {
+                  <div class="aisle-gap"></div>
+                }
               }
             </div>
           </div>

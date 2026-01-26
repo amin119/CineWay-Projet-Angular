@@ -20,7 +20,7 @@ interface SearchHistory {
   selector: 'app-explore',
   templateUrl: './explore.html',
   styleUrls: ['./explore.css'],
-  imports: [CommonModule, FormsModule,RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   standalone: true,
 })
 export class Explore implements OnInit, OnDestroy {
@@ -77,9 +77,9 @@ export class Explore implements OnInit, OnDestroy {
       .pipe(
         debounceTime(this.SEARCH_DEBOUNCE_TIME),
         distinctUntilChanged(),
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$),
       )
-      .subscribe(searchTerm => {
+      .subscribe((searchTerm) => {
         this.performSearch(searchTerm);
       });
   }
@@ -98,7 +98,6 @@ export class Explore implements OnInit, OnDestroy {
           this.isLoadingMovies$.next(false);
         },
         error: (error) => {
-          console.error('Error loading movies:', error);
           this.isLoadingMovies$.next(false);
           this.toastr.error('Failed to load movies. Please try again later.', 'Error');
         },
@@ -110,11 +109,11 @@ export class Explore implements OnInit, OnDestroy {
     today.setHours(0, 0, 0, 0);
 
     this.nowShowingMovies = movies
-      .filter(movie => new Date(movie.release_date) <= today)
+      .filter((movie) => new Date(movie.release_date) <= today)
       .slice(0, this.MOVIES_PER_CATEGORY);
 
     this.comingSoonMovies = movies
-      .filter(movie => new Date(movie.release_date) > today)
+      .filter((movie) => new Date(movie.release_date) > today)
       .slice(0, this.MOVIES_PER_CATEGORY);
 
     this.featuredMovie = this.nowShowingMovies[0] || movies[0] || null;
@@ -122,10 +121,7 @@ export class Explore implements OnInit, OnDestroy {
 
   private loadTrendingMovies(): void {
     this.trendingMovies = this.allMovies
-      .sort(
-        (a, b) =>
-          new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
-      )
+      .sort((a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime())
       .slice(0, this.TRENDING_MOVIES_LIMIT);
   }
 
@@ -139,7 +135,6 @@ export class Explore implements OnInit, OnDestroy {
         }));
       }
     } catch (error) {
-      console.error('Error loading search history:', error);
       this.recentSearches = [];
     }
   }
@@ -148,7 +143,7 @@ export class Explore implements OnInit, OnDestroy {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.recentSearches));
     } catch (error) {
-      console.error('Error saving search history:', error);
+      // Error saving search history
     }
   }
 
@@ -197,9 +192,7 @@ export class Explore implements OnInit, OnDestroy {
 
     const query = searchTerm.toLowerCase();
 
-    this.searchResults = this.allMovies.filter(movie =>
-      this.matchesSearchCriteria(movie, query)
-    );
+    this.searchResults = this.allMovies.filter((movie) => this.matchesSearchCriteria(movie, query));
 
     this.isSearching = false;
   }
@@ -207,14 +200,14 @@ export class Explore implements OnInit, OnDestroy {
   private matchesSearchCriteria(movie: MovieModel, query: string): boolean {
     return (
       movie.title.toLowerCase().includes(query) ||
-      movie.genre.some(g => g.toLowerCase().includes(query)) ||
+      movie.genre.some((g) => g.toLowerCase().includes(query)) ||
       (movie.description?.toLowerCase().includes(query) ?? false)
     );
   }
 
   private saveToRecentSearches(query: string, type: 'movie' | 'cinema'): void {
     const existingIndex = this.recentSearches.findIndex(
-      s => s.query.toLowerCase() === query.toLowerCase()
+      (s) => s.query.toLowerCase() === query.toLowerCase(),
     );
 
     if (existingIndex !== -1) {
@@ -228,10 +221,7 @@ export class Explore implements OnInit, OnDestroy {
     });
 
     if (this.recentSearches.length > this.RECENT_SEARCHES_LIMIT) {
-      this.recentSearches = this.recentSearches.slice(
-        0,
-        this.RECENT_SEARCHES_LIMIT
-      );
+      this.recentSearches = this.recentSearches.slice(0, this.RECENT_SEARCHES_LIMIT);
     }
 
     this.saveSearchHistory();
@@ -263,7 +253,6 @@ export class Explore implements OnInit, OnDestroy {
     }
   }
 
- 
   onGetTickets(): void {
     if (this.featuredMovie) {
       this.router.navigate(['/cinemas']);

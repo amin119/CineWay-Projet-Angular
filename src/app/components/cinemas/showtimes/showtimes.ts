@@ -22,7 +22,6 @@ export class Showtimes implements OnInit {
 
   readonly moviesRes = httpResource<MovieModel[]>(() => {
     const cid = this.cinemaId();
-    console.log('Showtimes: moviesRes called for cinemaId:', cid);
     return {
       url: APP_API.cinema.movies(cid!),
       method: 'GET',
@@ -47,10 +46,9 @@ export class Showtimes implements OnInit {
               showtimes,
             }));
             this.showtimesData.set(showtimeResponses);
-            console.log('Showtimes: loaded showtimesData:', showtimeResponses);
           },
           error: (err) => {
-            console.error('Error loading showtimes:', err);
+            // Error loading showtimes
           },
         });
       }
@@ -59,7 +57,6 @@ export class Showtimes implements OnInit {
 
   showTimes = computed(() => {
     const value = this.showtimesData();
-    console.log('Showtimes: showTimes computed, value:', value);
     return value ?? [];
   });
 
@@ -86,12 +83,10 @@ export class Showtimes implements OnInit {
 
   error = computed(() => {
     const err = this.moviesRes.error();
-    console.log('Showtimes: error computed, error:', err);
     return err;
   });
   isLoading = computed(() => {
     const loading = this.moviesRes.isLoading();
-    console.log('Showtimes: isLoading computed, loading:', loading);
     return loading;
   });
   days = computed(() => {

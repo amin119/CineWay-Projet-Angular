@@ -5,19 +5,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserModel } from '../../../../models/user.model';
 import { UserApi } from '../../../../services/user-api';
-import { FormInputComponent } from '../../components/form-input/form-input';
-import { FormDatePickerComponent } from '../../components/form-date-picker/form-date-picker';
-import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 
 @Component({
   selector: 'app-add-edit-user-page',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormInputComponent,
-    FormDatePickerComponent,
-    PrimaryButtonComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-edit-user-page.html',
   styleUrls: ['./add-edit-user-page.css'],
 })
@@ -64,7 +55,8 @@ export class AddEditUserPageComponent implements OnInit {
 
   private loadUser(id: number) {
     this.loading.set(true);
-    this.usersApi.getUserById(id)
+    this.usersApi
+      .getUserById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (user) => {
@@ -74,7 +66,6 @@ export class AddEditUserPageComponent implements OnInit {
         error: (err) => {
           this.error.set('Failed to load user');
           this.loading.set(false);
-          console.error(err);
         },
       });
   }
@@ -92,19 +83,16 @@ export class AddEditUserPageComponent implements OnInit {
       ? this.usersApi.updateUser(this.userId()!, userData)
       : this.usersApi.createUser(userData);
 
-    request
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.router.navigate(['/admin/users']);
-        },
-        error: (err) => {
-          this.error.set('Failed to save user');
-          this.loading.set(false);
-          console.error(err);
-        },
-      });
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/admin/users']);
+      },
+      error: (err) => {
+        this.error.set('Failed to save user');
+        this.loading.set(false);
+      },
+    });
   }
 
   onCancel() {
@@ -127,7 +115,7 @@ export class AddEditUserPageComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });

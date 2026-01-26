@@ -138,7 +138,6 @@ export class SeatSelection {
 
   proceedToPayment() {
     // Navigate to payment with selected seats
-    console.log('Proceeding to payment with seats:', Array.from(this.selectedSeats()));
     // Add payment navigation logic here
   }
 }

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map } from 'rxjs';
-import { MovieModel } from '../models/movie.model';
+import { MovieModel, CastMember } from '../models/movie.model';
 import { APP_API } from '../config/app-api.config';
 
 @Injectable({
@@ -12,11 +12,15 @@ export class MoviesApi {
 private http = inject(HttpClient);
 
   getMovies() {
-    return this.http.get<MovieModel[]>(`${APP_API.movies.movies}/`);
+    return this.http.get<MovieModel[]>(`${APP_API.movies.movies}/`).pipe(
+      map(movies => movies.map(movie => this.transformMovieResponse(movie)))
+    );
   }
 
   getMovieById(id: number) {
-    return this.http.get<MovieModel>(`${APP_API.movies.movies}/${id}`);
+    return this.http.get<MovieModel>(`${APP_API.movies.movies}/${id}`).pipe(
+      map(movie => this.transformMovieResponse(movie))
+    );
   }
 
   createMovie(movie: MovieModel) {
@@ -33,6 +37,30 @@ private http = inject(HttpClient);
     return this.http.delete(`${APP_API.movies.movies}/${id}`);
   }
 
+  private transformMovieResponse(movie: any): MovieModel {
+    return {
+      ...movie,
+      cast: Array.isArray(movie.cast) 
+        ? movie.cast.map((actor: any): CastMember => 
+            typeof actor === 'string' 
+              ? { 
+                  character_name: '',
+                  role: 'Actor',
+                  actor_name: actor, 
+                  profile_image_url: null,
+                  is_lead: false,
+                  order: 0,
+                  id: 0,
+                  movie_id: movie.id,
+                  created_at: movie.created_at,
+                  updated_at: movie.updated_at
+                } 
+              : actor
+          )
+        : []
+    };
+  }
+
   private prepareMoviePayload(movie: any) {
     // Helper function to convert comma-separated string to array
     const stringToArray = (value: string | string[] | null | undefined): string[] | null => {
@@ -47,7 +75,13 @@ private http = inject(HttpClient);
       duration_minutes: parseInt(movie.duration_minutes, 10),
       genre: Array.isArray(movie.genre) ? movie.genre : [movie.genre],
       rating: movie.rating ? String(movie.rating) : null,
-      cast: stringToArray(movie.cast),
+      cast: Array.isArray(movie.cast) 
+        ? movie.cast.map((actor: any) => 
+            typeof actor === 'string' 
+              ? { actor_name: actor, character_name: '', role: 'Actor', profile_image_url: null, is_lead: false, order: 0 }
+              : actor
+          )
+        : [],
       director: movie.director || null,
       writers: stringToArray(movie.writers),
       producers: stringToArray(movie.producers),

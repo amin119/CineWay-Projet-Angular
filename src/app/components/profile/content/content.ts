@@ -11,14 +11,12 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './content.css',
 })
 export class Content {
-
   private fb = inject(FormBuilder);
   private userApi = inject(UserApi);
 
- 
   profile = this.userApi.profile;
 
-  @Input() section!: 'profile' | 'preferences' | 'help';
+  @Input() section!: 'profile' | 'preferences' | 'payment' | 'history' | 'help';
 
   @Output() updateProfile = new EventEmitter<{
     payload: Partial<Profile>;
@@ -26,6 +24,8 @@ export class Content {
   }>();
   @Output() uploadProfilePicture = new EventEmitter<File>();
 
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
 
   profileForm = this.fb.nonNullable.group({
     full_name: ['', Validators.required],
@@ -50,8 +50,7 @@ export class Content {
     const payload = this.profileForm.getRawValue();
     const currentProfile = this.profile();
 
-    const emailChanged =
-      !!currentProfile && payload.email !== currentProfile.email;
+    const emailChanged = !!currentProfile && payload.email !== currentProfile.email;
 
     this.updateProfile.emit({
       payload,
@@ -60,14 +59,31 @@ export class Content {
 
     this.profileForm.markAsPristine();
   }
- onPictureSelected(event: Event) {
-  const input = event.target as HTMLInputElement;
-  if (!input.files || input.files.length === 0) return;
+  onPictureSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
 
-  const file = input.files[0];
+    const file = input.files[0];
+    this.selectedFile = file;
 
-  this.uploadProfilePicture.emit(file);
-}
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.previewUrl = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
 
+    // Reset the input
+    input.value = '';
+  }
 
+  onUploadPicture() {
+    if (this.selectedFile) {
+      this.uploadProfilePicture.emit(this.selectedFile);
+      this.selectedFile = null;
+      this.previewUrl = null;
+    }
+  }
 }
