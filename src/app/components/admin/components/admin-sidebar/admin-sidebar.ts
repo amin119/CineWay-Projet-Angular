@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-admin-sidebar',
+
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './admin-sidebar.html',
   styleUrl: './admin-sidebar.css',
@@ -18,5 +19,6 @@ export class AdminSidebarComponent {
     this.authService.logout();
     this.router.navigate(['/']);
     this.toastrService.warning('Good bye!');
+    
   }
 }

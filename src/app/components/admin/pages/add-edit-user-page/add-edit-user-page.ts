@@ -3,7 +3,6 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { UserModel } from '../../../../models/user.model';
 import { UserApi } from '../../../../services/user-api';
 
 @Component({

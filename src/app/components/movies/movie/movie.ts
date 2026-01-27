@@ -1,4 +1,4 @@
-import { Component, input, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MovieModel } from '../../../models/movie.model';
 import { FavoritesService } from '../../../services/favorites.service';
@@ -8,6 +8,7 @@ import { FavoritesService } from '../../../services/favorites.service';
   imports: [CommonModule],
   templateUrl: './movie.html',
   styleUrl: './movie.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Movie {
   movie = input.required<MovieModel>();
