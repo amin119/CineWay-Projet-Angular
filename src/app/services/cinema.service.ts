@@ -10,8 +10,9 @@ export class CinemaService {
   readonly limit = 4;
   private skip = signal(0);
   private http = inject(HttpClient);
+  private favoritesTrigger = signal(0);
 
-  readonly cinemaResource = httpResource<Cinema[]>(() => {
+  readonly cinemaResource = httpResource<CinemaResponse>(() => {
   
     return {
       url: APP_API.cinema.list,
@@ -24,7 +25,7 @@ export class CinemaService {
   });
   cinemas = computed(() => {
     const value = this.cinemaResource.value();
-    return value ?? [];
+    return value?.cinemas ?? [];
   });
 
   error = computed(() => {
@@ -48,11 +49,18 @@ export class CinemaService {
     return this.http.delete(`${APP_API.cinema.list}${cinemaId}/favorite`);
   }
 
-  favoriteCinemas = httpResource<Cinema[]>(() => ({
-    url: APP_API.cinema.favorites,
-    method: 'GET',
-  }));
+  favoriteCinemas = httpResource<Cinema[]>(() => {
+    this.favoritesTrigger();
+    return ({
+      url: APP_API.cinema.favorites,
+      method: 'GET',
+    });
+  });
   favorites = computed(() => this.favoriteCinemas.value() ?? []);
+
+  reloadFavorites() {
+    this.favoritesTrigger.update(v => v + 1);
+  }
 
   getCinemaById(id: number) {
     return this.http.get<Cinema>(`${APP_API.cinema.list}${id}`);
