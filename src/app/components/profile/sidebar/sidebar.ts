@@ -1,4 +1,5 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { APP_ROUTES } from '../../../config/app-routes.confg';
 import { User } from '../../../auth/model/user';
 import { UserApi } from '../../../services/user-api';
@@ -8,7 +9,7 @@ type SectionType = 'profile' | 'preferences' | 'payment' | 'history' | 'help';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
