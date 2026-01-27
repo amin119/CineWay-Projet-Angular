@@ -10,6 +10,7 @@ export const APP_API = {
   },
   movies: {
     movies: `${environment.apiUrl}/movies`,
+    trending: `${environment.apiUrl}/movies/trending`,
     reviews: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/reviews`,
     reviewSummary: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/reviews/summary`,
     showtimes: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/showtimes`,

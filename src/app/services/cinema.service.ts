@@ -13,7 +13,6 @@ export class CinemaService {
   private favoritesTrigger = signal(0);
 
   readonly cinemaResource = httpResource<CinemaResponse>(() => {
-  
     return {
       url: APP_API.cinema.list,
       method: 'GET',
@@ -51,15 +50,15 @@ export class CinemaService {
 
   favoriteCinemas = httpResource<Cinema[]>(() => {
     this.favoritesTrigger();
-    return ({
+    return {
       url: APP_API.cinema.favorites,
       method: 'GET',
-    });
+    };
   });
   favorites = computed(() => this.favoriteCinemas.value() ?? []);
 
   reloadFavorites() {
-    this.favoritesTrigger.update(v => v + 1);
+    this.favoritesTrigger.update((v) => v + 1);
   }
 
   getCinemaById(id: number) {

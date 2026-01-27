@@ -8,19 +8,24 @@ import { APP_API } from '../config/app-api.config';
   providedIn: 'root',
 })
 export class MoviesApi {
-  
-private http = inject(HttpClient);
+  private http = inject(HttpClient);
 
   getMovies() {
-    return this.http.get<MovieModel[]>(`${APP_API.movies.movies}/`).pipe(
-      map(movies => movies.map(movie => this.transformMovieResponse(movie)))
-    );
+    return this.http
+      .get<MovieModel[]>(`${APP_API.movies.movies}/`)
+      .pipe(map((movies) => movies.map((movie) => this.transformMovieResponse(movie))));
+  }
+
+  getTrendingMovies() {
+    return this.http
+      .get<MovieModel[]>(`${APP_API.movies.trending}`)
+      .pipe(map((movies) => movies.map((movie) => this.transformMovieResponse(movie))));
   }
 
   getMovieById(id: number) {
-    return this.http.get<MovieModel>(`${APP_API.movies.movies}/${id}`).pipe(
-      map(movie => this.transformMovieResponse(movie))
-    );
+    return this.http
+      .get<MovieModel>(`${APP_API.movies.movies}/${id}`)
+      .pipe(map((movie) => this.transformMovieResponse(movie)));
   }
 
   createMovie(movie: MovieModel) {
@@ -40,24 +45,25 @@ private http = inject(HttpClient);
   private transformMovieResponse(movie: any): MovieModel {
     return {
       ...movie,
-      cast: Array.isArray(movie.cast) 
-        ? movie.cast.map((actor: any): CastMember => 
-            typeof actor === 'string' 
-              ? { 
-                  character_name: '',
-                  role: 'Actor',
-                  actor_name: actor, 
-                  profile_image_url: null,
-                  is_lead: false,
-                  order: 0,
-                  id: 0,
-                  movie_id: movie.id,
-                  created_at: movie.created_at,
-                  updated_at: movie.updated_at
-                } 
-              : actor
+      cast: Array.isArray(movie.cast)
+        ? movie.cast.map(
+            (actor: any): CastMember =>
+              typeof actor === 'string'
+                ? {
+                    character_name: '',
+                    role: 'Actor',
+                    actor_name: actor,
+                    profile_image_url: null,
+                    is_lead: false,
+                    order: 0,
+                    id: 0,
+                    movie_id: movie.id,
+                    created_at: movie.created_at,
+                    updated_at: movie.updated_at,
+                  }
+                : actor,
           )
-        : []
+        : [],
     };
   }
 
@@ -66,7 +72,10 @@ private http = inject(HttpClient);
     const stringToArray = (value: string | string[] | null | undefined): string[] | null => {
       if (!value) return null;
       if (Array.isArray(value)) return value;
-      return value.split(',').map(item => item.trim()).filter(item => item.length > 0);
+      return value
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
     };
 
     return {
@@ -75,11 +84,18 @@ private http = inject(HttpClient);
       duration_minutes: parseInt(movie.duration_minutes, 10),
       genre: Array.isArray(movie.genre) ? movie.genre : [movie.genre],
       rating: movie.rating ? String(movie.rating) : null,
-      cast: Array.isArray(movie.cast) 
-        ? movie.cast.map((actor: any) => 
-            typeof actor === 'string' 
-              ? { actor_name: actor, character_name: '', role: 'Actor', profile_image_url: null, is_lead: false, order: 0 }
-              : actor
+      cast: Array.isArray(movie.cast)
+        ? movie.cast.map((actor: any) =>
+            typeof actor === 'string'
+              ? {
+                  actor_name: actor,
+                  character_name: '',
+                  role: 'Actor',
+                  profile_image_url: null,
+                  is_lead: false,
+                  order: 0,
+                }
+              : actor,
           )
         : [],
       director: movie.director || null,
@@ -98,5 +114,4 @@ private http = inject(HttpClient);
       details: movie.details || null,
     };
   }
-
 }

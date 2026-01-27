@@ -2,11 +2,11 @@ import { Component, effect, EventEmitter, inject, Input, Output } from '@angular
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserApi } from '../../../services/user-api';
 import { Profile } from '../../../models/profile.model';
-import { ToastrService } from 'ngx-toastr';
+import { PaymentHistory } from '../../payment/history/history';
 
 @Component({
   selector: 'app-content',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, PaymentHistory],
   templateUrl: './content.html',
   styleUrl: './content.css',
 })

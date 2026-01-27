@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
@@ -13,6 +13,7 @@ import { ReviewsService } from '../../../services/reviews-service';
 import { ReviewListResponse, ReviewRead } from '../../../models/review.model';
 import { map } from 'rxjs/operators';
 import { ReviewsSection } from './reviews-section/reviews-section';
+import { FavoritesService } from '../../../services/favorites.service';
 
 const DEFAULT_TRAILER = 'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ';
 
@@ -26,14 +27,51 @@ export class MovieDetails {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
+  private favoritesService = inject(FavoritesService);
   isMuted = signal(true);
+  isFavorite = signal(false);
 
   movieId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
+
+  constructor() {
+    // Check if movie is in favorites when component loads
+    effect(() => {
+      const id = this.movieId();
+      if (id) {
+        this.checkIfFavorite(id);
+      }
+    });
+  }
+
+  private checkIfFavorite(movieId: number) {
+    this.favoritesService.getFavoriteMovies().subscribe({
+      next: (movies: MovieModel[]) => {
+        const isFav = movies.some((m) => m.id === movieId);
+        this.isFavorite.set(isFav);
+      },
+      error: (err: any) => {
+        console.error('Error checking favorites:', err);
+      },
+    });
+  }
 
   movieResource = httpResource<MovieModel>(() => ({
     url: `${APP_API.movies.movies}/${this.movieId()}`,
   }));
-  movie = computed(() => this.movieResource.value());
+  movie = computed(() => {
+    const movieData = this.movieResource.value();
+    if (movieData && !movieData.status) {
+      // Set default status based on release date if not provided
+      const releaseDate = new Date(movieData.release_date);
+      const now = new Date();
+      if (releaseDate > now) {
+        movieData.status = 'COMING_SOON';
+      } else {
+        movieData.status = 'SHOWING';
+      }
+    }
+    return movieData;
+  });
   loading = this.movieResource.isLoading;
   error = this.movieResource.error;
 
@@ -77,6 +115,32 @@ export class MovieDetails {
     this.isMuted.set(nextMuted);
 
     this.ytCommand(nextMuted ? 'mute' : 'unMute');
+  }
+
+  toggleFavorite(event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const movieId = this.movieId();
+    if (this.isFavorite()) {
+      this.favoritesService.removeMovieFromFavorites(movieId).subscribe({
+        next: () => {
+          this.isFavorite.set(false);
+        },
+        error: (err: any) => {
+          console.error('Error removing from favorites:', err);
+        },
+      });
+    } else {
+      this.favoritesService.addMovieToFavorites(movieId).subscribe({
+        next: () => {
+          this.isFavorite.set(true);
+        },
+        error: (err: any) => {
+          console.error('Error adding to favorites:', err);
+        },
+      });
+    }
   }
 
   viewShowtimes() {
