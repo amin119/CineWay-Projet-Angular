@@ -22,8 +22,10 @@ export class Cinemas {
   constructor() {
     effect(() => {
       const loadedCinemas = this.cinemaService.cinemas();
+      console.log('Cinemas component: loadedCinemas:', loadedCinemas);
 
       if (loadedCinemas.length > 0) {
+        console.log('Cinemas component: updating cinemas signal');
         this.cinemas.update((current) => {
           const ids = new Set(current.map((c) => c.id));
           const merged = [...current];
@@ -34,8 +36,11 @@ export class Cinemas {
             }
           }
 
+          console.log('Cinemas component: merged cinemas:', merged);
           return merged;
         });
+      } else {
+        console.log('Cinemas component: no cinemas loaded yet');
       }
     });
   }
@@ -49,6 +54,7 @@ export class Cinemas {
 
   filteredCinemas = computed(() => {
     const result = this.showFavoritesOnly() ? this.cinemaService.favorites() || [] : this.cinemas();
+    console.log('Cinemas component: filteredCinemas:', result);
     return result;
   });
 

@@ -62,18 +62,16 @@ export class CinemaDetails {
     if (this.isFavorite()) {
       this.cinemaService.removeFromFavorites(this.cinemaId()).subscribe({
         next: () => {
-          this.toastr.success('Cinema removed from favorites!');
           this.cinemaService.favoriteCinemas.reload();
         },
-        error: () => this.toastr.error('Failed to remove from favorites.'),
+        error: () => {},
       });
     } else {
       this.cinemaService.addToFavorites(this.cinemaId()).subscribe({
         next: () => {
-          this.toastr.success('Cinema added to favorites!');
           this.cinemaService.favoriteCinemas.reload();
         },
-        error: () => this.toastr.error('Failed to add cinema to favorites.'),
+        error: () => {},
       });
     }
   }
