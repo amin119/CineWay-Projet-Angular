@@ -14,6 +14,17 @@
       </div>
       <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i> Back</button>
     </div>
+
+    <!-- Error Messages -->
+    @if (reservationError()) {
+      <div class="alert alert-error">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ reservationError() }}</span>
+        <button class="btn-close-alert" (click)="reservationError.set(null)">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    }
   </div>
 
   <!-- Main Content Area -->
@@ -30,13 +41,15 @@
               @for (seat of row.value; track seat.id; let i = $index) {
                 <button
                   class="seat"
-                  [class.available]="isAvailable(seat) && !selectedSeats().has(seat)"
-                  [class.selected]="selectedSeats().has(seat)"
-                  [class.unavailable]="!isAvailable(seat)"
+                  [class.available]="getSeatStatus(seat.id) === 'available'"
+                  [class.mine]="isSelected(seat.id) || getSeatStatus(seat.id) === 'reserved_by_me'"
+                  [class.held]="getSeatStatus(seat.id) === 'held'"
+                  [class.booked]="getSeatStatus(seat.id) === 'booked'"
                   [class.recliner]="seat.seat_type === 'recliner'"
-                  [disabled]="!isAvailable(seat)"
+                  [class.processing]="isProcessing()"
+                  [disabled]="!isAvailable(seat.id) || isProcessing()"
                   (click)="toggleSeat(seat)"
-                  [title]="seat.row_label + seat.seat_number"
+                  [title]="getSeatTooltip(seat)"
                 >
                   <i class="bi bi-square-fill"></i>
                 </button>
@@ -59,26 +72,55 @@
           <div class="booking-details">
             <div class="selected-seats-list">
               <h4>Selected Seats ({{ selectedSeats().size }}/{{ ticketCount() }})</h4>
-              @for (seat of selectedSeatsArray(); track seat.label) {
+              @for (seat of selectedSeatsArray(); track seat?.seat_id) {
                 <div class="seat-item">
-                  <span class="seat-label">{{ seat.label }}</span>
+                  <span class="seat-label">{{ seat?.label }}</span>
+                  <span class="seat-price">${{ seat?.price }}</span>
                 </div>
               }
             </div>
 
+            <div class="price-breakdown">
+              <div class="price-row">
+                <span>Subtotal:</span>
+                <span>${{ calculateTicketsTotal() }}</span>
+              </div>
+              <div class="price-row">
+                <span>Service Fee:</span>
+                <span>${{ serviceFee() }}</span>
+              </div>
+              <div class="price-row total">
+                <span>Total:</span>
+                <span>${{ calculateTotal() }}</span>
+              </div>
+            </div>
+
             <button
               class="btn-proceed"
-              [disabled]="selectedSeats().size === 0"
+              [disabled]="selectedSeats().size === 0 || isProcessing() || timeRemaining() === 0"
               (click)="proceedToPayment()"
             >
-              Proceed to Payment
-              <i class="bi bi-arrow-right"></i>
+              @if (isProcessing()) {
+                <span>Processing...</span>
+              } @else {
+                <span>Proceed to Payment</span>
+                <i class="bi bi-arrow-right"></i>
+              }
             </button>
+
+            @if (selectedSeats().size > 0) {
+              <button class="btn-cancel" (click)="cancelReservation()">
+                <i class="bi bi-x-circle"></i> Cancel Reservation
+              </button>
+            }
           </div>
         } @else {
           <div class="empty-selection">
             <i class="bi bi-ticket-perforated"></i>
             <p>Select seats to see booking summary</p>
+            @if (isProcessing()) {
+              <p class="processing-text">Processing your selection...</p>
+            }
           </div>
         }
       </div>
@@ -91,12 +133,16 @@
           <span class="type-name">Available</span>
         </div>
         <div class="seat-type-item">
-          <span class="type-icon selected"></span>
-          <span class="type-name">Selected</span>
+          <span class="type-icon mine"></span>
+          <span class="type-name">Your Seats</span>
         </div>
         <div class="seat-type-item">
-          <span class="type-icon unavailable"></span>
-          <span class="type-name">Unavailable</span>
+          <span class="type-icon held"></span>
+          <span class="type-name">Reserved by Others</span>
+        </div>
+        <div class="seat-type-item">
+          <span class="type-icon booked"></span>
+          <span class="type-name">Sold</span>
         </div>
       </div>
     </div>

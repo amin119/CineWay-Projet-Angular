@@ -88,6 +88,51 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Real-time connection status indicator */
+.connection-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.connection-status.connected {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.connection-status.disconnected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.connection-status.connecting {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.connection-status i.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .screen-label {
   text-align: center;
   padding: 1rem;
@@ -170,16 +215,34 @@
   box-shadow: 0 4px 12px rgba(160, 174, 192, 0.4);
 }
 
-.seat.selected {
-  background: #3b82f6;
-  color: #3b82f6;
+/* User's own seats (selected or reserved) - Single green color */
+.seat.mine {
+  background: #10b981;
+  color: #10b981;
   transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5);
+  cursor: pointer;
 }
 
-.seat.selected:hover {
-  background: #2563eb;
-  color: #2563eb;
+.seat.mine:hover {
+  background: #059669;
+  color: #059669;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.7);
+}
+
+/* Held by another user */
+.seat.held {
+  background: #f97316;
+  color: #f97316;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.seat.booked {
+  background: #2d3748;
+  color: #2d3748;
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 .seat.unavailable {
@@ -220,6 +283,10 @@
 .legend-icon.unavailable {
   background: #2d3748;
   opacity: 0.4;
+}
+
+.legend-icon.held {
+  background: #f97316;
 }
 
 /* Booking Panel */
@@ -423,11 +490,20 @@
   background: #718096;
 }
 
-.type-icon.selected {
-  background: #3b82f6;
+.type-icon.mine {
+  background: #10b981;
+}
+
+.type-icon.held {
+  background: #f97316;
 }
 
 .type-icon.unavailable {
+  background: #2d3748;
+  opacity: 0.4;
+}
+
+.type-icon.booked {
   background: #2d3748;
   opacity: 0.4;
 }
@@ -497,4 +573,178 @@
 .seats button:not(:disabled):hover {
   transform: scale(1.1);
   transition: transform 0.2s ease;
+}
+
+/* Reservation Timer */
+.reservation-timer {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #a78bfa;
+  font-size: 1rem;
+}
+
+.reservation-timer i {
+  font-size: 1.25rem;
+}
+
+.reservation-timer strong {
+  color: #ffffff;
+  font-size: 1.125rem;
+}
+
+.btn-extend {
+  margin-left: auto;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: #a78bfa;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-extend:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.6);
+}
+
+/* Alert Messages */
+.alert {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.alert-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.alert i {
+  font-size: 1.25rem;
+}
+
+.btn-close-alert {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.25rem;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.btn-close-alert:hover {
+  opacity: 1;
+}
+
+/* Held Seat Status */
+.seat.held,
+.seat.reserved {
+  background: #f97316 !important;
+  color: #f97316 !important;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.seat.booked {
+  background: #2d3748;
+  color: #2d3748;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.seat.processing {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Type Icon Updates */
+.type-icon.held {
+  background: #f97316;
+  opacity: 0.8;
+}
+
+.type-icon.booked {
+  background: #2d3748;
+  opacity: 0.4;
+}
+
+/* Price Breakdown */
+.price-breakdown {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #a8b2d1;
+  font-size: 0.95rem;
+}
+
+.price-row.total {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.seat-price {
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+/* Cancel Button */
+.btn-cancel {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.btn-cancel:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* Processing Text */
+.processing-text {
+  color: #a78bfa;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  font-style: italic;
 }
