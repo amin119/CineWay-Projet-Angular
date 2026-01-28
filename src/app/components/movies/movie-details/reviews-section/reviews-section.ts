@@ -6,9 +6,11 @@ import {
   ReviewListResponse,
   ReviewRead,
   ReviewSummary,
+  ReviewUpdate,
 } from '../../../../models/review.model';
 import { ReviewsService } from '../../../../services/reviews-service';
 import { AddReview } from '../add-review/add-review';
+import { DeleteConfirmationModal } from '../delete-confirmation-modal/delete-confirmation-modal';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../auth/services/auth.service';
@@ -16,7 +18,7 @@ import { UserApi } from '../../../../services/user-api';
 
 @Component({
   selector: 'app-reviews-section',
-  imports: [AddReview, CommonModule],
+  imports: [AddReview, DeleteConfirmationModal, CommonModule],
   templateUrl: './reviews-section.html',
   styleUrl: './reviews-section.css',
 })
@@ -32,6 +34,8 @@ export class ReviewsSection {
   reactingToReview = signal<number | null>(null);
   deletingReview = signal<number | null>(null);
   editingReview = signal(false);
+  deleteConfirmationOpen = signal(false);
+  pendingDeleteReviewId = signal<number | null>(null);
 
   currentUserId = computed(() => this.userApi.user()?.id || null);
 
@@ -109,9 +113,15 @@ export class ReviewsSection {
     const isEditing = this.editingReview();
     const reviewId = this.userReview()?.id;
 
+    const updatePayload: ReviewUpdate = {
+      rating: payload.rating,
+      title: payload.title ?? null,
+      comment: payload.comment ?? null,
+    };
+
     const request$ =
       isEditing && reviewId
-        ? this.reviewsApi.updateReview(reviewId, payload)
+        ? this.reviewsApi.updateReview(reviewId, updatePayload)
         : this.reviewsApi.createReview(this.movieId(), payload);
 
     request$
@@ -145,9 +155,18 @@ export class ReviewsSection {
   }
 
   deleteReview(reviewId: number) {
-    if (!confirm('Are you sure you want to delete this review?')) return;
+    this.pendingDeleteReviewId.set(reviewId);
+    this.deleteConfirmationOpen.set(true);
+  }
 
+  confirmDeleteReview() {
+    const reviewId = this.pendingDeleteReviewId();
+    if (!reviewId) return;
+
+    this.deleteConfirmationOpen.set(false);
+    this.pendingDeleteReviewId.set(null);
     this.deletingReview.set(reviewId);
+
     this.reviewsApi
       .deleteReview(reviewId)
       .pipe(
@@ -170,6 +189,11 @@ export class ReviewsSection {
           this.deletingReview.set(null);
         },
       });
+  }
+
+  cancelDeleteReview() {
+    this.deleteConfirmationOpen.set(false);
+    this.pendingDeleteReviewId.set(null);
   }
 
   deleteUserReview() {

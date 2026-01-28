@@ -34,7 +34,7 @@ export class ReviewsService {
   }
 
   updateReview(reviewId: number, payload: ReviewUpdate) {
-    return this.http.patch<ReviewRead>(APP_API.reviews.reviewById(reviewId), payload);
+    return this.http.put<ReviewRead>(APP_API.reviews.reviewById(reviewId), payload);
   }
 
   deleteReview(reviewId: number) {

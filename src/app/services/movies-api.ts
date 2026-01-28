@@ -65,6 +65,7 @@ export class MoviesApi {
   private transformMovieResponse(movie: any): MovieModel {
     return {
       ...movie,
+      status: movie.state || movie.status, // Map 'state' from backend to 'status' for frontend
       cast: Array.isArray(movie.cast)
         ? movie.cast.map(
             (actor: any): CastMember =>

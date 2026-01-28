@@ -1,13 +1,13 @@
 export interface ReviewCreate {
-  rating: number;          // 1..5
+  rating: number; // 1..5
   title?: string | null;
   comment?: string | null;
 }
 
 export interface ReviewUpdate {
-  rating?: number | null;
-  title?: string | null;
-  comment?: string | null;
+  rating: number;
+  title: string | null;
+  comment: string | null;
 }
 
 export interface ReviewRead {
@@ -21,7 +21,7 @@ export interface ReviewRead {
   comment?: string | null;
   likes: number;
   dislikes: number;
-  created_at: string;  
+  created_at: string;
   updated_at: string;
 }
 

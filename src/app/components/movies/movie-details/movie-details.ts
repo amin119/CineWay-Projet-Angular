@@ -50,7 +50,7 @@ export class MovieDetails {
         this.isFavorite.set(isFav);
       },
       error: (err: any) => {
-        console.error('Error checking favorites:', err);
+        // Handle error silently or show user-friendly message
       },
     });
   }
@@ -60,17 +60,22 @@ export class MovieDetails {
   }));
   movie = computed(() => {
     const movieData = this.movieResource.value();
-    if (movieData && !movieData.status) {
-      // Set default status based on release date if not provided
-      const releaseDate = new Date(movieData.release_date);
-      const now = new Date();
-      if (releaseDate > now) {
-        movieData.status = 'COMING_SOON';
-      } else {
-        movieData.status = 'SHOWING';
-      }
+    if (!movieData) return movieData;
+    
+    // Return movieData with its existing status 
+    // Only add fallback if status is explicitly missing
+    if (movieData.status) {
+      return movieData;
     }
-    return movieData;
+    
+    // Fallback: Set default status based on release date if not provided
+    const releaseDate = new Date(movieData.release_date);
+    const now = new Date();
+    const fallbackStatus = releaseDate > now ? 'COMING_SOON' : 'SHOWING';
+    return {
+      ...movieData,
+      status: fallbackStatus
+    };
   });
   loading = this.movieResource.isLoading;
   error = this.movieResource.error;
@@ -128,7 +133,7 @@ export class MovieDetails {
           this.isFavorite.set(false);
         },
         error: (err: any) => {
-          console.error('Error removing from favorites:', err);
+          // Handle error silently or show user-friendly message
         },
       });
     } else {
@@ -137,7 +142,7 @@ export class MovieDetails {
           this.isFavorite.set(true);
         },
         error: (err: any) => {
-          console.error('Error adding to favorites:', err);
+          // Handle error silently or show user-friendly message
         },
       });
     }
@@ -146,6 +151,7 @@ export class MovieDetails {
   viewShowtimes() {
     // Navigate to movie showtimes page
     const movieId = this.movieId();
+    const currentMovie = this.movie();
     if (movieId) {
       this.router.navigate(['/movies', movieId, 'showtimes']);
     }
