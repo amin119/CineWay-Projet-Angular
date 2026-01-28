@@ -11,6 +11,7 @@ import { CinemaService } from '../../../services/cinema.service';
   templateUrl: './cinema-card.html',
   styleUrl: './cinema-card.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class CinemaCard {
   route = APP_ROUTES.cinemas;

@@ -10,6 +10,7 @@ import { Cinema } from '../../../models/cinema.model';
   imports: [CinemaCard, FormsModule, SearchBar],
   templateUrl: './cinemas.html',
   styleUrl: './cinemas.css',
+  standalone: true,
 })
 export class Cinemas {
   private cinemaService = inject(CinemaService);
