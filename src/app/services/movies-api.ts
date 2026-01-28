@@ -10,16 +10,36 @@ import { APP_API } from '../config/app-api.config';
 export class MoviesApi {
   private http = inject(HttpClient);
 
-  getMovies() {
+  getMovies(state?: string, sortBy?: string) {
+    let url = `${APP_API.movies.movies}/`;
+    const params: string[] = [];
+
+    if (state) params.push(`state=${state}`);
+    if (sortBy) params.push(`sort_by=${sortBy}`);
+
+    if (params.length > 0) {
+      url += '?' + params.join('&');
+    }
+
     return this.http
-      .get<MovieModel[]>(`${APP_API.movies.movies}/`)
+      .get<MovieModel[]>(url)
       .pipe(map((movies) => movies.map((movie) => this.transformMovieResponse(movie))));
   }
 
   getTrendingMovies() {
-    return this.http
-      .get<MovieModel[]>(`${APP_API.movies.trending}`)
-      .pipe(map((movies) => movies.map((movie) => this.transformMovieResponse(movie))));
+    return this.getMovies('SHOWING', 'trending');
+  }
+
+  getShowingMovies() {
+    return this.getMovies('SHOWING');
+  }
+
+  getComingSoonMovies() {
+    return this.getMovies('COMING_SOON');
+  }
+
+  getEndedMovies() {
+    return this.getMovies('ENDED');
   }
 
   getMovieById(id: number) {

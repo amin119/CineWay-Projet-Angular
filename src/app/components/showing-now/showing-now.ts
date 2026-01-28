@@ -10,7 +10,7 @@ import { MovieModel } from '../../models/movie.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './showing-now.html',
-  styleUrls: ['./showing-now.css']
+  styleUrls: ['./showing-now.css'],
 })
 export class ShowingNowComponent implements OnInit {
   showingNowMovies = signal<MovieModel[]>([]);
@@ -34,36 +34,30 @@ export class ShowingNowComponent implements OnInit {
     if (this.isLoading()) return;
 
     this.isLoading.set(true);
-    this.moviesApi.getMovies().subscribe({
+    this.moviesApi.getShowingMovies().subscribe({
       next: (movies) => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        // Filter movies that are currently showing (release date <= today)
-        const showingMovies = movies
-          .filter((movie) => new Date(movie.release_date) <= today)
-          .map(movie => ({
-            ...movie,
-            status: movie.status || 'SHOWING'
-          }));
+        const showingMovies = movies.map((movie) => ({
+          ...movie,
+          status: movie.status || 'SHOWING',
+        }));
 
         this.allShowingMovies.set(showingMovies);
-        
+
         // Load first batch
         const firstBatch = showingMovies.slice(0, this.limit);
         this.showingNowMovies.set(firstBatch);
         this.currentIndex.set(this.limit);
-        
+
         if (firstBatch.length >= showingMovies.length) {
           this.hasMoreMovies.set(false);
         }
-        
+
         this.isLoading.set(false);
       },
       error: (error) => {
         console.error('Error loading now showing movies:', error);
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
@@ -71,29 +65,29 @@ export class ShowingNowComponent implements OnInit {
     if (this.isLoadingMore() || !this.hasMoreMovies()) return;
 
     this.isLoadingMore.set(true);
-    
+
     const allMovies = this.allShowingMovies();
     const currentIdx = this.currentIndex();
     const nextBatch = allMovies.slice(currentIdx, currentIdx + this.limit);
-    
+
     this.showingNowMovies.set([...this.showingNowMovies(), ...nextBatch]);
     this.currentIndex.set(currentIdx + this.limit);
-    
+
     if (this.currentIndex() >= allMovies.length) {
       this.hasMoreMovies.set(false);
     }
-    
+
     this.isLoadingMore.set(false);
   }
 
   private loadFavorites(): void {
     this.favoritesService.getFavoriteMovies().subscribe({
       next: (movies) => {
-        this.favoriteMovieIds = new Set(movies.map(m => m.id));
+        this.favoriteMovieIds = new Set(movies.map((m) => m.id));
       },
       error: (error) => {
         console.error('Error loading favorites:', error);
-      }
+      },
     });
   }
 
@@ -114,7 +108,7 @@ export class ShowingNowComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error removing from favorites:', error);
-        }
+        },
       });
     } else {
       this.favoritesService.addMovieToFavorites(movie.id).subscribe({
@@ -123,7 +117,7 @@ export class ShowingNowComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error adding to favorites:', error);
-        }
+        },
       });
     }
   }
@@ -132,7 +126,7 @@ export class ShowingNowComponent implements OnInit {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 

@@ -706,16 +706,6 @@ export class SeatSelection implements OnInit, OnDestroy {
     // Set flag to prevent ngOnDestroy from cancelling reservations
     this.isNavigatingToPayment = true;
 
-    // Debug: Log all signal values
-    console.log('=== SEAT SELECTION DEBUG ===');
-    console.log('reservationIds:', ids);
-    console.log('showtimeId:', this.showtimeId());
-    console.log('movie:', this.movie());
-    console.log('selectedSeats Set:', Array.from(this.selectedSeats()));
-    console.log('selectedSeatsArray:', this.selectedSeatsArray());
-    console.log('calculateTicketsTotal:', this.calculateTicketsTotal());
-    console.log('holdExpiresAt:', this.holdExpiresAt());
-
     const paymentState = {
       reservationIds: ids,
       screeningId: this.showtimeId(),
@@ -724,9 +714,6 @@ export class SeatSelection implements OnInit, OnDestroy {
       total: parseFloat(this.calculateTicketsTotal()), // Pass numeric total (without service fee - payment page adds it)
       expiresAt: this.holdExpiresAt(),
     };
-
-    console.log('=== PAYMENT STATE ===');
-    console.log('paymentState:', JSON.stringify(paymentState, null, 2));
 
     // Navigate to payment with reservation IDs
     this.router.navigate(['/payment'], {

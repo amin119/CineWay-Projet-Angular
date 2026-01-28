@@ -30,7 +30,6 @@ export class ScreeningWebSocketService {
     this.currentToken = token;
 
     if (this.ws?.readyState === WebSocket.OPEN) {
-      console.log('WebSocket already connected');
       return;
     }
 
@@ -44,30 +43,24 @@ export class ScreeningWebSocketService {
     const url = `${wsUrl}/ws/screenings/${screeningId}?token=${token}`;
 
     this.connectionStatus$.next('connecting');
-    console.log('🔌 Connecting to WebSocket:', url);
 
     try {
       this.ws = new WebSocket(url);
 
       this.ws.onopen = () => {
-        console.log('✅ WebSocket connected to screening:', screeningId);
         this.connectionStatus$.next('connected');
         this.reconnectAttempts = 0; // Reset on successful connection
       };
 
       this.ws.onmessage = (event) => {
         try {
-          console.log('📨 RAW WebSocket message:', event.data);
           const data = JSON.parse(event.data);
-          console.log('📨 Parsed WebSocket message:', data);
 
           if (data.type === 'seat_update') {
             // Single seat update
-            console.log('✅ Single seat update - broadcasting to component');
             this.seatUpdates$.next(data as SeatUpdateEvent);
           } else if (data.type === 'bulk_seat_update' && Array.isArray(data.updates)) {
             // Bulk seat updates - emit each one individually
-            console.log(`✅ Bulk seat update - ${data.updates.length} seats`);
             for (const update of data.updates) {
               const seatEvent: SeatUpdateEvent = {
                 type: 'seat_update',
@@ -77,23 +70,19 @@ export class ScreeningWebSocketService {
                 is_mine: update.is_mine,
                 expires_at: update.expires_at,
               };
-              console.log('  → Emitting seat update:', seatEvent);
               this.seatUpdates$.next(seatEvent);
             }
           } else {
-            console.log('ℹ️ Unhandled message type:', data.type);
-          }
+            console.warn('⚠️ Unknown WebSocket message type:', data);}
         } catch (error) {
           console.error('Error parsing WebSocket message:', error, 'Raw:', event.data);
         }
       };
 
       this.ws.onerror = (error) => {
-        console.error('❌ WebSocket error:', error);
-      };
+        console.error('WebSocket error:', error);};
 
       this.ws.onclose = (event) => {
-        console.log('🔌 WebSocket disconnected, code:', event.code, 'reason:', event.reason);
         this.connectionStatus$.next('disconnected');
         this.ws = null;
 
@@ -114,16 +103,11 @@ export class ScreeningWebSocketService {
    */
   private attemptReconnect(): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log('❌ Max reconnection attempts reached');
       return;
     }
 
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-
-    console.log(
-      `🔄 Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`,
-    );
 
     this.reconnectTimer = setTimeout(() => {
       if (this.currentScreeningId && this.currentToken) {

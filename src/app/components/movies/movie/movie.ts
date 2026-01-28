@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MovieModel } from '../../../models/movie.model';
 import { FavoritesService } from '../../../services/favorites.service';
 
 @Component({
   selector: 'app-movie',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './movie.html',
   styleUrl: './movie.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,10 +18,11 @@ export class Movie {
 
   private favoritesService = inject(FavoritesService);
 
+  constructor() {}
+
   toggleFavorite(event: Event) {
     event.stopPropagation();
     event.preventDefault();
-
     if (this.isFavorite()) {
       this.favoritesService.removeMovieFromFavorites(this.movie().id).subscribe({
         next: () => {

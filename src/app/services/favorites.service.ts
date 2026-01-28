@@ -49,21 +49,21 @@ export class FavoritesService {
   // Coming soon movies
   getComingSoonMovies(skip: number = 0, limit: number = 10): Observable<MovieModel[]> {
     return this.http.get<MovieModel[]>(
-      `${this.apiUrl}/movies/coming-soon?skip=${skip}&limit=${limit}`,
+      `${this.apiUrl}/movies?state=COMING_SOON&skip=${skip}&limit=${limit}`,
     );
   }
 
   // Trending movies
   getTrendingMovies(skip: number = 0, limit: number = 10): Observable<MovieModel[]> {
     return this.http.get<MovieModel[]>(
-      `${this.apiUrl}/movies/trending?skip=${skip}&limit=${limit}`,
+      `${this.apiUrl}/movies?state=SHOWING&sort_by=trending&skip=${skip}&limit=${limit}`,
     );
   }
 
   // Now showing movies
   getNowShowingMovies(skip: number = 0, limit: number = 10): Observable<MovieModel[]> {
     return this.http.get<MovieModel[]>(
-      `${this.apiUrl}/movies/now-showing?skip=${skip}&limit=${limit}`,
+      `${this.apiUrl}/movies?state=SHOWING&skip=${skip}&limit=${limit}`,
     );
   }
 }

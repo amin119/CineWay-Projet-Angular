@@ -65,9 +65,6 @@ export class SeatReservationService {
   ): SeatAvailabilityResponse {
     // Handle if backend returns array directly instead of wrapped object
     if (Array.isArray(response)) {
-      console.log('✅ Backend returned array format, wrapping it');
-      console.log('🔍 First seat in array:', response[0]);
-      console.log('🔍 All seat keys:', response[0] ? Object.keys(response[0]) : 'No seats');
 
       // Transform the response to flatten nested seat object
       const transformedSeats = response.map((item: any) => ({
@@ -82,14 +79,12 @@ export class SeatReservationService {
         seat_type: item.seat?.seat_type ?? item.seat_type,
       }));
 
-      console.log('✅ Transformed first seat:', transformedSeats[0]);
 
       return {
         screening_id: screeningId,
         seats: transformedSeats,
       };
     }
-    console.log('✅ Backend returned object format');
     return response;
   }
 

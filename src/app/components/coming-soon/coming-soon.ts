@@ -35,7 +35,7 @@ export class ComingSoonComponent implements OnInit {
 
     this.favoritesService.getComingSoonMovies(skip, this.moviesPerPage).subscribe({
       next: (movies: MovieModel[]) => {
-        // Set status to COMING_SOON for coming soon movies
+        // Movies are already filtered by backend with state=COMING_SOON
         const moviesWithStatus = movies.map((movie) => ({
           ...movie,
           status: movie.status || 'COMING_SOON',
@@ -44,7 +44,7 @@ export class ComingSoonComponent implements OnInit {
         if (movies.length < this.moviesPerPage) {
           this.hasMoreMovies.set(false);
         }
-        this.comingSoonMovies.set(movies);
+        this.comingSoonMovies.set(moviesWithStatus);
         this.isLoading.set(false);
       },
       error: (err: any) => {
