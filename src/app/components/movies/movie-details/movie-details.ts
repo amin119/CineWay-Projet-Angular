@@ -30,6 +30,7 @@ export class MovieDetails {
   private favoritesService = inject(FavoritesService);
   isMuted = signal(true);
   isFavorite = signal(false);
+  notificationSignedUp = signal(false);
 
   movieId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
 
@@ -62,20 +63,16 @@ export class MovieDetails {
     const movieData = this.movieResource.value();
     if (!movieData) return movieData;
     
-    // Return movieData with its existing status 
-    // Only add fallback if status is explicitly missing
-    if (movieData.status) {
-      return movieData;
-    }
+    console.log('🎬 Movie Details - Movie Data:', {
+      movieId: movieData.id,
+      title: movieData.title,
+      state: movieData.state,
+      releaseDate: movieData.release_date
+    });
     
-    // Fallback: Set default status based on release date if not provided
-    const releaseDate = new Date(movieData.release_date);
-    const now = new Date();
-    const fallbackStatus = releaseDate > now ? 'COMING_SOON' : 'SHOWING';
-    return {
-      ...movieData,
-      status: fallbackStatus
-    };
+    // Use the backend state directly
+    console.log('✅ Using backend state:', movieData.state);
+    return movieData;
   });
   loading = this.movieResource.isLoading;
   error = this.movieResource.error;
@@ -148,10 +145,43 @@ export class MovieDetails {
     }
   }
 
+  notifyMe() {
+    console.log('🔔 Notify Me clicked for movie:', {
+      movieId: this.movieId(),
+      movieTitle: this.movie()?.title,
+      currentState: this.movie()?.state
+    });
+    // Here you would typically call an API to sign up for notifications
+    // For now, we'll just set the local state
+    this.notificationSignedUp.set(true);
+    
+    // You could show a success message or call a service
+    // this.notificationService.signUpForMovieNotifications(this.movieId()).subscribe(...)
+  }
+
+  // Debug helper method
+  logMovieStatus() {
+    const currentMovie = this.movie();
+    console.log('🔍 Current Movie Status Check:', {
+      movieId: currentMovie?.id,
+      title: currentMovie?.title,
+      state: currentMovie?.state,
+      isShowing: currentMovie?.state === 'SHOWING',
+      isComingSoon: currentMovie?.state === 'COMING_SOON',
+      isEnded: currentMovie?.state === 'ENDED'
+    });
+    return true; // Return true so it doesn't affect template rendering
+  }
+
   viewShowtimes() {
     // Navigate to movie showtimes page
     const movieId = this.movieId();
     const currentMovie = this.movie();
+    console.log('🎬 View Showtimes clicked:', {
+      movieId,
+      state: currentMovie?.state,
+      shouldBeVisible: currentMovie?.state === 'SHOWING'
+    });
     if (movieId) {
       this.router.navigate(['/movies', movieId, 'showtimes']);
     }

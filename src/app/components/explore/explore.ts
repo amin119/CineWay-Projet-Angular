@@ -147,7 +147,7 @@ export class Explore implements OnInit, OnDestroy {
       .subscribe({
         next: (movies) => {
           this.trendingMovies = movies
-            .map((movie) => ({ ...movie, status: movie.status || 'SHOWING' }))
+            .map((movie) => ({ ...movie, status: movie.state || 'SHOWING' }))
             .slice(0, this.TRENDING_MOVIES_LIMIT);
         },
         error: (error) => {
@@ -155,7 +155,7 @@ export class Explore implements OnInit, OnDestroy {
           // Fallback to sorting from allMovies if API fails
           this.trendingMovies = this.allMovies
             .sort((a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime())
-            .map((movie) => ({ ...movie, status: movie.status || 'SHOWING' }))
+            .map((movie) => ({ ...movie, status: movie.state || 'SHOWING' }))
             .slice(0, this.TRENDING_MOVIES_LIMIT);
         },
       });

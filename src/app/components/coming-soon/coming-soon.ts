@@ -38,7 +38,7 @@ export class ComingSoonComponent implements OnInit {
         // Movies are already filtered by backend with state=COMING_SOON
         const moviesWithStatus = movies.map((movie) => ({
           ...movie,
-          status: movie.status || 'COMING_SOON',
+          status: movie.state || 'COMING_SOON',
         }));
 
         if (movies.length < this.moviesPerPage) {

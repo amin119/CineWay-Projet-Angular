@@ -38,7 +38,7 @@ export class TrendingComponent implements OnInit {
       next: (movies) => {
         const trendingMovies = movies.map((movie) => ({
           ...movie,
-          status: movie.status || 'SHOWING',
+          status: movie.state || 'SHOWING',
         }));
 
         this.allMovies.set(trendingMovies);

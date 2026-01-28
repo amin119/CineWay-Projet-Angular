@@ -34,7 +34,7 @@ export interface MovieModel {
   trailer_url: string;
   awards: string[];
   details: Record<string, any>;
-  status: 'COMING_SOON' | 'SHOWING' | 'ENDED';
+  state: 'COMING_SOON' | 'SHOWING' | 'ENDED';
   created_at: string;
   updated_at: string;
 }

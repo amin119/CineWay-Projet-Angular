@@ -176,42 +176,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Other Showtimes -->
-        @if (groupedOtherShowtimes().length > 0) {
-          <div class="flex flex-col gap-4 p-6 bg-bg-dark rounded-xl">
-            <h3 class="text-lg md:text-xl font-bold">Other Showtimes for This Movie</h3>
-
-            <div class="space-y-4">
-              @for (group of groupedOtherShowtimes(); track group.cinema.id) {
-                <div class="bg-bg-medium-dark rounded-lg p-4">
-                  <!-- Cinema Info -->
-                  <h4 class="text-md font-semibold mb-3">{{ group.cinema.name }}</h4>
-
-                  <!-- Showtimes -->
-                  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    @for (showtime of group.showtimes; track showtime.id) {
-                      <button
-                        (click)="selectOtherShowtime(showtime.id)"
-                        class="flex flex-col items-center justify-center p-3 bg-primary hover:bg-primary-600 rounded-lg transition-colors group"
-                      >
-                        <span class="text-sm font-bold group-hover:text-white">
-                          {{ formatTime(showtime.screening_time) }}
-                        </span>
-                        <span class="text-xs text-gray-300 group-hover:text-white/80 mt-1">
-                          {{ showtime.room?.name }}
-                        </span>
-                        <span class="text-xs text-gray-400 group-hover:text-white/60 mt-1">
-                          ${{ showtime.price.toFixed(2) }}
-                        </span>
-                      </button>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
       </div>
     }
   </main>

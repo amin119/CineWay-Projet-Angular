@@ -29,7 +29,6 @@ export class ShowtimeSelectionComponent implements OnInit {
 
   // Data
   screening = signal<Screening | null>(null);
-  otherShowtimes = signal<Screening[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
 
@@ -86,26 +85,6 @@ export class ShowtimeSelectionComponent implements OnInit {
 
   canProceed = computed(() => this.totalTickets() > 0);
 
-  // Group other showtimes by cinema
-  groupedOtherShowtimes = computed(() => {
-    const showtimes = this.otherShowtimes();
-    const grouped = new Map<number, { cinema: any; showtimes: Screening[] }>();
-
-    showtimes.forEach((showtime) => {
-      const cinemaId = showtime.room?.cinema?.id;
-      if (!cinemaId) return;
-      if (!grouped.has(cinemaId)) {
-        grouped.set(cinemaId, {
-          cinema: showtime.room!.cinema!,
-          showtimes: [],
-        });
-      }
-      grouped.get(cinemaId)!.showtimes.push(showtime);
-    });
-
-    return Array.from(grouped.values());
-  });
-
   // Format date helper
   formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -116,20 +95,6 @@ export class ShowtimeSelectionComponent implements OnInit {
       year: 'numeric',
     };
     return date.toLocaleDateString('en-US', options);
-  }
-  private loadOtherShowtimes(movieId: number, excludeId: number): void {
-    this.screeningService
-      .getScreenings({ movie_id: movieId })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (showtimes) => {
-          const other = showtimes.filter((s) => s.id !== excludeId);
-          this.otherShowtimes.set(other);
-        },
-        error: (err) => {
-          // Don't set error, just leave empty
-        },
-      });
   }
   // Format time helper
   formatTime(dateString: string): string {
@@ -142,22 +107,28 @@ export class ShowtimeSelectionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+    // Subscribe to route parameter changes to handle navigation to different screenings
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const id = params.get('id');
 
-    if (!id) {
-      this.router.navigate(['/explore']);
-      return;
-    }
+      if (!id) {
+        this.router.navigate(['/explore']);
+        return;
+      }
 
-    const numericId = Number(id);
+      const numericId = Number(id);
 
-    if (isNaN(numericId) || numericId <= 0) {
-      this.error.set('Invalid screening ID');
-      return;
-    }
+      if (isNaN(numericId) || numericId <= 0) {
+        this.error.set('Invalid screening ID');
+        return;
+      }
 
-    this.screeningId.set(numericId);
-    this.loadScreening();
+      // Only reload if the screening ID has actually changed
+      if (this.screeningId() !== numericId) {
+        this.screeningId.set(numericId);
+        this.loadScreening();
+      }
+    });
   }
 
   private loadScreening(): void {
@@ -184,9 +155,6 @@ export class ShowtimeSelectionComponent implements OnInit {
               })),
             );
           }
-
-          // Load other showtimes for the same movie
-          this.loadOtherShowtimes(screening.movie_id, id);
         },
         error: (err) => {
           let errorMessage = 'Failed to load showtime details';
@@ -255,10 +223,6 @@ export class ShowtimeSelectionComponent implements OnInit {
         ticketCount: this.totalTickets(),
       },
     });
-  }
-
-  selectOtherShowtime(showtimeId: number): void {
-    this.router.navigate(['/screenings', showtimeId]);
   }
 
   retryLoadScreening(): void {

@@ -38,7 +38,7 @@ export class ShowingNowComponent implements OnInit {
       next: (movies) => {
         const showingMovies = movies.map((movie) => ({
           ...movie,
-          status: movie.status || 'SHOWING',
+          status: movie.state || 'SHOWING',
         }));
 
         this.allShowingMovies.set(showingMovies);
