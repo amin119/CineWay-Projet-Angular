@@ -210,18 +210,30 @@
               [routerLink]="APP_ROUTES.explore"
               class="cw-li-navbar"
               routerLinkActive="active text-white"
-              >Movies</a
             >
-            <a routerLink="/cinemas" class="cw-li-navbar" routerLinkActive="active text-white"
-              >Cinemas</a
-            >
-            <a href="#" class="cw-li-navbar">Special Offers</a>
+              <i class="bi bi-film"></i>
+              <span class="hidden lg:inline ml-1">Movies</span>
+            </a>
+
+            <a routerLink="/cinemas" class="cw-li-navbar" routerLinkActive="active text-white">
+              <i class="bi bi-building"></i>
+              <span class="hidden lg:inline ml-1">Cinemas</span>
+            </a>
             <a
               [routerLink]="APP_ROUTES.favorites"
               class="cw-li-navbar"
               routerLinkActive="active text-white"
             >
               <i class="bi bi-heart"></i>
+              <span class="hidden lg:inline ml-1"> Favorites</span>
+            </a>
+            <a
+              routerLink="/special-offers"
+              class="cw-li-navbar"
+              routerLinkActive="active text-white"
+            >
+              <i class="bi bi-gift-fill"></i>
+              <span class="hidden lg:inline ml-1"> Special Offers</span>
             </a>
           </div>
           <div class="relative ml-auto">

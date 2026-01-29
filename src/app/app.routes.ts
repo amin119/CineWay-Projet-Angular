@@ -33,6 +33,8 @@ import { ComingSoonComponent } from './components/coming-soon/coming-soon';
 import { TrendingComponent } from './components/trending/trending';
 import { ShowingNowComponent } from './components/showing-now/showing-now';
 import { Faq } from './components/faq/faq';
+import { About } from './components/about/about';
+import { SpecialOffers } from './components/special-offers/special-offers';
 
 export const routes: Routes = [
   {
@@ -50,6 +52,8 @@ export const routes: Routes = [
       { path: 'trending', component: TrendingComponent },
       { path: 'showing-now', component: ShowingNowComponent },
       { path: 'faq', component: Faq },
+      { path: 'about', component: About },
+      { path: 'special-offers', component: SpecialOffers },
       { path: 'not-found', component: NotFound },
       { path: 'movies/:id', component: MovieDetails },
       { path: 'movies/:id/showtimes', component: MovieShowtimesComponent },
