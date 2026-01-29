@@ -3,10 +3,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserApi } from '../../../services/user-api';
 import { Profile } from '../../../models/profile.model';
 import { PaymentHistory } from '../../payment/history/history';
+import { ContactComponent } from '../../contact/contact.component';
 
 @Component({
   selector: 'app-content',
-  imports: [ReactiveFormsModule, PaymentHistory],
+  imports: [ReactiveFormsModule, PaymentHistory, ContactComponent],
   templateUrl: './content.html',
   styleUrl: './content.css',
 })

@@ -1,12 +1,9 @@
 @if (section === 'profile') {
-  <!-- Centering wrapper -->
   <div class="flex justify-center pt-24 pb-24">
-    <!-- Content container -->
     <div class="w-full">
       <h2 class="text-lg font-semibold mb-2">Profile Details</h2>
       <p class="text-sm text-gray-400 mb-6">Update your personal information and password below.</p>
 
-      <!-- Card -->
       <form
         [formGroup]="profileForm"
         class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y-6 mb-6"
@@ -35,7 +32,6 @@
           </button>
         </div>
       </form>
-      <!-- Profile picture -->
 
       <div class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y-4 mb-6">
         <h3 class="text-sm font-semibold">Update Your Profile Picture</h3>
@@ -144,9 +140,7 @@
       <h2 class="text-lg font-semibold mb-2">Help & Support</h2>
       <p class="text-sm text-gray-400 mb-6">Get help with using CineWay and contact support.</p>
 
-      <div class="bg-gray-850 rounded-lg p-8 border border-gray-700">
-        <p class="text-gray-400">Help & support content will be implemented here.</p>
-      </div>
+      <app-contact></app-contact>
     </div>
   </div>
 }

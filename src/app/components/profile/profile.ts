@@ -7,7 +7,7 @@ import { UserApi } from '../../services/user-api';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Profile as ProfileModel } from '../../models/profile.model';
 import { Toast, ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { APP_API } from '../../config/app-api.config';
 import { APP_ROUTES } from '../../config/app-routes.confg';
 @Component({
@@ -25,6 +25,16 @@ export class Profile {
   section: 'profile' | 'preferences' | 'payment' | 'history' | 'help' = 'profile';
   toastr = inject(ToastrService);
   router = inject(Router);
+  activatedRoute = inject(ActivatedRoute);
+
+  constructor() {
+    this.activatedRoute.queryParams.subscribe((params) => {
+      const section = params['section'];
+      if (section && ['profile', 'preferences', 'payment', 'history', 'help'].includes(section)) {
+        this.section = section as 'profile' | 'preferences' | 'payment' | 'history' | 'help';
+      }
+    });
+  }
 
   onUpdateProfile(event: { payload: Partial<ProfileModel>; emailChanged: boolean }) {
     this.userApi.updateProfile(event.payload).subscribe({

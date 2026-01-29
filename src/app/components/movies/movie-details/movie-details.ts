@@ -14,6 +14,7 @@ import { ReviewListResponse, ReviewRead } from '../../../models/review.model';
 import { map } from 'rxjs/operators';
 import { ReviewsSection } from './reviews-section/reviews-section';
 import { FavoritesService } from '../../../services/favorites.service';
+import { NotificationService, NotificationResponse } from '../../../services/notification.service';
 
 const DEFAULT_TRAILER = 'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ';
 
@@ -28,9 +29,11 @@ export class MovieDetails {
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   private favoritesService = inject(FavoritesService);
+  private notificationService = inject(NotificationService);
   isMuted = signal(true);
   isFavorite = signal(false);
   notificationSignedUp = signal(false);
+  notificationLoading = signal(false);
 
   movieId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
 
@@ -146,17 +149,89 @@ export class MovieDetails {
   }
 
   notifyMe() {
+    if (this.notificationLoading()) return;
+
+    const movieId = this.movieId();
+    const movieTitle = this.movie()?.title;
+
     console.log('🔔 Notify Me clicked for movie:', {
-      movieId: this.movieId(),
-      movieTitle: this.movie()?.title,
+      movieId,
+      movieTitle,
       currentState: this.movie()?.state
     });
-    // Here you would typically call an API to sign up for notifications
-    // For now, we'll just set the local state
-    this.notificationSignedUp.set(true);
-    
-    // You could show a success message or call a service
-    // this.notificationService.signUpForMovieNotifications(this.movieId()).subscribe(...)
+
+    this.notificationLoading.set(true);
+
+    this.notificationService.subscribeToMovie(movieId).subscribe({
+      next: (response: NotificationResponse) => {
+        console.log('✅ Notification subscription successful:', response);
+        this.notificationSignedUp.set(response.subscribed);
+
+        // You could show a toast notification here
+        // this.toastr.success(response.message);
+
+        this.notificationLoading.set(false);
+      },
+      error: (error) => {
+        console.error('❌ Notification subscription failed:', error);
+
+        // Handle different error types
+        let errorMessage = 'Failed to subscribe to notifications';
+        if (error.status === 401) {
+          errorMessage = 'Please log in to subscribe to notifications';
+        } else if (error.status === 404) {
+          errorMessage = 'Movie not found';
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
+        }
+
+        // You could show a toast error here
+        // this.toastr.error(errorMessage);
+
+        this.notificationLoading.set(false);
+      }
+    });
+  }
+
+  unsubscribeFromNotifications() {
+    if (this.notificationLoading()) return;
+
+    const movieId = this.movieId();
+    const movieTitle = this.movie()?.title;
+
+    console.log('🔕 Unsubscribe clicked for movie:', {
+      movieId,
+      movieTitle
+    });
+
+    this.notificationLoading.set(true);
+
+    this.notificationService.unsubscribeFromMovie(movieId).subscribe({
+      next: (response: NotificationResponse) => {
+        console.log('✅ Notification unsubscription successful:', response);
+        this.notificationSignedUp.set(response.subscribed);
+
+        // You could show a toast notification here
+        // this.toastr.success(response.message);
+
+        this.notificationLoading.set(false);
+      },
+      error: (error) => {
+        console.error('❌ Notification unsubscription failed:', error);
+
+        let errorMessage = 'Failed to unsubscribe from notifications';
+        if (error.status === 401) {
+          errorMessage = 'Please log in to manage notifications';
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
+        }
+
+        // You could show a toast error here
+        // this.toastr.error(errorMessage);
+
+        this.notificationLoading.set(false);
+      }
+    });
   }
 
   // Debug helper method
