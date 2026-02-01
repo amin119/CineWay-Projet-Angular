@@ -89,26 +89,26 @@
         <h3 class="text-sm font-semibold text-gray-100 mb-3">Cast</h3>
 
         <div class="flex gap-3 overflow-x-auto pb-2 pr-2">
-          @for (actor of movie()?.cast ?? []; track actor.id) {
+          @for (actor of movie()?.cast ?? []; track actor.name) {
             <div class="flex flex-col items-center gap-2 px-3 py-2 shrink-0">
               <img
                 class="w-14 h-14 rounded-full object-cover bg-white/20"
                 [src]="
-                  actor.profile_image_url ||
+                  actor.image_url ||
                   'https://ui-avatars.com/api/?name=' +
-                    actor.actor_name +
+                    actor.name +
                     '&size=56&background=cccccc&color=000000'
                 "
                 (error)="
                   $event.target.src =
                     'https://ui-avatars.com/api/?name=' +
-                    actor.actor_name +
+                    actor.name +
                     '&size=56&background=cccccc&color=000000'
                 "
                 alt="actor"
               />
               <span class="text-xs text-gray-100 whitespace-nowrap">
-                {{ actor.actor_name }}
+                {{ actor.name }}
               </span>
             </div>
           }

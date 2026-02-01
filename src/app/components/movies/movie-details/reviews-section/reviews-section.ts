@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  signal,
+  effect,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, throwError } from 'rxjs';
 import {
@@ -38,6 +46,12 @@ export class ReviewsSection {
   deleteConfirmationOpen = signal(false);
   pendingDeleteReviewId = signal<number | null>(null);
 
+  // Pagination signals
+  currentPage = signal(1);
+  readonly pageSize = 15;
+  isLoadingMore = signal(false);
+  hasMoreReviews = signal(true);
+
   currentUserId = computed(() => this.userApi.user()?.id || null);
 
   // Find user's own review
@@ -49,11 +63,14 @@ export class ReviewsSection {
 
   hasUserReviewed = computed(() => !!this.userReview());
 
+  // Accumulate all loaded reviews
+  allReviews = signal<ReviewRead[]>([]);
+
   reviewsRxResource = rxResource({
     params: () => ({
       movieId: this.movieId(),
-      page: 1,
-      pageSize: 20,
+      page: this.currentPage(),
+      pageSize: this.pageSize,
     }),
     stream: ({ params }) =>
       this.reviewsApi
@@ -61,8 +78,27 @@ export class ReviewsSection {
         .pipe(map((res: ReviewListResponse) => res.reviews)),
     defaultValue: [] as ReviewRead[],
   });
-  reviews = computed(() => this.reviewsRxResource.value());
-  reviewsLoading = this.reviewsRxResource.isLoading;
+
+  // Update allReviews when new reviews are loaded
+  constructor() {
+    effect(() => {
+      const newReviews = this.reviewsRxResource.value();
+      if (newReviews.length > 0) {
+        if (this.currentPage() === 1) {
+          this.allReviews.set(newReviews);
+        } else {
+          this.allReviews.set([...this.allReviews(), ...newReviews]);
+        }
+
+        // Check if there are more reviews to load
+        this.hasMoreReviews.set(newReviews.length === this.pageSize);
+        this.isLoadingMore.set(false);
+      }
+    });
+  }
+
+  reviews = computed(() => this.allReviews());
+  reviewsLoading = computed(() => this.reviewsRxResource.isLoading() && this.currentPage() === 1);
   reviewsError = this.reviewsRxResource.error;
 
   // Fetch review summary for average rating
@@ -90,6 +126,13 @@ export class ReviewsSection {
   }
   nextReview() {
     if (this.hasNextReview()) this.reviewIndex.update((i) => i + 1);
+  }
+
+  loadMoreReviews() {
+    if (this.isLoadingMore() || !this.hasMoreReviews()) return;
+
+    this.isLoadingMore.set(true);
+    this.currentPage.update((page) => page + 1);
   }
 
   openAddReview() {

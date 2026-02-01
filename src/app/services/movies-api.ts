@@ -77,18 +77,13 @@ export class MoviesApi {
             (actor: any): CastMember =>
               typeof actor === 'string'
                 ? {
-                    character_name: '',
-                    role: 'Actor',
-                    actor_name: actor,
-                    profile_image_url: null,
-                    is_lead: false,
-                    order: 0,
-                    id: 0,
-                    movie_id: movie.id,
-                    created_at: movie.created_at,
-                    updated_at: movie.updated_at,
+                    name: actor,
+                    image_url: null,
                   }
-                : actor,
+                : {
+                    name: actor.name || actor.actor_name || '',
+                    image_url: actor.image_url || actor.profile_image_url || null,
+                  },
           )
         : [],
     };

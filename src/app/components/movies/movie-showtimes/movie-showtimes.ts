@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { APP_API } from '../../../config/app-api.config';
 import { ShowtimeDatePipe } from '../../../pipes/showtime-date.pipe';
@@ -90,8 +90,13 @@ export class MovieShowtimesComponent implements OnInit {
     return Array.from(grouped.values());
   });
 
-  // Get unique dates from showtimes, limited to current week
+  // Get next 7 days starting from today
   availableDates = computed(() => {
+    return this.getNext7Days();
+  });
+
+  // Get dates that actually have showtimes
+  datesWithShowtimes = computed(() => {
     const showtimes = this.showtimes();
     const dates = new Set<string>();
 
@@ -100,23 +105,19 @@ export class MovieShowtimesComponent implements OnInit {
       dates.add(date);
     });
 
-    const allDates = Array.from(dates).sort();
-    const currentWeekDates = this.getCurrentWeekDates();
-    return allDates.filter((date) => currentWeekDates.includes(date));
+    return dates;
   });
 
-  private getCurrentWeekDates(): string[] {
+  private getNext7Days(): string[] {
     const today = new Date();
-    const startDate = new Date(today);
-    const endDate = new Date(today);
-    endDate.setDate(today.getDate() + 6); // 7 days from today
-
     const dates: string[] = [];
-    const current = new Date(startDate);
-    while (current <= endDate) {
-      dates.push(current.toISOString().split('T')[0]);
-      current.setDate(current.getDate() + 1);
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push(date.toISOString().split('T')[0]);
     }
+
     return dates;
   }
 
@@ -138,16 +139,29 @@ export class MovieShowtimesComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
+    const params = new HttpParams().set('skip', '0').set('limit', '1000');
+
     this.http
-      .get<MovieShowtime[]>(APP_API.movies.showtimes(id))
+      .get<MovieShowtime[]>(APP_API.movies.showtimes(id), { params })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (showtimes) => {
           this.showtimes.set(showtimes);
           this.loading.set(false);
-          // Set default selected date to the first available date
-          if (this.availableDates().length > 0 && !this.selectedDate()) {
-            this.selectedDate.set(this.availableDates()[0]);
+          // Set default selected date to today if it has showtimes, otherwise first date with showtimes
+          if (!this.selectedDate()) {
+            const datesWithShowtimes = this.datesWithShowtimes();
+            const today = new Date().toISOString().split('T')[0];
+
+            if (datesWithShowtimes.has(today)) {
+              this.selectedDate.set(today);
+            } else {
+              // Find first date with showtimes
+              const firstDateWithShowtimes = Array.from(datesWithShowtimes).sort()[0];
+              if (firstDateWithShowtimes) {
+                this.selectedDate.set(firstDateWithShowtimes);
+              }
+            }
           }
         },
         error: (err) => {

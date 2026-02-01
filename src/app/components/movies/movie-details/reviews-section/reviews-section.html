@@ -157,6 +157,19 @@
     </div>
   }
 
+  <!-- Load More Reviews Button -->
+  @if (hasMoreReviews() && !reviewsLoading()) {
+    <div class="mt-4 text-center">
+      <button
+        (click)="loadMoreReviews()"
+        [disabled]="isLoadingMore()"
+        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {{ isLoadingMore() ? 'Loading...' : 'Load More Reviews' }}
+      </button>
+    </div>
+  }
+
   <app-add-review
     [open]="modalOpen()"
     [movieTitle]="movieTitle()"

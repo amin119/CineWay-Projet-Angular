@@ -19,7 +19,7 @@ export class ShowingNowComponent implements OnInit {
   isLoadingMore = signal(false);
   hasMoreMovies = signal(true);
   currentIndex = signal(0);
-  readonly limit = 12;
+  readonly limit = 15;
   favoriteMovieIds = new Set<number>();
 
   private moviesApi = inject(MoviesApi);
