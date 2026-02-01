@@ -1,7 +1,8 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-delete-confirmation-modal',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (open()) {
       <!-- Backdrop -->

@@ -1,9 +1,18 @@
-import { Component, computed, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  OnInit,
+  DestroyRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { APP_API } from '../../../config/app-api.config';
+import { ShowtimeDatePipe } from '../../../pipes/showtime-date.pipe';
 
 interface Cinema {
   id: number;
@@ -41,8 +50,9 @@ interface MovieShowtime {
 
 @Component({
   selector: 'app-movie-showtimes',
-  imports: [CommonModule],
+  imports: [CommonModule, ShowtimeDatePipe],
   templateUrl: './movie-showtimes.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MovieShowtimesComponent implements OnInit {
   private route = inject(ActivatedRoute);

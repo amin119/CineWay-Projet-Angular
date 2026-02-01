@@ -1,8 +1,18 @@
-import { Component, computed, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  OnInit,
+  DestroyRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScreeningService, Screening } from '../../../services/screening.service';
+import { TicketTotalPipe } from '../../../pipes/ticket-total.pipe';
+import { ShowtimeDatePipe } from '../../../pipes/showtime-date.pipe';
 
 interface TicketType {
   id: string;
@@ -15,8 +25,9 @@ interface TicketType {
 
 @Component({
   selector: 'app-showtime-selection',
-  imports: [CommonModule],
+  imports: [CommonModule, TicketTotalPipe, ShowtimeDatePipe],
   templateUrl: './showtime-selection.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowtimeSelectionComponent implements OnInit {
   private route = inject(ActivatedRoute);

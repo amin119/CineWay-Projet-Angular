@@ -21,9 +21,6 @@ import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
 import { adminGuard } from './auth/guards/admin/admin.guard';
 import { NotFound } from './components/not-found/not-found';
-import { MovieDetails } from './components/movies/movie-details/movie-details';
-import { ShowtimeSelectionComponent } from './components/movies/showtime-selection/showtime-selection';
-import { MovieShowtimesComponent } from './components/movies/movie-showtimes/movie-showtimes';
 import { SeatSelection } from './components/seat-selection/seat-selection';
 import { Payment } from './components/payment/payment';
 import { PaymentConfirmation } from './components/payment/confirmation/confirmation';
@@ -57,9 +54,25 @@ export const routes: Routes = [
       { path: 'about', component: About },
       { path: 'special-offers', component: SpecialOffers },
       { path: 'not-found', component: NotFound },
-      { path: 'movies/:id', component: MovieDetails },
-      { path: 'movies/:id/showtimes', component: MovieShowtimesComponent },
-      { path: 'screenings/:id', component: ShowtimeSelectionComponent },
+      {
+        path: 'movies/:id',
+        loadComponent: () =>
+          import('./components/movies/movie-details/movie-details').then((m) => m.MovieDetails),
+      },
+      {
+        path: 'movies/:id/showtimes',
+        loadComponent: () =>
+          import('./components/movies/movie-showtimes/movie-showtimes').then(
+            (m) => m.MovieShowtimesComponent,
+          ),
+      },
+      {
+        path: 'screenings/:id',
+        loadComponent: () =>
+          import('./components/movies/showtime-selection/showtime-selection').then(
+            (m) => m.ShowtimeSelectionComponent,
+          ),
+      },
       { path: 'seats/:id', component: SeatSelection },
       { path: 'payment', component: Payment },
       { path: 'payment/confirmation/:paymentId', component: PaymentConfirmation },

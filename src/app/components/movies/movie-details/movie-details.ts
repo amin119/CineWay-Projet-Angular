@@ -1,4 +1,13 @@
-import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
@@ -23,6 +32,7 @@ const DEFAULT_TRAILER = 'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ';
   templateUrl: './movie-details.html',
   styleUrl: './movie-details.css',
   imports: [TimeToHoursPipe, ReviewsSection, DatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MovieDetails {
   private route = inject(ActivatedRoute);
@@ -65,14 +75,14 @@ export class MovieDetails {
   movie = computed(() => {
     const movieData = this.movieResource.value();
     if (!movieData) return movieData;
-    
+
     console.log('🎬 Movie Details - Movie Data:', {
       movieId: movieData.id,
       title: movieData.title,
       state: movieData.state,
-      releaseDate: movieData.release_date
+      releaseDate: movieData.release_date,
     });
-    
+
     // Use the backend state directly
     console.log('✅ Using backend state:', movieData.state);
     return movieData;
@@ -157,7 +167,7 @@ export class MovieDetails {
     console.log('🔔 Notify Me clicked for movie:', {
       movieId,
       movieTitle,
-      currentState: this.movie()?.state
+      currentState: this.movie()?.state,
     });
 
     this.notificationLoading.set(true);
@@ -189,7 +199,7 @@ export class MovieDetails {
         // this.toastr.error(errorMessage);
 
         this.notificationLoading.set(false);
-      }
+      },
     });
   }
 
@@ -201,7 +211,7 @@ export class MovieDetails {
 
     console.log('🔕 Unsubscribe clicked for movie:', {
       movieId,
-      movieTitle
+      movieTitle,
     });
 
     this.notificationLoading.set(true);
@@ -230,7 +240,7 @@ export class MovieDetails {
         // this.toastr.error(errorMessage);
 
         this.notificationLoading.set(false);
-      }
+      },
     });
   }
 
@@ -243,7 +253,7 @@ export class MovieDetails {
       state: currentMovie?.state,
       isShowing: currentMovie?.state === 'SHOWING',
       isComingSoon: currentMovie?.state === 'COMING_SOON',
-      isEnded: currentMovie?.state === 'ENDED'
+      isEnded: currentMovie?.state === 'ENDED',
     });
     return true; // Return true so it doesn't affect template rendering
   }
@@ -255,7 +265,7 @@ export class MovieDetails {
     console.log('🎬 View Showtimes clicked:', {
       movieId,
       state: currentMovie?.state,
-      shouldBeVisible: currentMovie?.state === 'SHOWING'
+      shouldBeVisible: currentMovie?.state === 'SHOWING',
     });
     if (movieId) {
       this.router.navigate(['/movies', movieId, 'showtimes']);

@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, throwError } from 'rxjs';
 import {
@@ -21,6 +21,7 @@ import { UserApi } from '../../../../services/user-api';
   imports: [AddReview, DeleteConfirmationModal, CommonModule],
   templateUrl: './reviews-section.html',
   styleUrl: './reviews-section.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewsSection {
   private reviewsApi = inject(ReviewsService);

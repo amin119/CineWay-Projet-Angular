@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, Output, signal, effect, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+  effect,
+  input,
+} from '@angular/core';
 import { ReviewCreate, ReviewRead } from '../../../../models/review.model';
 import { FormsModule } from '@angular/forms';
 
@@ -7,6 +16,7 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule],
   templateUrl: './add-review.html',
   styleUrl: './add-review.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddReview {
   open = input.required<boolean>();
@@ -29,7 +39,6 @@ export class AddReview {
   hoverRating = signal<number>(0);
 
   constructor() {
-    // Watch for initialData changes and populate the form
     effect(() => {
       const data = this.initialData();
       if (data) {

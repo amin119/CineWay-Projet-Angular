@@ -9,7 +9,7 @@ interface SpecialOffer {
   discount: string;
   validUntil: string;
   image: string;
-  category: 'student' | 'family' | 'vip' | 'seasonal';
+  category: 'student' | 'family' | 'seasonal';
   terms: string[];
   isActive: boolean;
 }
@@ -54,21 +54,6 @@ export class SpecialOffers {
     },
     {
       id: 3,
-      title: 'VIP Member Exclusive',
-      description: 'Premium benefits for our VIP members',
-      discount: '40% OFF + Free Popcorn',
-      validUntil: '2026-12-31',
-      image: '/assets/offers/vip.jpg',
-      category: 'vip',
-      terms: [
-        'VIP membership required',
-        'Free popcorn with ticket purchase',
-        'Priority seating available',
-      ],
-      isActive: true,
-    },
-    {
-      id: 4,
       title: 'Holiday Special',
       description: 'Celebrate the season with special holiday pricing',
       discount: '20% OFF all tickets',
@@ -83,7 +68,7 @@ export class SpecialOffers {
       isActive: true,
     },
     {
-      id: 5,
+      id: 4,
       title: 'Senior Citizen Discount',
       description: 'Special pricing for seniors 65+',
       discount: '15% OFF',
@@ -94,7 +79,7 @@ export class SpecialOffers {
       isActive: true,
     },
     {
-      id: 6,
+      id: 5,
       title: 'First-Time Visitor',
       description: 'Welcome new customers with a special discount',
       discount: 'Free ticket upgrade',
@@ -122,7 +107,6 @@ export class SpecialOffers {
     const colors = {
       student: 'bg-blue-600',
       family: 'bg-green-600',
-      vip: 'bg-purple-600',
       seasonal: 'bg-orange-600',
     };
     return colors[category as keyof typeof colors] || 'bg-gray-600';
@@ -132,7 +116,6 @@ export class SpecialOffers {
     const labels = {
       student: 'Student',
       family: 'Family',
-      vip: 'VIP',
       seasonal: 'Seasonal',
     };
     return labels[category as keyof typeof labels] || category;

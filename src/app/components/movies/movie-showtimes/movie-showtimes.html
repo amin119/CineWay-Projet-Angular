@@ -58,7 +58,7 @@
                     <div class="text-lg font-semibold">Tomorrow</div>
                   }
                   <div class="text-lg" [class.font-semibold]="!isToday(date) && !isTomorrow(date)">
-                    {{ formatDate(date) }}
+                    {{ date | showtimeDate: 'short' }}
                   </div>
                 </div>
               </button>
@@ -98,7 +98,7 @@
                       class="flex flex-col items-center justify-center p-4 bg-bg-medium-dark hover:bg-primary rounded-lg transition-colors group"
                     >
                       <span class="text-lg font-bold group-hover:text-white">
-                        {{ formatTime(showtime.screening_time) }}
+                        {{ showtime.screening_time | showtimeDate: 'time' }}
                       </span>
                       <span class="text-xs text-gray-400 group-hover:text-white/80 mt-1">
                         {{ showtime.room.name }}

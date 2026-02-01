@@ -1,14 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { map } from 'rxjs';
 import { MovieModel, CastMember } from '../models/movie.model';
 import { APP_API } from '../config/app-api.config';
-
 @Injectable({
   providedIn: 'root',
 })
 export class MoviesApi {
   private http = inject(HttpClient);
+
+  readonly moviesCache = signal<MovieModel[]>([]);
+  readonly trendingMoviesCache = signal<MovieModel[]>([]);
+  readonly isLoadingMovies = signal<boolean>(false);
+  readonly moviesError = signal<string | null>(null);
 
   getMovies(state?: string, sortBy?: string) {
     let url = `${APP_API.movies.movies}/`;
@@ -136,5 +140,44 @@ export class MoviesApi {
       awards: stringToArray(movie.awards),
       details: movie.details || null,
     };
+  }
+  /**
+   * Fetches movies and updates the signal cache
+   * @param state Optional movie state filter
+   * @param sortBy Optional sort parameter
+   */
+  loadMovies(state?: string, sortBy?: string): void {
+    this.isLoadingMovies.set(true);
+    this.moviesError.set(null);
+
+    this.getMovies(state, sortBy).subscribe({
+      next: (movies) => {
+        this.moviesCache.set(movies);
+        this.isLoadingMovies.set(false);
+      },
+      error: (err) => {
+        this.moviesError.set('Failed to load movies');
+        this.isLoadingMovies.set(false);
+      },
+    });
+  }
+
+  /**
+   * Fetches trending movies and updates the signal cache
+   */
+  loadTrendingMovies(): void {
+    this.getTrendingMovies().subscribe({
+      next: (movies) => this.trendingMoviesCache.set(movies),
+      error: (err) => console.error('Failed to load trending movies', err),
+    });
+  }
+
+  /**
+   * Clears all cached movie data
+   */
+  clearCache(): void {
+    this.moviesCache.set([]);
+    this.trendingMoviesCache.set([]);
+    this.moviesError.set(null);
   }
 }

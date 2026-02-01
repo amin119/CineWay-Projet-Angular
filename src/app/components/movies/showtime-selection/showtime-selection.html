@@ -72,12 +72,12 @@
                   @if (screening()?.screening_time) {
                     <div class="flex items-center gap-2">
                       <span class="bi bi-calendar3 text-lg"></span>
-                      <span>{{ formatDate(screening()!.screening_time) }}</span>
+                      <span>{{ screening()!.screening_time | showtimeDate: 'full' }}</span>
                     </div>
 
                     <div class="flex items-center gap-2">
                       <span class="bi bi-clock text-lg"></span>
-                      <span>{{ formatTime(screening()!.screening_time) }}</span>
+                      <span>{{ screening()!.screening_time | showtimeDate: 'time' }}</span>
                     </div>
                   }
 
@@ -146,7 +146,7 @@
                   @for (item of getTicketSummary(); track item.name) {
                     <div class="flex justify-between">
                       <span class="text-gray-300">{{ item.name }} x {{ item.count }}</span>
-                      <span class="text-white">${{ item.price.toFixed(2) }}</span>
+                      <span class="text-white">{{ item | ticketTotal: 'currency' }}</span>
                     </div>
                   }
 

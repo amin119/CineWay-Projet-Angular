@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="text-center mb-12">
       <h1
-        class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-green-400 to-blue-600 bg-clip-text text-transparent"
+        class="text-4xl md:text-5xl font-bold mb-6 bg-linear-to-r from-green-400 to-blue-600 bg-clip-text text-transparent"
       >
         Special Offers
       </h1>
@@ -52,18 +52,6 @@
         Family
       </button>
       <button
-        (click)="filterOffers('vip')"
-        [class.active]="selectedCategory === 'vip'"
-        class="px-6 py-3 rounded-full font-medium transition-all duration-200 hover:scale-105"
-        [class]="
-          selectedCategory === 'vip'
-            ? 'bg-blue-600 text-white'
-            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-        "
-      >
-        VIP
-      </button>
-      <button
         (click)="filterOffers('seasonal')"
         [class.active]="selectedCategory === 'seasonal'"
         class="px-6 py-3 rounded-full font-medium transition-all duration-200 hover:scale-105"
@@ -85,15 +73,13 @@
         >
           <!-- Offer Image -->
           <div
-            class="h-48 bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center"
+            class="h-48 bg-linear-to-br from-gray-700 to-gray-800 flex items-center justify-center"
           >
             <div class="text-6xl opacity-50">
               @if (offer.category === 'student') {
                 🎓
               } @else if (offer.category === 'family') {
                 👨‍👩‍👧‍👦
-              } @else if (offer.category === 'vip') {
-                👑
               } @else {
                 🎄
               }
@@ -159,7 +145,7 @@
 
     <!-- Newsletter Signup -->
     <div
-      class="bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-xl p-8 border border-gray-700 text-center"
+      class="bg-linear-to-r from-blue-600/10 to-purple-600/10 rounded-xl p-8 border border-gray-700 text-center"
     >
       <h2 class="text-2xl font-semibold mb-4">Never Miss an Offer!</h2>
       <p class="text-gray-300 mb-6">
