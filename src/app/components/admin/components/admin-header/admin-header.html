@@ -1,29 +1,29 @@
-<header class="fixed top-0 right-0 left-0 lg:left-64 h-16 bg-[#101922] border-b border-[#2a3644] z-40">
+<header class="fixed top-0 left-0 right-0 h-16 bg-[#101922] border-b border-[#2a3644] z-40">
   <div class="h-full px-6 flex items-center justify-between">
-    <div class="flex items-center gap-8 ml-auto">
-      <button class="text-gray-400 hover:text-[#3d99f5] transition-colors">
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-          />
-        </svg>
-      </button>
-
+    <a
+      (click)="navigateToHome()"
+      class="flex items-center gap-2 no-underline"
+      style="text-decoration: none"
+    >
+      <img
+        src="https://img.icons8.com/?size=100&id=111180&format=png&color=228BE6"
+        class="h-7"
+        alt="CineWay Logo"
+      />
+      <span class="text-xl font-semibold text-white no-underline">CineWay</span>
+    </a>
+    <div class="flex items-center gap-8">
       <div class="relative">
         <button
           class="flex items-center gap-2 focus:outline-none hover:bg-[#18222c] px-3 py-2 rounded-lg transition-colors"
           (click)="toggleMenu()"
         >
           <img
-            [src]="user() && user()!.profile_picture_url ? user()!.profile_picture_url : '/assets/avatar.png'"
+            [src]="
+              user() && user()!.profile_picture_url
+                ? user()!.profile_picture_url
+                : '/assets/avatar.png'
+            "
             alt="User avatar"
             class="w-8 h-8 rounded-full object-cover border border-[#2a3644]"
           />
@@ -33,22 +33,22 @@
         </button>
 
         @if (menuOpen) {
-        <div
-          class="absolute right-0 mt-2 w-48 bg-[#18222c] border border-[#2a3644] rounded-lg shadow-xl shadow-black/20 py-2"
-        >
-          <button
-            class="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#101922] hover:text-[#3d99f5] transition-colors"
+          <div
+            class="absolute right-0 mt-2 w-48 bg-[#18222c] border border-[#2a3644] rounded-lg shadow-xl shadow-black/20 py-2"
           >
-            Profile Settings
-          </button>
-          <hr class="border-[#2a3644] my-2" />
-          <button
-            class="w-full text-left px-4 py-2 text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition-colors"
-            (click)="logout()"
-          >
-            Logout
-          </button>
-        </div>
+            <button
+              class="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#101922] hover:text-[#3d99f5] transition-colors"
+            >
+              Profile Settings
+            </button>
+            <hr class="border-[#2a3644] my-2" />
+            <button
+              class="w-full text-left px-4 py-2 text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+              (click)="logout()"
+            >
+              Logout
+            </button>
+          </div>
         }
       </div>
     </div>

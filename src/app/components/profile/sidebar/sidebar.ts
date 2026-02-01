@@ -13,7 +13,7 @@ import { User } from '../../../auth/model/user';
 import { UserApi } from '../../../services/user-api';
 import { CommonModule } from '@angular/common';
 
-type SectionType = 'profile' | 'preferences' | 'payment' | 'history' | 'help';
+type SectionType = 'profile' | 'payment' | 'history' | 'help';
 
 @Component({
   selector: 'app-sidebar',

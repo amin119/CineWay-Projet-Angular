@@ -29,7 +29,7 @@
               }}
             </p>
             <button
-              (click)="onGetTickets()"
+              [routerLink]="['/movies', featuredMovie?.id]"
               [attr.aria-label]="'Get tickets for ' + (featuredMovie?.title || 'featured movie')"
               class="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold py-2 px-5 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-950"
             >

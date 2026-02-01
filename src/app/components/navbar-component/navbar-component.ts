@@ -126,6 +126,10 @@ export class NavbarComponent {
     this.toastrService.warning('Good bye!');
   }
 
+  navigateToHome() {
+    this.router.navigate(['/home']);
+  }
+
   isAuth() {
     return this.authService.isAuthenticated();
   }

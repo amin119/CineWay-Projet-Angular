@@ -27,7 +27,9 @@ export class MoviesApi {
   }
 
   getTrendingMovies() {
-    return this.getMovies('SHOWING', 'trending');
+    return this.http
+      .get<MovieModel[]>(APP_API.movies.trending)
+      .pipe(map((movies) => movies.map((movie) => this.transformMovieResponse(movie))));
   }
 
   getShowingMovies() {

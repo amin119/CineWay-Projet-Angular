@@ -4,34 +4,45 @@
     <p class="text-sm text-gray-400 mb-8">Find answers to common questions about using CineWay.</p>
 
     <div class="space-y-4">
-      @for (faq of faqs; track faq.question; let i = $index) {
-        <div class="bg-gray-850 rounded-lg border border-gray-700 overflow-hidden">
-          <button
-            class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-800 transition-colors"
-            (click)="toggleFAQ(i)"
-          >
-            <span class="font-medium text-white">{{ faq.question }}</span>
-            <span
-              class="text-gray-400 transition-transform duration-200"
-              [class.rotate-180]="faq.isOpen"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </span>
-          </button>
-
-          @if (faq.isOpen) {
-            <div class="px-6 pb-4 text-gray-300 leading-relaxed">
-              {{ faq.answer }}
-            </div>
-          }
+      @if (isLoading) {
+        <div class="text-center py-8">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          <p class="text-gray-400 mt-2">Loading FAQs...</p>
         </div>
+      } @else if (faqs.length === 0) {
+        <div class="text-center py-8">
+          <p class="text-gray-400">No FAQs available at the moment.</p>
+        </div>
+      } @else {
+        @for (faq of faqs; track faq.id; let i = $index) {
+          <div class="bg-gray-850 rounded-lg border border-gray-700 overflow-hidden">
+            <button
+              class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-800 transition-colors"
+              (click)="toggleFAQ(i)"
+            >
+              <span class="font-medium text-white">{{ faq.question }}</span>
+              <span
+                class="text-gray-400 transition-transform duration-200"
+                [class.rotate-180]="faq.isOpen"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
+              </span>
+            </button>
+
+            @if (faq.isOpen) {
+              <div class="px-6 pb-4 text-gray-300 leading-relaxed">
+                {{ faq.answer }}
+              </div>
+            }
+          </div>
+        }
       }
     </div>
 

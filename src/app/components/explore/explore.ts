@@ -115,7 +115,6 @@ export class Explore implements OnInit, OnDestroy {
       .subscribe({
         next: (movies) => {
           this.nowShowingMovies = movies.slice(0, this.MOVIES_PER_CATEGORY);
-          this.featuredMovie = this.nowShowingMovies[0] || null;
         },
         error: (error) => {
           console.error('Error loading showing movies:', error);
@@ -149,6 +148,7 @@ export class Explore implements OnInit, OnDestroy {
           this.trendingMovies = movies
             .map((movie) => ({ ...movie, status: movie.state || 'SHOWING' }))
             .slice(0, this.TRENDING_MOVIES_LIMIT);
+          this.featuredMovie = this.trendingMovies.sort((a, b) => b.revenue - a.revenue)[0] || null;
         },
         error: (error) => {
           console.error('Failed to load trending movies:', error);
@@ -157,6 +157,7 @@ export class Explore implements OnInit, OnDestroy {
             .sort((a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime())
             .map((movie) => ({ ...movie, status: movie.state || 'SHOWING' }))
             .slice(0, this.TRENDING_MOVIES_LIMIT);
+          this.featuredMovie = this.trendingMovies.sort((a, b) => b.revenue - a.revenue)[0] || null;
         },
       });
   }

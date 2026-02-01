@@ -1,13 +1,17 @@
 <nav class="cw fixed w-full border-b border-gray-500 bg-gray-950 z-50 h-16">
   <div class="max-w-7xl mx-auto flex items-center px-2 py-2">
-    <div class="flex items-center gap-2">
+    <a
+      (click)="navigateToHome()"
+      class="flex items-center gap-2 no-underline"
+      style="text-decoration: none"
+    >
       <img
         src="https://img.icons8.com/?size=100&id=111180&format=png&color=228BE6"
         class="h-7"
         alt="CineWay Logo"
       />
-      <span class="text-xl font-semibold text-heading">CineWay</span>
-    </div>
+      <span class="text-xl font-semibold text-heading no-underline">CineWay</span>
+    </a>
 
     <div class="hidden md:flex flex-1 items-center justify-between ml-12">
       <div class="search-container relative">

@@ -22,7 +22,7 @@ export class Profile {
   authService = inject(AuthService);
   profile = this.userApi.profile;
   loading = this.userApi.loading;
-  section: 'profile' | 'preferences' | 'payment' | 'history' | 'help' = 'profile';
+  section: 'profile' | 'payment' | 'history' | 'help' = 'profile';
   toastr = inject(ToastrService);
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
@@ -30,8 +30,8 @@ export class Profile {
   constructor() {
     this.activatedRoute.queryParams.subscribe((params) => {
       const section = params['section'];
-      if (section && ['profile', 'preferences', 'payment', 'history', 'help'].includes(section)) {
-        this.section = section as 'profile' | 'preferences' | 'payment' | 'history' | 'help';
+      if (section && ['profile', 'payment', 'history', 'help'].includes(section)) {
+        this.section = section as 'profile' | 'payment' | 'history' | 'help';
       }
     });
   }
@@ -65,7 +65,13 @@ export class Profile {
     });
   }
 
-  onSectionChange(section: 'profile' | 'preferences' | 'payment' | 'history' | 'help') {
+  onAccountDeleted() {
+    this.userApi.clear();
+    this.authService.logout();
+    this.router.navigate([APP_ROUTES.login]);
+  }
+
+  onSectionChange(section: 'profile' | 'payment' | 'history' | 'help') {
     this.section = section;
   }
 

@@ -121,6 +121,10 @@ export class UserApi {
     );
   }
 
+  deleteAccount(): Observable<void> {
+    return this.http.delete<void>(APP_API.user.me);
+  }
+
   clear(): void {
     this._user.set(null);
     this._error.set(null);

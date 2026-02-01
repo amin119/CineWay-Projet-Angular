@@ -35,6 +35,8 @@ import { ShowingNowComponent } from './components/showing-now/showing-now';
 import { Faq } from './components/faq/faq';
 import { About } from './components/about/about';
 import { SpecialOffers } from './components/special-offers/special-offers';
+import { AdminFaqsComponent } from './components/admin/pages/admin-faqs/admin-faqs';
+import { AddEditFaqPageComponent } from './components/admin/pages/add-edit-faq-page/add-edit-faq-page';
 
 export const routes: Routes = [
   {
@@ -117,6 +119,9 @@ export const routes: Routes = [
       { path: 'showtimes', component: AdminShowtimesComponent },
       { path: 'showtimes/add', component: AddEditShowtimePageComponent },
       { path: 'showtimes/edit/:id', component: AddEditShowtimePageComponent },
+      { path: 'faqs', component: AdminFaqsComponent },
+      { path: 'faqs/add', component: AddEditFaqPageComponent },
+      { path: 'faqs/edit/:id', component: AddEditFaqPageComponent },
     ],
   },
   {
