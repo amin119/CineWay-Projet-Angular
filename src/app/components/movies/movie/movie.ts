@@ -1,5 +1,5 @@
 
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MovieModel } from '../../../models/movie.model';
 
 @Component({
@@ -7,6 +7,7 @@ import { MovieModel } from '../../../models/movie.model';
   imports: [],
   templateUrl: './movie.html',
   styleUrl: './movie.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Movie {
 

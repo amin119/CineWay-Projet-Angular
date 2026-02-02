@@ -6,7 +6,8 @@ export const APP_API = {
     signup: `${environment.apiUrl}/auth/register`,
     logout: `${environment.apiUrl}/auth/logout`,
     checkmail: `${environment.apiUrl}/auth/check-email`,
-    me: `${environment.apiUrl}/auth/me`,
+    me : `${environment.apiUrl}/auth/me`,
+    changePassword: `${environment.apiUrl}/auth/change-password`,
   },
   movies: {
     movies: `${environment.apiUrl}/movies`,
@@ -24,7 +25,7 @@ export const APP_API = {
     me: `${environment.apiUrl}/users/me`,
     preferences: `${environment.apiUrl}/users/me/preferences`,
     profilePicture: `${environment.apiUrl}/users/me/profile-picture`,
-    admin: `${environment.apiUrl}/users`,
+    admin: `${environment.apiUrl}/users/admin/users`,
   },
 
   cinema: {

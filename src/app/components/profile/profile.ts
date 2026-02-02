@@ -10,6 +10,7 @@ import { Toast, ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { APP_API } from '../../config/app-api.config';
 import { APP_ROUTES } from '../../config/app-routes.confg';
+import { ChangePasswordRequestDto } from '../../auth/services/auth.service';
 @Component({
   selector: 'app-profile',
   imports: [Sidebar, Content],
@@ -47,6 +48,18 @@ onUpdateProfile(event: {
     },
     error: () => {
       this.toastr.error('Failed to update profile');
+    },
+  });
+}
+onChangePassword(payload: ChangePasswordRequestDto) {
+  this.authService.changePassword(payload).subscribe({
+    next: (res) => {
+      this.toastr.success(res.message || 'Password successfully changed');
+    },
+    error: (err) => {
+      const backendDetail =
+        err?.error?.detail || err?.error?.message || 'Failed to change password';
+      this.toastr.error(backendDetail);
     },
   });
 }

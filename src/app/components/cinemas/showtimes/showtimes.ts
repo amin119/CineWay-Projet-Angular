@@ -1,4 +1,4 @@
-import { Component, computed, input, OnInit, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, OnInit, output, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { APP_API } from '../../../config/app-api.config';
@@ -11,6 +11,7 @@ import { MovieModel } from '../../../models/movie.model';
   imports: [DatePipe, TimeToHoursPipe],
   templateUrl: './showtimes.html',
   styleUrl: './showtimes.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Showtimes implements OnInit {
   chosenDate = signal('');
