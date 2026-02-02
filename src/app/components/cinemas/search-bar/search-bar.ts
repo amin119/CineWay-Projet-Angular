@@ -11,7 +11,6 @@ import { Cinema } from '../../../models/cinema.model';
   imports: [FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.css',
-  standalone: true,
 })
 export class SearchBar {
   formBuilder = inject(FormBuilder);
@@ -30,8 +29,9 @@ export class SearchBar {
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((q) => this.cinemaService.searchCinemas(q)),
-        catchError(() => of([])),
+        catchError(() => of([]))
       ),
     defaultValue: [],
   });
+
 }

@@ -5,11 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchInputComponent } from '../../components/search-input/search-input';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { PaginationComponent } from '../../components/pagination/pagination';
-import {
-  AdminDataTableComponent,
-  TableColumn,
-  TableAction,
-} from '../../components/admin-data-table/admin-data-table';
+import { AdminDataTableComponent, TableColumn, TableAction } from '../../components/admin-data-table/admin-data-table';
 import { Cinema } from '../../../../models/cinema.model';
 import { CinemaService } from '../../../../services/cinema.service';
 
@@ -53,11 +49,10 @@ export class AdminCinemasComponent implements OnInit {
 
   readonly filteredCinemas = computed(() => {
     const q = this.searchTerm().toLowerCase().trim();
-    return this.cinemas().filter(
-      (cinema) =>
-        cinema.name.toLowerCase().includes(q) ||
-        cinema.city.toLowerCase().includes(q) ||
-        cinema.address.toLowerCase().includes(q),
+    return this.cinemas().filter((cinema) =>
+      cinema.name.toLowerCase().includes(q)
+      || cinema.city.toLowerCase().includes(q)
+      || cinema.address.toLowerCase().includes(q)
     );
   });
 
@@ -90,8 +85,7 @@ export class AdminCinemasComponent implements OnInit {
 
   private loadCinemas(): void {
     this.loading.set(true);
-    this.cinemasApi
-      .getCinemas()
+    this.cinemasApi.getCinemas()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -101,6 +95,7 @@ export class AdminCinemasComponent implements OnInit {
         error: (err) => {
           this.error.set('Failed to load cinemas');
           this.loading.set(false);
+          console.error(err);
         },
       });
   }
@@ -126,7 +121,7 @@ export class AdminCinemasComponent implements OnInit {
     this.router.navigate(['/admin/cinemas/add']);
   }
 
-  onTableAction(event: { action: 'edit' | 'delete'; row: Cinema }): void {
+  onTableAction(event: { action: 'edit' | 'delete', row: Cinema }): void {
     if (event.action === 'edit') {
       this.router.navigate(['/admin/cinemas/edit', event.row.id]);
     } else if (event.action === 'delete') {
@@ -135,21 +130,20 @@ export class AdminCinemasComponent implements OnInit {
   }
 
   private onDelete(cinema: Cinema): void {
-    const confirmed = confirm(
-      `Are you sure you want to delete "${cinema.name}"? This action cannot be undone.`,
-    );
+    const confirmed = confirm(`Are you sure you want to delete "${cinema.name}"? This action cannot be undone.`);
     if (!confirmed) return;
 
-    this.cinemasApi
-      .deleteCinema(cinema.id)
+    this.cinemasApi.deleteCinema(cinema.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.cinemas.update((cinemas) => cinemas.filter((c) => c.id !== cinema.id));
+          this.cinemas.update(cinemas => cinemas.filter(c => c.id !== cinema.id));
         },
         error: (err) => {
           this.error.set('Failed to delete cinema');
+          console.error('Delete failed:', err);
         },
       });
   }
 }
+

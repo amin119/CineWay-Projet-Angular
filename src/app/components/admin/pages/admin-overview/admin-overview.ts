@@ -4,7 +4,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { StatsCard } from '../../components/stats-card/stats-card';
 import { QuickNavCard } from '../../components/quick-nav-card/quick-nav-card';
-import { AdminStatsService, RecentBooking } from '../../../../services/admin-stats.service';
+import { AdminStatsService } from '../../../../services/admin-stats.service';
 
 @Component({
   selector: 'app-admin-overview',
@@ -18,7 +18,6 @@ export class AdminOverviewComponent implements OnInit {
   totalMovies = 0;
   totalCinemas = 0;
   recentBookings = 0;
-  recentBookingsList: RecentBooking[] = [];
   totalUsers = 0;
   loading = false;
   error: string | null = null;
@@ -35,12 +34,12 @@ export class AdminOverviewComponent implements OnInit {
       movies: this.adminStats.getMoviesCount(),
       cinemas: this.adminStats.getCinemasCount(),
       users: this.adminStats.getUsersCount(),
-      recentBookings: this.adminStats.getRecentBookings(7, 10),
+      recentBookings: this.adminStats.getRecentBookingsCount(),
     })
       .pipe(
         catchError(() => {
           this.error = 'Unable to load dashboard statistics.';
-          return of({ movies: 0, cinemas: 0, users: 0, recentBookings: [] as RecentBooking[] });
+          return of({ movies: 0, cinemas: 0, users: 0, recentBookings: 0 });
         }),
         finalize(() => {
           this.loading = false;
@@ -50,8 +49,7 @@ export class AdminOverviewComponent implements OnInit {
         this.totalMovies = movies;
         this.totalCinemas = cinemas;
         this.totalUsers = users;
-        this.recentBookingsList = recentBookings;
-        this.recentBookings = recentBookings.length;
+        this.recentBookings = recentBookings;
       });
   }
 }

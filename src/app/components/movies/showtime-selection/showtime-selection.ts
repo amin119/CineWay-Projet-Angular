@@ -118,15 +118,27 @@ export class ShowtimeSelectionComponent implements OnInit {
     return date.toLocaleDateString('en-US', options);
   }
   private loadOtherShowtimes(movieId: number, excludeId: number): void {
+    console.log(
+      'Loading other showtimes for movie ID:',
+      movieId,
+      'excluding screening ID:',
+      excludeId,
+    );
     this.screeningService
       .getScreenings({ movie_id: movieId })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (showtimes) => {
+          console.log('Other showtimes data received:', showtimes);
           const other = showtimes.filter((s) => s.id !== excludeId);
+          console.log('Filtered other showtimes:', other);
           this.otherShowtimes.set(other);
         },
         error: (err) => {
+          console.error('Error loading other showtimes:', err);
+          console.error('Error details:', err.error);
+          console.error('Error status:', err.status);
+          console.error('Error message:', err.message);
           // Don't set error, just leave empty
         },
       });
@@ -143,20 +155,12 @@ export class ShowtimeSelectionComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-
     if (!id) {
       this.router.navigate(['/explore']);
       return;
     }
 
-    const numericId = Number(id);
-
-    if (isNaN(numericId) || numericId <= 0) {
-      this.error.set('Invalid screening ID');
-      return;
-    }
-
-    this.screeningId.set(numericId);
+    this.screeningId.set(Number(id));
     this.loadScreening();
   }
 
@@ -164,6 +168,7 @@ export class ShowtimeSelectionComponent implements OnInit {
     const id = this.screeningId();
     if (!id) return;
 
+    console.log('Loading screening with ID:', id);
     this.loading.set(true);
     this.error.set(null);
 
@@ -172,6 +177,9 @@ export class ShowtimeSelectionComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (screening) => {
+          console.log('Screening data received:', screening);
+          console.log('Movie data:', screening.movie);
+          console.log('Room data:', screening.room);
           this.screening.set(screening);
           this.loading.set(false);
 
@@ -189,20 +197,11 @@ export class ShowtimeSelectionComponent implements OnInit {
           this.loadOtherShowtimes(screening.movie_id, id);
         },
         error: (err) => {
-          let errorMessage = 'Failed to load showtime details';
-
-          if (err.status === 0) {
-            errorMessage =
-              'Cannot connect to server. Please check if the backend server is running and CORS is configured properly.';
-          } else if (err.status === 404) {
-            errorMessage = 'Showtime not found. This showtime may have been cancelled or removed.';
-          } else if (err.status === 500) {
-            errorMessage = 'Server error occurred. Please try again later or contact support.';
-          } else if (err.status === 403) {
-            errorMessage = 'Access denied. Please login and try again.';
-          }
-
-          this.error.set(errorMessage);
+          console.error('Error loading screening:', err);
+          console.error('Error details:', err.error);
+          console.error('Error status:', err.status);
+          console.error('Error message:', err.message);
+          this.error.set('Failed to load showtime details');
           this.loading.set(false);
         },
       });
@@ -248,21 +247,12 @@ export class ShowtimeSelectionComponent implements OnInit {
     const screeningId = this.screeningId();
     if (!screeningId) return;
 
-    // Navigate to seat selection page with state
-    this.router.navigate(['/seats', screeningId], {
-      state: {
-        movie: this.screening()?.movie,
-        ticketCount: this.totalTickets(),
-      },
-    });
+    // Navigate to seat selection page
+    // For now, just show an alert
+    alert('Proceeding to seat selection...');
   }
 
   selectOtherShowtime(showtimeId: number): void {
     this.router.navigate(['/screenings', showtimeId]);
-  }
-
-  retryLoadScreening(): void {
-    this.error.set(null);
-    this.loadScreening();
   }
 }

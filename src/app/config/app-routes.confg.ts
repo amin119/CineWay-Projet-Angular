@@ -3,8 +3,6 @@ export const APP_ROUTES = {
   login: 'auth/login',
   signup: 'auth/signup',
   profile: '/profile',
-  favorites: '/favorites',
   cinemas: '/cinemas',
-  book: '/book',
-  explore: '/explore',
+  explore: '/explore'
 };

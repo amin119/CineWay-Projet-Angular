@@ -1,15 +1,19 @@
 @if (section === 'profile') {
+
   <!-- Centering wrapper -->
-  <div class="flex justify-center pt-24 pb-24">
+  <div class="flex justify-center pt-24">
+
+
     <!-- Content container -->
-    <div class="w-full">
+    <div class="w-full ">
+
       <h2 class="text-lg font-semibold mb-2">Profile Details</h2>
-      <p class="text-sm text-gray-400 mb-6">Update your personal information and password below.</p>
+      <p class="text-sm text-gray-400 mb-6">
+        Update your personal information and password below.
+      </p>
 
       <!-- Card -->
-      <form
-        [formGroup]="profileForm"
-        class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y-6 mb-6"
+ <form [formGroup]="profileForm" class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y-6 mb-6"
       >
         <h3 class="text-sm font-semibold">Personal Information</h3>
 
@@ -21,132 +25,103 @@
 
           <div>
             <label class="text-sm text-gray-400 mb-2">Email</label>
-            <input class="input w-full profile-input" formControlName="email" />
+            <input class="input w-full profile-input"formControlName="email" />
           </div>
         </div>
 
         <div class="flex justify-end">
+          <button class="cw-btn-primary"  [disabled]="profileForm.invalid || profileForm.pristine"
+            (click)="onSave()">
+            Save changes
+          </button>
+        </div>
+
+      </form>
+      <!-- Profile picture -->
+
+<div class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y- mb-6 flex items-center justify-between">
+         <h3 class="text-sm font-semibold"> Update Your Profile Picture </h3>
+<img
+    [src]="profile()? 'http://localhost:8000' + profile()?.profile_picture_url
+    : '/assets/avatar.png'"
+    class="w-20 h-20 rounded-full object-cover border border-gray-600"
+    alt="Profile picture"
+  />
+<label class="cw-btn-primary cursor-pointer">
+  Select picture
+  <input
+    type="file"
+    accept="image/*"
+    class="hidden"
+    (change)="onPictureSelected($event)"
+  />
+</label>
+
+
+ <div>
+
+ </div>
+
+</div>
+
+      <!-- Change Password -->
+      <div class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y-6 mb-2">
+
+  <h3 class="text-sm font-semibold">Change Password</h3>
+
+  <form [formGroup]="passwordForm" class="space-y-6">
+  <div>
+    <label class="text-sm text-gray-400 mb-2">
+      Current password
+    </label>
+    <input
+      type="password"
+      class="input w-full profile-input"
+      placeholder="Current password"
+      formControlName="current_password"
+    />
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="text-sm text-gray-400 mb-2">
+        New password
+      </label>
+      <input
+        type="password"
+        class="input w-full profile-input"
+        placeholder="New password"
+        formControlName="new_password"
+      />
+    </div>
+
+    <div>
+      <label class="text-sm text-gray-400 mb-2 ">
+        Confirm new password
+      </label>
+      <input
+        type="password"
+        class="input w-full profile-input"
+        placeholder="Confirm new password"
+        formControlName="confirm_new_password"
+      />
+    </div>
+  
+  </div>
+  <div class="flex justify-end">
           <button
             class="cw-btn-primary"
-            [disabled]="profileForm.invalid || profileForm.pristine"
-            (click)="onSave()"
+            type="button"
+            [disabled]="passwordForm.invalid"
+            (click)="onChangePassword()"
           >
             Save changes
           </button>
         </div>
-      </form>
-      <!-- Profile picture -->
+</form>
+</div>
 
-      <div class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y-4 mb-6">
-        <h3 class="text-sm font-semibold">Update Your Profile Picture</h3>
 
-        <div class="flex items-center gap-6">
-          <img
-            [src]="previewUrl || profile()?.profile_picture_url || '/assets/avatar.png'"
-            class="w-20 h-20 rounded-full object-cover border border-gray-600"
-            alt="Profile picture"
-          />
-
-          <div class="flex gap-3">
-            <label class="cw-btn-primary cursor-pointer">
-              Select Picture
-              <input
-                type="file"
-                accept="image/*"
-                class="hidden"
-                (change)="onPictureSelected($event)"
-              />
-            </label>
-
-            @if (selectedFile) {
-              <button
-                class="cw-btn-primary bg-green-600 hover:bg-green-700"
-                (click)="onUploadPicture()"
-              >
-                Save Picture
-              </button>
-            }
-          </div>
-        </div>
-      </div>
-
-      <!-- Change Password -->
-      <div class="bg-gray-850 rounded-lg p-8 border border-gray-700 space-y-6 mb-2">
-        <h3 class="text-sm font-semibold">Change Password</h3>
-
-        <div>
-          <label class="text-sm text-gray-400 mb-2"> Current password </label>
-          <input
-            type="password"
-            class="input w-full profile-input"
-            placeholder="Current password"
-          />
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm text-gray-400 mb-2"> New password </label>
-            <input type="password" class="input w-full profile-input" placeholder="New password" />
-          </div>
-
-          <div>
-            <label class="text-sm text-gray-400 mb-2"> Confirm new password </label>
-            <input
-              type="password"
-              class="input w-full profile-input"
-              placeholder="Confirm new password"
-            />
-          </div>
-        </div>
-        <div class="flex justify-end">
-          <button class="cw-btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-}
-
-@if (section === 'preferences') {
-  <div class="flex justify-center pt-24 pb-24">
-    <div class="w-full">
-      <h2 class="text-lg font-semibold mb-2">Preferences</h2>
-      <p class="text-sm text-gray-400 mb-6">Manage your application preferences and settings.</p>
-
-      <div class="bg-gray-850 rounded-lg p-8 border border-gray-700">
-        <p class="text-gray-400">Preferences settings will be implemented here.</p>
-      </div>
-    </div>
-  </div>
-}
-
-@if (section === 'payment') {
-  <div class="flex justify-center pt-24 pb-24">
-    <div class="w-full">
-      <h2 class="text-lg font-semibold mb-2">Payment Methods</h2>
-      <p class="text-sm text-gray-400 mb-6">Manage your payment methods and billing information.</p>
-
-      <div class="bg-gray-850 rounded-lg p-8 border border-gray-700">
-        <p class="text-gray-400">Payment methods will be implemented here.</p>
-      </div>
-    </div>
-  </div>
-}
-
-@if (section === 'history') {
-  <div class="pt-8">
-    <app-payment-history></app-payment-history>
-  </div>
-}
-
-@if (section === 'help') {
-  <div class="flex justify-center pt-24 pb-24">
-    <div class="w-full">
-      <h2 class="text-lg font-semibold mb-2">Help & Support</h2>
-      <p class="text-sm text-gray-400 mb-6">Get help with using CineWay and contact support.</p>
-
-      <div class="bg-gray-850 rounded-lg p-8 border border-gray-700">
-        <p class="text-gray-400">Help & support content will be implemented here.</p>
-      </div>
     </div>
   </div>
 }

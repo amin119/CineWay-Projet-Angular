@@ -141,6 +141,7 @@ export class MovieShowtimesComponent implements OnInit {
           }
         },
         error: (err) => {
+          console.error('Error loading showtimes:', err);
           this.error.set('Failed to load showtimes');
           this.loading.set(false);
         },

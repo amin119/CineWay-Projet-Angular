@@ -45,68 +45,6 @@
     {{ error }}
   </div>
 
-  <div class="section-surface" *ngIf="!error">
-    <div class="section-header">
-      <h2 class="section-title">Recent bookings</h2>
-      <p class="section-subtitle">Last 10 bookings from the past 7 days.</p>
-    </div>
-
-    <div class="overflow-x-auto rounded-2xl border border-white/10 bg-white/5">
-      <table class="min-w-full text-left text-sm">
-        <thead class="text-xs uppercase tracking-wider text-white/70">
-          <tr class="border-b border-white/10">
-            <th class="px-4 py-3">Ticket</th>
-            <th class="px-4 py-3">User</th>
-            <th class="px-4 py-3">Screening</th>
-            <th class="px-4 py-3">Seat</th>
-            <th class="px-4 py-3">Price</th>
-            <th class="px-4 py-3">Status</th>
-            <th class="px-4 py-3">Booked at</th>
-          </tr>
-        </thead>
-
-        <tbody class="divide-y divide-white/10">
-          <tr *ngIf="loading">
-            <td class="px-4 py-4 text-white/70" colspan="7">Loading bookings…</td>
-          </tr>
-
-          <tr *ngIf="!loading && recentBookingsList.length === 0">
-            <td class="px-4 py-4 text-white/70" colspan="7">No recent bookings found.</td>
-          </tr>
-
-          <tr *ngFor="let b of recentBookingsList">
-            <td class="px-4 py-3 font-medium text-white/90">#{{ b.id }}</td>
-            <td class="px-4 py-3 text-white/80">#{{ b.user_id }}</td>
-            <td class="px-4 py-3 text-white/80">#{{ b.screening_id }}</td>
-            <td class="px-4 py-3 text-white/80">
-              {{ b.seat_id ?? '—' }}
-            </td>
-            <td class="px-4 py-3 text-white/80">
-              {{ b.price | number : '1.2-2' }}
-            </td>
-            <td class="px-4 py-3">
-              <span
-                class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
-                [ngClass]="
-                  b.status === 'confirmed'
-                    ? 'bg-emerald-500/15 text-emerald-300'
-                    : b.status === 'cancelled'
-                      ? 'bg-rose-500/15 text-rose-300'
-                      : 'bg-amber-500/15 text-amber-300'
-                "
-              >
-                {{ b.status }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-white/80">
-              {{ b.booked_at | date : 'medium' }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
   <div class="section-surface">
     <div class="section-header">
       <h2 class="section-title">Quick Navigation</h2>

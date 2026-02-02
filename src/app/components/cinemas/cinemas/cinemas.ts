@@ -10,32 +10,26 @@ import { Cinema } from '../../../models/cinema.model';
   imports: [CinemaCard, FormsModule, SearchBar],
   templateUrl: './cinemas.html',
   styleUrl: './cinemas.css',
-  standalone: true,
 })
 export class Cinemas {
   private cinemaService = inject(CinemaService);
   cinemas = signal<Cinema[]>([]);
   error = this.cinemaService.error;
   isLoading = this.cinemaService.isLoading;
+  total = this.cinemaService.total;
 
-  hasMore = computed(() => !this.isLoading());
+  hasMore = computed(() => {
+    const currentTotal = this.cinemas().length;
+    const totalAvailable = this.total();
+    return totalAvailable !== undefined && totalAvailable > currentTotal;
+  });
 
   constructor() {
     effect(() => {
       const loadedCinemas = this.cinemaService.cinemas();
-
-      if (loadedCinemas.length > 0) {
+      if (loadedCinemas && loadedCinemas.length > 0) {
         this.cinemas.update((current) => {
-          const ids = new Set(current.map((c) => c.id));
-          const merged = [...current];
-
-          for (const cinema of loadedCinemas) {
-            if (!ids.has(cinema.id)) {
-              merged.push(cinema);
-            }
-          }
-
-          return merged;
+          return [...current, ...loadedCinemas];
         });
       }
     });
@@ -48,10 +42,9 @@ export class Cinemas {
 
   showFavoritesOnly = signal(false);
 
-  filteredCinemas = computed(() => {
-    const result = this.showFavoritesOnly() ? this.cinemaService.favorites() || [] : this.cinemas();
-    return result;
-  });
+  filteredCinemas = computed(() =>
+    this.showFavoritesOnly() ? this.cinemaService.favorites() || [] : this.cinemas()
+  );
 
   toggleFavoritesFilter() {
     this.showFavoritesOnly.update((v) => !v);
