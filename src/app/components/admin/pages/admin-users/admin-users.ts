@@ -145,7 +145,7 @@ export class AdminUsersComponent implements OnInit {
     this.router.navigate(['/admin/users/add']);
   }
 
-  onTableAction(event: { action: 'edit' | 'delete'; row: UserModel }): void {
+  onTableAction(event: { action: string; row: UserModel }): void {
     if (event.action === 'edit') {
       this.router.navigate(['/admin/users/edit', event.row.id]);
     } else if (event.action === 'delete') {

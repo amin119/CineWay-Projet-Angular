@@ -10,7 +10,7 @@ export interface TableColumn {
 }
 
 export interface TableAction {
-  type: 'edit' | 'delete';
+  type: string;
   label: string;
 }
 
@@ -25,11 +25,14 @@ export class AdminDataTableComponent {
   // Inputs
   data = input.required<any[]>();
   columns = input.required<TableColumn[]>();
-  actions = input<TableAction[]>([{ type: 'edit', label: 'Edit' }, { type: 'delete', label: 'Delete' }]);
+  actions = input<TableAction[]>([
+    { type: 'edit', label: 'Edit' },
+    { type: 'delete', label: 'Delete' },
+  ]);
   loading = input<boolean>(false);
 
   // Outputs
-  actionClicked = output<{ action: 'edit' | 'delete'; row: any }>();
+  actionClicked = output<{ action: string; row: any }>();
 
   // Computed
   displayHeaders = computed(() => {
@@ -37,7 +40,7 @@ export class AdminDataTableComponent {
     return [...cols, { label: 'Actions', key: 'actions', align: 'right' as const }];
   });
 
-  onAction(action: 'edit' | 'delete', row: any) {
+  onAction(action: string, row: any) {
     this.actionClicked.emit({ action, row });
   }
 

@@ -7,7 +7,7 @@ import { MovieModel } from '../../models/movie.model';
 
 @Component({
   selector: 'app-trending',
-  standalone: true,
+
   imports: [CommonModule, RouterModule],
   templateUrl: './trending.html',
   styleUrls: ['./trending.css'],
@@ -22,7 +22,7 @@ export class TrendingComponent implements OnInit {
   isLoadingMore = signal(false);
   hasMoreMovies = signal(true);
   currentIndex = signal(0);
-  readonly limit = 12;
+  readonly limit = 15;
   favoriteMovieIds = new Set<number>();
 
   ngOnInit() {
@@ -38,7 +38,7 @@ export class TrendingComponent implements OnInit {
       next: (movies) => {
         const trendingMovies = movies.map((movie) => ({
           ...movie,
-          status: movie.status || 'SHOWING',
+          status: movie.state || 'SHOWING',
         }));
 
         this.allMovies.set(trendingMovies);

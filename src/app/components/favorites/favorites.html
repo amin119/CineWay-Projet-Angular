@@ -48,7 +48,9 @@
             <i class="bi bi-heart text-6xl text-gray-600 mb-4"></i>
             <h3 class="text-xl text-gray-400 mb-2">No favorite movies yet</h3>
             <p class="text-gray-500 mb-6">Start adding movies to your favorites!</p>
-            <a routerLink="/explore" class="cw-btn-primary"> Browse Movies </a>
+            <a routerLink="/explore" class="cw-btn-primary block mx-auto text-center">
+              Browse Movies
+            </a>
           </div>
         } @else {
           @for (movie of favoriteMovies(); track movie.id) {
@@ -95,7 +97,9 @@
             <i class="bi bi-building text-6xl text-gray-600 mb-4"></i>
             <h3 class="text-xl text-gray-400 mb-2">No favorite cinemas yet</h3>
             <p class="text-gray-500 mb-6">Start adding cinemas to your favorites!</p>
-            <a routerLink="/cinemas" class="cw-btn-primary"> Browse Cinemas </a>
+            <a routerLink="/cinemas" class="cw-btn-primary block mx-auto text-center">
+              Browse Cinemas
+            </a>
           </div>
         } @else {
           @for (cinema of favoriteCinemas(); track cinema.id) {

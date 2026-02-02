@@ -8,7 +8,7 @@ import { Movie } from '../../movies/movie/movie';
   imports: [Movie],
   templateUrl: './now-playing-component.html',
   styleUrl: './now-playing-component.css',
-  standalone: true,
+
 })
 export class NowPlayingComponent {
   private moviesApi = inject(MoviesApi);

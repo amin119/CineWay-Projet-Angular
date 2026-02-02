@@ -1,4 +1,12 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  signal,
+  effect,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, throwError } from 'rxjs';
 import {
@@ -6,9 +14,11 @@ import {
   ReviewListResponse,
   ReviewRead,
   ReviewSummary,
+  ReviewUpdate,
 } from '../../../../models/review.model';
 import { ReviewsService } from '../../../../services/reviews-service';
 import { AddReview } from '../add-review/add-review';
+import { DeleteConfirmationModal } from '../delete-confirmation-modal/delete-confirmation-modal';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../auth/services/auth.service';
@@ -16,9 +26,10 @@ import { UserApi } from '../../../../services/user-api';
 
 @Component({
   selector: 'app-reviews-section',
-  imports: [AddReview, CommonModule],
+  imports: [AddReview, DeleteConfirmationModal, CommonModule],
   templateUrl: './reviews-section.html',
   styleUrl: './reviews-section.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewsSection {
   private reviewsApi = inject(ReviewsService);
@@ -32,6 +43,14 @@ export class ReviewsSection {
   reactingToReview = signal<number | null>(null);
   deletingReview = signal<number | null>(null);
   editingReview = signal(false);
+  deleteConfirmationOpen = signal(false);
+  pendingDeleteReviewId = signal<number | null>(null);
+
+  // Pagination signals
+  currentPage = signal(1);
+  readonly pageSize = 15;
+  isLoadingMore = signal(false);
+  hasMoreReviews = signal(true);
 
   currentUserId = computed(() => this.userApi.user()?.id || null);
 
@@ -44,11 +63,14 @@ export class ReviewsSection {
 
   hasUserReviewed = computed(() => !!this.userReview());
 
+  // Accumulate all loaded reviews
+  allReviews = signal<ReviewRead[]>([]);
+
   reviewsRxResource = rxResource({
     params: () => ({
       movieId: this.movieId(),
-      page: 1,
-      pageSize: 20,
+      page: this.currentPage(),
+      pageSize: this.pageSize,
     }),
     stream: ({ params }) =>
       this.reviewsApi
@@ -56,8 +78,27 @@ export class ReviewsSection {
         .pipe(map((res: ReviewListResponse) => res.reviews)),
     defaultValue: [] as ReviewRead[],
   });
-  reviews = computed(() => this.reviewsRxResource.value());
-  reviewsLoading = this.reviewsRxResource.isLoading;
+
+  // Update allReviews when new reviews are loaded
+  constructor() {
+    effect(() => {
+      const newReviews = this.reviewsRxResource.value();
+      if (newReviews.length > 0) {
+        if (this.currentPage() === 1) {
+          this.allReviews.set(newReviews);
+        } else {
+          this.allReviews.set([...this.allReviews(), ...newReviews]);
+        }
+
+        // Check if there are more reviews to load
+        this.hasMoreReviews.set(newReviews.length === this.pageSize);
+        this.isLoadingMore.set(false);
+      }
+    });
+  }
+
+  reviews = computed(() => this.allReviews());
+  reviewsLoading = computed(() => this.reviewsRxResource.isLoading() && this.currentPage() === 1);
   reviewsError = this.reviewsRxResource.error;
 
   // Fetch review summary for average rating
@@ -87,6 +128,13 @@ export class ReviewsSection {
     if (this.hasNextReview()) this.reviewIndex.update((i) => i + 1);
   }
 
+  loadMoreReviews() {
+    if (this.isLoadingMore() || !this.hasMoreReviews()) return;
+
+    this.isLoadingMore.set(true);
+    this.currentPage.update((page) => page + 1);
+  }
+
   openAddReview() {
     this.editingReview.set(false);
     this.modalOpen.set(true);
@@ -109,9 +157,15 @@ export class ReviewsSection {
     const isEditing = this.editingReview();
     const reviewId = this.userReview()?.id;
 
+    const updatePayload: ReviewUpdate = {
+      rating: payload.rating,
+      title: payload.title ?? null,
+      comment: payload.comment ?? null,
+    };
+
     const request$ =
       isEditing && reviewId
-        ? this.reviewsApi.updateReview(reviewId, payload)
+        ? this.reviewsApi.updateReview(reviewId, updatePayload)
         : this.reviewsApi.createReview(this.movieId(), payload);
 
     request$
@@ -145,9 +199,18 @@ export class ReviewsSection {
   }
 
   deleteReview(reviewId: number) {
-    if (!confirm('Are you sure you want to delete this review?')) return;
+    this.pendingDeleteReviewId.set(reviewId);
+    this.deleteConfirmationOpen.set(true);
+  }
 
+  confirmDeleteReview() {
+    const reviewId = this.pendingDeleteReviewId();
+    if (!reviewId) return;
+
+    this.deleteConfirmationOpen.set(false);
+    this.pendingDeleteReviewId.set(null);
     this.deletingReview.set(reviewId);
+
     this.reviewsApi
       .deleteReview(reviewId)
       .pipe(
@@ -170,6 +233,11 @@ export class ReviewsSection {
           this.deletingReview.set(null);
         },
       });
+  }
+
+  cancelDeleteReview() {
+    this.deleteConfirmationOpen.set(false);
+    this.pendingDeleteReviewId.set(null);
   }
 
   deleteUserReview() {

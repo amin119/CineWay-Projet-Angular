@@ -6,7 +6,7 @@ import { MovieModel } from '../../models/movie.model';
 
 @Component({
   selector: 'app-coming-soon',
-  standalone: true,
+
   imports: [CommonModule, RouterModule],
   templateUrl: './coming-soon.html',
   styleUrl: './coming-soon.css',
@@ -16,7 +16,7 @@ export class ComingSoonComponent implements OnInit {
   isLoading = signal(true);
   error = signal<string | null>(null);
   currentPage = signal(1);
-  moviesPerPage = 20;
+  moviesPerPage = 15;
   hasMoreMovies = signal(true);
   favoriteMovieIds = new Set<number>();
 
@@ -38,13 +38,19 @@ export class ComingSoonComponent implements OnInit {
         // Movies are already filtered by backend with state=COMING_SOON
         const moviesWithStatus = movies.map((movie) => ({
           ...movie,
-          status: movie.status || 'COMING_SOON',
+          status: movie.state || 'COMING_SOON',
         }));
 
         if (movies.length < this.moviesPerPage) {
           this.hasMoreMovies.set(false);
         }
-        this.comingSoonMovies.set(moviesWithStatus);
+
+        if (this.currentPage() === 1) {
+          this.comingSoonMovies.set(moviesWithStatus);
+        } else {
+          this.comingSoonMovies.set([...this.comingSoonMovies(), ...moviesWithStatus]);
+        }
+
         this.isLoading.set(false);
       },
       error: (err: any) => {

@@ -1,14 +1,6 @@
 export interface CastMember {
-  character_name: string;
-  role: string;
-  actor_name: string;
-  profile_image_url: string | null;
-  is_lead: boolean;
-  order: number;
-  id: number;
-  movie_id: number;
-  created_at: string;
-  updated_at: string;
+  name: string;
+  image_url: string | null;
 }
 
 export interface MovieModel {
@@ -34,7 +26,7 @@ export interface MovieModel {
   trailer_url: string;
   awards: string[];
   details: Record<string, any>;
-  status: 'COMING_SOON' | 'SHOWING' | 'ENDED';
+  state: 'COMING_SOON' | 'SHOWING' | 'ENDED';
   created_at: string;
   updated_at: string;
 }

@@ -61,7 +61,7 @@ export class PaymentConfirmation implements OnInit {
   }
 
   goToMovies() {
-    this.router.navigate(['/movies']);
+    this.router.navigate(['/explore']);
   }
 
   goToHistory() {

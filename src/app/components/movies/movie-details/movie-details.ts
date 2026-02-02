@@ -1,4 +1,13 @@
-import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
@@ -14,6 +23,7 @@ import { ReviewListResponse, ReviewRead } from '../../../models/review.model';
 import { map } from 'rxjs/operators';
 import { ReviewsSection } from './reviews-section/reviews-section';
 import { FavoritesService } from '../../../services/favorites.service';
+import { NotificationService, NotificationResponse } from '../../../services/notification.service';
 
 const DEFAULT_TRAILER = 'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ';
 
@@ -22,14 +32,18 @@ const DEFAULT_TRAILER = 'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ';
   templateUrl: './movie-details.html',
   styleUrl: './movie-details.css',
   imports: [TimeToHoursPipe, ReviewsSection, DatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MovieDetails {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   private favoritesService = inject(FavoritesService);
+  private notificationService = inject(NotificationService);
   isMuted = signal(true);
   isFavorite = signal(false);
+  notificationSignedUp = signal(false);
+  notificationLoading = signal(false);
 
   movieId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
 
@@ -50,7 +64,7 @@ export class MovieDetails {
         this.isFavorite.set(isFav);
       },
       error: (err: any) => {
-        console.error('Error checking favorites:', err);
+        // Handle error silently or show user-friendly message
       },
     });
   }
@@ -60,16 +74,17 @@ export class MovieDetails {
   }));
   movie = computed(() => {
     const movieData = this.movieResource.value();
-    if (movieData && !movieData.status) {
-      // Set default status based on release date if not provided
-      const releaseDate = new Date(movieData.release_date);
-      const now = new Date();
-      if (releaseDate > now) {
-        movieData.status = 'COMING_SOON';
-      } else {
-        movieData.status = 'SHOWING';
-      }
-    }
+    if (!movieData) return movieData;
+
+    console.log('🎬 Movie Details - Movie Data:', {
+      movieId: movieData.id,
+      title: movieData.title,
+      state: movieData.state,
+      releaseDate: movieData.release_date,
+    });
+
+    // Use the backend state directly
+    console.log('✅ Using backend state:', movieData.state);
     return movieData;
   });
   loading = this.movieResource.isLoading;
@@ -128,7 +143,7 @@ export class MovieDetails {
           this.isFavorite.set(false);
         },
         error: (err: any) => {
-          console.error('Error removing from favorites:', err);
+          // Handle error silently or show user-friendly message
         },
       });
     } else {
@@ -137,15 +152,121 @@ export class MovieDetails {
           this.isFavorite.set(true);
         },
         error: (err: any) => {
-          console.error('Error adding to favorites:', err);
+          // Handle error silently or show user-friendly message
         },
       });
     }
   }
 
+  notifyMe() {
+    if (this.notificationLoading()) return;
+
+    const movieId = this.movieId();
+    const movieTitle = this.movie()?.title;
+
+    console.log('🔔 Notify Me clicked for movie:', {
+      movieId,
+      movieTitle,
+      currentState: this.movie()?.state,
+    });
+
+    this.notificationLoading.set(true);
+
+    this.notificationService.subscribeToMovie(movieId).subscribe({
+      next: (response: NotificationResponse) => {
+        console.log('✅ Notification subscription successful:', response);
+        this.notificationSignedUp.set(response.subscribed);
+
+        // You could show a toast notification here
+        // this.toastr.success(response.message);
+
+        this.notificationLoading.set(false);
+      },
+      error: (error) => {
+        console.error('❌ Notification subscription failed:', error);
+
+        // Handle different error types
+        let errorMessage = 'Failed to subscribe to notifications';
+        if (error.status === 401) {
+          errorMessage = 'Please log in to subscribe to notifications';
+        } else if (error.status === 404) {
+          errorMessage = 'Movie not found';
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
+        }
+
+        // You could show a toast error here
+        // this.toastr.error(errorMessage);
+
+        this.notificationLoading.set(false);
+      },
+    });
+  }
+
+  unsubscribeFromNotifications() {
+    if (this.notificationLoading()) return;
+
+    const movieId = this.movieId();
+    const movieTitle = this.movie()?.title;
+
+    console.log('🔕 Unsubscribe clicked for movie:', {
+      movieId,
+      movieTitle,
+    });
+
+    this.notificationLoading.set(true);
+
+    this.notificationService.unsubscribeFromMovie(movieId).subscribe({
+      next: (response: NotificationResponse) => {
+        console.log('✅ Notification unsubscription successful:', response);
+        this.notificationSignedUp.set(response.subscribed);
+
+        // You could show a toast notification here
+        // this.toastr.success(response.message);
+
+        this.notificationLoading.set(false);
+      },
+      error: (error) => {
+        console.error('❌ Notification unsubscription failed:', error);
+
+        let errorMessage = 'Failed to unsubscribe from notifications';
+        if (error.status === 401) {
+          errorMessage = 'Please log in to manage notifications';
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
+        }
+
+        // You could show a toast error here
+        // this.toastr.error(errorMessage);
+
+        this.notificationLoading.set(false);
+      },
+    });
+  }
+
+  // Debug helper method
+  logMovieStatus() {
+    const currentMovie = this.movie();
+    console.log('🔍 Current Movie Status Check:', {
+      movieId: currentMovie?.id,
+      title: currentMovie?.title,
+      state: currentMovie?.state,
+      isShowing: currentMovie?.state === 'SHOWING',
+      isComingSoon: currentMovie?.state === 'COMING_SOON',
+      isEnded: currentMovie?.state === 'ENDED',
+    });
+    return true; // Return true so it doesn't affect template rendering
+  }
+
   viewShowtimes() {
     // Navigate to movie showtimes page
     const movieId = this.movieId();
+    const currentMovie = this.movie();
+    console.log('🎬 View Showtimes clicked:', {
+      movieId,
+      state: currentMovie?.state,
+      shouldBeVisible: currentMovie?.state === 'SHOWING',
+    });
     if (movieId) {
       this.router.navigate(['/movies', movieId, 'showtimes']);
     }

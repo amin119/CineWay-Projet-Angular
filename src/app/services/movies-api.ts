@@ -1,14 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { map } from 'rxjs';
 import { MovieModel, CastMember } from '../models/movie.model';
 import { APP_API } from '../config/app-api.config';
-
 @Injectable({
   providedIn: 'root',
 })
 export class MoviesApi {
   private http = inject(HttpClient);
+
+  readonly moviesCache = signal<MovieModel[]>([]);
+  readonly trendingMoviesCache = signal<MovieModel[]>([]);
+  readonly isLoadingMovies = signal<boolean>(false);
+  readonly moviesError = signal<string | null>(null);
 
   getMovies(state?: string, sortBy?: string) {
     let url = `${APP_API.movies.movies}/`;
@@ -27,7 +31,9 @@ export class MoviesApi {
   }
 
   getTrendingMovies() {
-    return this.getMovies('SHOWING', 'trending');
+    return this.http
+      .get<MovieModel[]>(APP_API.movies.trending)
+      .pipe(map((movies) => movies.map((movie) => this.transformMovieResponse(movie))));
   }
 
   getShowingMovies() {
@@ -65,23 +71,19 @@ export class MoviesApi {
   private transformMovieResponse(movie: any): MovieModel {
     return {
       ...movie,
+      status: movie.state || movie.status, // Map 'state' from backend to 'status' for frontend
       cast: Array.isArray(movie.cast)
         ? movie.cast.map(
             (actor: any): CastMember =>
               typeof actor === 'string'
                 ? {
-                    character_name: '',
-                    role: 'Actor',
-                    actor_name: actor,
-                    profile_image_url: null,
-                    is_lead: false,
-                    order: 0,
-                    id: 0,
-                    movie_id: movie.id,
-                    created_at: movie.created_at,
-                    updated_at: movie.updated_at,
+                    name: actor,
+                    image_url: null,
                   }
-                : actor,
+                : {
+                    name: actor.name || actor.actor_name || '',
+                    image_url: actor.image_url || actor.profile_image_url || null,
+                  },
           )
         : [],
     };
@@ -98,13 +100,19 @@ export class MoviesApi {
         .filter((item) => item.length > 0);
     };
 
-    return {
-      title: movie.title,
-      description: movie.description || null,
-      duration_minutes: parseInt(movie.duration_minutes, 10),
-      genre: Array.isArray(movie.genre) ? movie.genre : [movie.genre],
-      rating: movie.rating ? String(movie.rating) : null,
-      cast: Array.isArray(movie.cast)
+    const payload: any = {};
+
+    // Only include fields that are present in the movie object
+    if (movie.title !== undefined) payload.title = movie.title;
+    if (movie.description !== undefined) payload.description = movie.description || null;
+    if (movie.duration_minutes !== undefined)
+      payload.duration_minutes = parseInt(movie.duration_minutes, 10);
+    if (movie.genre !== undefined)
+      payload.genre = Array.isArray(movie.genre) ? movie.genre : [movie.genre];
+    if (movie.rating !== undefined) payload.rating = movie.rating ? String(movie.rating) : null;
+    if (movie.state !== undefined) payload.state = movie.state;
+    if (movie.cast !== undefined) {
+      payload.cast = Array.isArray(movie.cast)
         ? movie.cast.map((actor: any) =>
             typeof actor === 'string'
               ? {
@@ -117,21 +125,66 @@ export class MoviesApi {
                 }
               : actor,
           )
-        : [],
-      director: movie.director || null,
-      writers: stringToArray(movie.writers),
-      producers: stringToArray(movie.producers),
-      release_date: movie.release_date || null,
-      country: movie.country || null,
-      language: movie.language || null,
-      budget: movie.budget ? parseFloat(movie.budget) : null,
-      revenue: movie.revenue ? parseFloat(movie.revenue) : null,
-      production_company: movie.production_company || null,
-      distributor: movie.distributor || null,
-      image_url: movie.poster_url || movie.image_url || null,
-      trailer_url: movie.trailer_url || null,
-      awards: stringToArray(movie.awards),
-      details: movie.details || null,
-    };
+        : [];
+    }
+    if (movie.director !== undefined) payload.director = movie.director || null;
+    if (movie.writers !== undefined) payload.writers = stringToArray(movie.writers);
+    if (movie.producers !== undefined) payload.producers = stringToArray(movie.producers);
+    if (movie.release_date !== undefined) payload.release_date = movie.release_date || null;
+    if (movie.country !== undefined) payload.country = movie.country || null;
+    if (movie.language !== undefined) payload.language = movie.language || null;
+    if (movie.budget !== undefined) payload.budget = movie.budget ? parseFloat(movie.budget) : null;
+    if (movie.revenue !== undefined)
+      payload.revenue = movie.revenue ? parseFloat(movie.revenue) : null;
+    if (movie.production_company !== undefined)
+      payload.production_company = movie.production_company || null;
+    if (movie.distributor !== undefined) payload.distributor = movie.distributor || null;
+    if (movie.image_url !== undefined || movie.poster_url !== undefined) {
+      payload.image_url = movie.poster_url || movie.image_url || null;
+    }
+    if (movie.trailer_url !== undefined) payload.trailer_url = movie.trailer_url || null;
+    if (movie.awards !== undefined) payload.awards = stringToArray(movie.awards);
+    if (movie.details !== undefined) payload.details = movie.details || null;
+
+    return payload;
+  }
+  /**
+   * Fetches movies and updates the signal cache
+   * @param state Optional movie state filter
+   * @param sortBy Optional sort parameter
+   */
+  loadMovies(state?: string, sortBy?: string): void {
+    this.isLoadingMovies.set(true);
+    this.moviesError.set(null);
+
+    this.getMovies(state, sortBy).subscribe({
+      next: (movies) => {
+        this.moviesCache.set(movies);
+        this.isLoadingMovies.set(false);
+      },
+      error: (err) => {
+        this.moviesError.set('Failed to load movies');
+        this.isLoadingMovies.set(false);
+      },
+    });
+  }
+
+  /**
+   * Fetches trending movies and updates the signal cache
+   */
+  loadTrendingMovies(): void {
+    this.getTrendingMovies().subscribe({
+      next: (movies) => this.trendingMoviesCache.set(movies),
+      error: (err) => console.error('Failed to load trending movies', err),
+    });
+  }
+
+  /**
+   * Clears all cached movie data
+   */
+  clearCache(): void {
+    this.moviesCache.set([]);
+    this.trendingMoviesCache.set([]);
+    this.moviesError.set(null);
   }
 }

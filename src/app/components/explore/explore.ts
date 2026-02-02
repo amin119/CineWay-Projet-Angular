@@ -22,7 +22,7 @@ interface SearchHistory {
   templateUrl: './explore.html',
   styleUrls: ['./explore.css'],
   imports: [CommonModule, FormsModule, RouterLink],
-  standalone: true,
+
 })
 export class Explore implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
@@ -110,37 +110,33 @@ export class Explore implements OnInit, OnDestroy {
     this.isLoadingMovies$.next(true);
 
     this.moviesApi
-      .getMovies()
+      .getShowingMovies()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (movies) => {
-          this.allMovies = movies;
-          this.categorizeMovies(movies);
-          this.loadTrendingMovies();
+          this.nowShowingMovies = movies.slice(0, this.MOVIES_PER_CATEGORY);
+        },
+        error: (error) => {
+          console.error('Error loading showing movies:', error);
+        },
+      });
+
+    this.moviesApi
+      .getComingSoonMovies()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (movies) => {
+          this.comingSoonMovies = movies.slice(0, this.MOVIES_PER_CATEGORY);
           this.isLoadingMovies$.next(false);
         },
         error: (error) => {
           this.isLoadingMovies$.next(false);
+          console.error('Error loading coming soon movies:', error);
           this.toastr.error('Failed to load movies. Please try again later.', 'Error');
         },
       });
-  }
 
-  private categorizeMovies(movies: MovieModel[]): void {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    this.nowShowingMovies = movies
-      .filter((movie) => new Date(movie.release_date) <= today)
-      .map((movie) => ({ ...movie, status: movie.status || 'SHOWING' }))
-      .slice(0, this.MOVIES_PER_CATEGORY);
-
-    this.comingSoonMovies = movies
-      .filter((movie) => new Date(movie.release_date) > today)
-      .map((movie) => ({ ...movie, status: movie.status || 'COMING_SOON' }))
-      .slice(0, this.MOVIES_PER_CATEGORY);
-
-    this.featuredMovie = this.nowShowingMovies[0] || movies[0] || null;
+    this.loadTrendingMovies();
   }
 
   private loadTrendingMovies(): void {
@@ -150,16 +146,18 @@ export class Explore implements OnInit, OnDestroy {
       .subscribe({
         next: (movies) => {
           this.trendingMovies = movies
-            .map((movie) => ({ ...movie, status: movie.status || 'SHOWING' }))
+            .map((movie) => ({ ...movie, status: movie.state || 'SHOWING' }))
             .slice(0, this.TRENDING_MOVIES_LIMIT);
+          this.featuredMovie = this.trendingMovies.sort((a, b) => b.revenue - a.revenue)[0] || null;
         },
         error: (error) => {
           console.error('Failed to load trending movies:', error);
           // Fallback to sorting from allMovies if API fails
           this.trendingMovies = this.allMovies
             .sort((a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime())
-            .map((movie) => ({ ...movie, status: movie.status || 'SHOWING' }))
+            .map((movie) => ({ ...movie, status: movie.state || 'SHOWING' }))
             .slice(0, this.TRENDING_MOVIES_LIMIT);
+          this.featuredMovie = this.trendingMovies.sort((a, b) => b.revenue - a.revenue)[0] || null;
         },
       });
   }

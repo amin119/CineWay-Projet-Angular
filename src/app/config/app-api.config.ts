@@ -7,6 +7,7 @@ export const APP_API = {
     logout: `${environment.apiUrl}/auth/logout`,
     checkmail: `${environment.apiUrl}/auth/check-email`,
     me: `${environment.apiUrl}/auth/me`,
+    changePassword: `${environment.apiUrl}/auth/change-password`,
   },
   movies: {
     movies: `${environment.apiUrl}/movies`,
@@ -14,6 +15,12 @@ export const APP_API = {
     reviews: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/reviews`,
     reviewSummary: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/reviews/summary`,
     showtimes: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/showtimes`,
+  },
+
+  faqs: {
+    list: `${environment.apiUrl}/faqs`,
+    create: `${environment.apiUrl}/faqs`,
+    delete: (faqId: number) => `${environment.apiUrl}/faqs/${faqId}`,
   },
 
   reviews: {

@@ -7,7 +7,7 @@ import { MovieModel } from '../../models/movie.model';
 
 @Component({
   selector: 'app-showing-now',
-  standalone: true,
+
   imports: [CommonModule, RouterModule],
   templateUrl: './showing-now.html',
   styleUrls: ['./showing-now.css'],
@@ -19,7 +19,7 @@ export class ShowingNowComponent implements OnInit {
   isLoadingMore = signal(false);
   hasMoreMovies = signal(true);
   currentIndex = signal(0);
-  readonly limit = 12;
+  readonly limit = 15;
   favoriteMovieIds = new Set<number>();
 
   private moviesApi = inject(MoviesApi);
@@ -38,7 +38,7 @@ export class ShowingNowComponent implements OnInit {
       next: (movies) => {
         const showingMovies = movies.map((movie) => ({
           ...movie,
-          status: movie.status || 'SHOWING',
+          status: movie.state || 'SHOWING',
         }));
 
         this.allShowingMovies.set(showingMovies);

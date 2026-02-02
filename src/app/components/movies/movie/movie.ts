@@ -10,7 +10,7 @@ import { FavoritesService } from '../../../services/favorites.service';
   templateUrl: './movie.html',
   styleUrl: './movie.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
+
 })
 export class Movie {
   movie = input.required<MovieModel>();

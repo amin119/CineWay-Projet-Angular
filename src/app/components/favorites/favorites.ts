@@ -7,7 +7,7 @@ import { Cinema } from '../../models/cinema.model';
 
 @Component({
   selector: 'app-favorites',
-  standalone: true,
+
   imports: [CommonModule, RouterLink],
   templateUrl: './favorites.html',
   styleUrl: './favorites.css',
