@@ -60,7 +60,7 @@ export class AdminFaqsComponent implements OnInit {
     this.router.navigate(['/admin/faqs/add']);
   }
 
-  onAction(action: { action: 'edit' | 'delete'; row: FAQ }) {
+  onAction(action: { action: string; row: FAQ }) {
     switch (action.action) {
       case 'edit':
         this.router.navigate(['/admin/faqs/edit', action.row.id]);

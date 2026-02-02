@@ -58,6 +58,15 @@ export class AddEditShowtimePageComponent implements OnInit {
     });
   }
 
+  private checkEditMode() {
+    const id = this.route.snapshot.params['id'];
+    if (id) {
+      this.isEditMode.set(true);
+      this.showtimeId.set(parseInt(id, 10));
+      this.loadShowtime(parseInt(id, 10));
+    }
+  }
+
   private loadData() {
     this.loading.set(true);
     this.moviesApi
@@ -67,6 +76,11 @@ export class AddEditShowtimePageComponent implements OnInit {
         next: (movies) => {
           this.movies.set(movies);
           this.loading.set(false);
+          // Check query param after movies are loaded
+          const movieId = this.route.snapshot.queryParams['movie_id'];
+          if (movieId) {
+            this.form.patchValue({ movie_id: parseInt(movieId, 10) });
+          }
         },
         error: (err) => {
           this.error.set('Failed to load movies');
@@ -87,12 +101,10 @@ export class AddEditShowtimePageComponent implements OnInit {
       });
   }
 
-  private checkEditMode() {
-    const id = this.route.snapshot.params['id'];
-    if (id) {
-      this.isEditMode.set(true);
-      this.showtimeId.set(parseInt(id, 10));
-      this.loadShowtime(parseInt(id, 10));
+  private checkMovieQueryParam() {
+    const movieId = this.route.snapshot.queryParams['movie_id'];
+    if (movieId) {
+      this.form.patchValue({ movie_id: parseInt(movieId, 10) });
     }
   }
 

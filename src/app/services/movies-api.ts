@@ -100,13 +100,17 @@ export class MoviesApi {
         .filter((item) => item.length > 0);
     };
 
-    return {
-      title: movie.title,
-      description: movie.description || null,
-      duration_minutes: parseInt(movie.duration_minutes, 10),
-      genre: Array.isArray(movie.genre) ? movie.genre : [movie.genre],
-      rating: movie.rating ? String(movie.rating) : null,
-      cast: Array.isArray(movie.cast)
+    const payload: any = {};
+
+    // Only include fields that are present in the movie object
+    if (movie.title !== undefined) payload.title = movie.title;
+    if (movie.description !== undefined) payload.description = movie.description || null;
+    if (movie.duration_minutes !== undefined) payload.duration_minutes = parseInt(movie.duration_minutes, 10);
+    if (movie.genre !== undefined) payload.genre = Array.isArray(movie.genre) ? movie.genre : [movie.genre];
+    if (movie.rating !== undefined) payload.rating = movie.rating ? String(movie.rating) : null;
+    if (movie.state !== undefined) payload.state = movie.state;
+    if (movie.cast !== undefined) {
+      payload.cast = Array.isArray(movie.cast)
         ? movie.cast.map((actor: any) =>
             typeof actor === 'string'
               ? {
@@ -119,22 +123,26 @@ export class MoviesApi {
                 }
               : actor,
           )
-        : [],
-      director: movie.director || null,
-      writers: stringToArray(movie.writers),
-      producers: stringToArray(movie.producers),
-      release_date: movie.release_date || null,
-      country: movie.country || null,
-      language: movie.language || null,
-      budget: movie.budget ? parseFloat(movie.budget) : null,
-      revenue: movie.revenue ? parseFloat(movie.revenue) : null,
-      production_company: movie.production_company || null,
-      distributor: movie.distributor || null,
-      image_url: movie.poster_url || movie.image_url || null,
-      trailer_url: movie.trailer_url || null,
-      awards: stringToArray(movie.awards),
-      details: movie.details || null,
-    };
+        : [];
+    }
+    if (movie.director !== undefined) payload.director = movie.director || null;
+    if (movie.writers !== undefined) payload.writers = stringToArray(movie.writers);
+    if (movie.producers !== undefined) payload.producers = stringToArray(movie.producers);
+    if (movie.release_date !== undefined) payload.release_date = movie.release_date || null;
+    if (movie.country !== undefined) payload.country = movie.country || null;
+    if (movie.language !== undefined) payload.language = movie.language || null;
+    if (movie.budget !== undefined) payload.budget = movie.budget ? parseFloat(movie.budget) : null;
+    if (movie.revenue !== undefined) payload.revenue = movie.revenue ? parseFloat(movie.revenue) : null;
+    if (movie.production_company !== undefined) payload.production_company = movie.production_company || null;
+    if (movie.distributor !== undefined) payload.distributor = movie.distributor || null;
+    if (movie.image_url !== undefined || movie.poster_url !== undefined) {
+      payload.image_url = movie.poster_url || movie.image_url || null;
+    }
+    if (movie.trailer_url !== undefined) payload.trailer_url = movie.trailer_url || null;
+    if (movie.awards !== undefined) payload.awards = stringToArray(movie.awards);
+    if (movie.details !== undefined) payload.details = movie.details || null;
+
+    return payload;
   }
   /**
    * Fetches movies and updates the signal cache

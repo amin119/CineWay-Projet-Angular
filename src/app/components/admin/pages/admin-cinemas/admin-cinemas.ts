@@ -126,7 +126,7 @@ export class AdminCinemasComponent implements OnInit {
     this.router.navigate(['/admin/cinemas/add']);
   }
 
-  onTableAction(event: { action: 'edit' | 'delete'; row: Cinema }): void {
+  onTableAction(event: { action: string; row: Cinema }): void {
     if (event.action === 'edit') {
       this.router.navigate(['/admin/cinemas/edit', event.row.id]);
     } else if (event.action === 'delete') {
