@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { ReviewCreate } from '../../../../models/review.model';
+import { Component, EventEmitter, Input, Output, signal, effect } from '@angular/core';
+import { ReviewCreate, ReviewRead } from '../../../../models/review.model';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -9,10 +9,11 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './add-review.css',
 })
 export class AddReview {
-
   @Input({ required: true }) open!: boolean;
 
   @Input() movieTitle?: string;
+
+  @Input() initialData: ReviewRead | null = null;
 
   @Output() submitReview = new EventEmitter<ReviewCreate>();
   @Output() close = new EventEmitter<void>();
@@ -23,6 +24,17 @@ export class AddReview {
   rating = signal<number>(0);
   title = signal<string>('');
   comment = signal<string>('');
+
+  constructor() {
+    // Watch for initialData changes and populate the form
+    effect(() => {
+      if (this.initialData) {
+        this.rating.set(this.initialData.rating);
+        this.title.set(this.initialData.title || '');
+        this.comment.set(this.initialData.comment || '');
+      }
+    });
+  }
 
   setRating(v: number) {
     this.rating.set(v);

@@ -22,6 +22,8 @@ import { guestGuard } from './auth/guards/guest.guard';
 import { adminGuard } from './auth/guards/admin/admin.guard';
 import { NotFound } from './components/not-found/not-found';
 import { MovieDetails } from './components/movies/movie-details/movie-details';
+import { ShowtimeSelectionComponent } from './components/movies/showtime-selection/showtime-selection';
+import { MovieShowtimesComponent } from './components/movies/movie-showtimes/movie-showtimes';
 
 export const routes: Routes = [
   {
@@ -35,7 +37,9 @@ export const routes: Routes = [
       { path: 'cinemas/:id', component: CinemaDetails },
       { path: 'profile', component: Profile },
       { path: 'not-found', component: NotFound },
-      { path: 'movies/:id',component: MovieDetails},
+      { path: 'movies/:id', component: MovieDetails },
+      { path: 'movies/:id/showtimes', component: MovieShowtimesComponent },
+      { path: 'screenings/:id', component: ShowtimeSelectionComponent },
     ],
   },
   {
@@ -53,12 +57,12 @@ export const routes: Routes = [
       {
         path: '',
         component: LandingPageComponent,
-        canActivate : [guestGuard]
+        canActivate: [guestGuard],
       },
       {
         path: 'cinemas',
-        component : Cinemas,
-        canActivate :[authGuard],
+        component: Cinemas,
+        canActivate: [authGuard],
       },
       {
         path: 'cinemas/:id',
@@ -70,7 +74,6 @@ export const routes: Routes = [
         component: Profile,
         canActivate: [authGuard],
       },
-      
     ],
   },
   {
@@ -95,7 +98,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: "**", redirectTo: '/not-found'
-  }
+    path: '**',
+    redirectTo: '/not-found',
+  },
 ];
-

@@ -17,10 +17,7 @@ interface Room {
 
 @Component({
   selector: 'app-add-edit-showtime-page',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-edit-showtime-page.html',
   styleUrls: ['./add-edit-showtime-page.css'],
 })
@@ -63,7 +60,8 @@ export class AddEditShowtimePageComponent implements OnInit {
 
   private loadData() {
     this.loading.set(true);
-    this.moviesApi.getMovies()
+    this.moviesApi
+      .getMovies()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (movies) => {
@@ -77,7 +75,8 @@ export class AddEditShowtimePageComponent implements OnInit {
         },
       });
 
-    this.cinemasApi.getCinemas()
+    this.cinemasApi
+      .getCinemas()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -101,7 +100,8 @@ export class AddEditShowtimePageComponent implements OnInit {
 
   private loadShowtime(id: number) {
     this.loading.set(true);
-    this.screeningService.getScreening(id)
+    this.screeningService
+      .getScreening(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (showtime: Screening) => {
@@ -135,7 +135,8 @@ export class AddEditShowtimePageComponent implements OnInit {
       return;
     }
 
-    this.cinemasApi.getCinemaById(cinemaId)
+    this.cinemasApi
+      .getCinemaById(cinemaId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cinema: Cinema & { rooms?: Room[] }) => {
@@ -170,19 +171,17 @@ export class AddEditShowtimePageComponent implements OnInit {
       ? this.screeningService.updateScreening(this.showtimeId()!, showtimeData)
       : this.screeningService.createScreening(showtimeData);
 
-    request
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.router.navigate(['/admin/showtimes']);
-        },
-        error: (err) => {
-          this.error.set('Failed to save showtime');
-          this.loading.set(false);
-          console.error(err);
-        },
-      });
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/admin/showtimes']);
+      },
+      error: (err) => {
+        this.error.set('Failed to save showtime');
+        this.loading.set(false);
+        console.error(err);
+      },
+    });
   }
 
   onCancel() {
@@ -202,7 +201,7 @@ export class AddEditShowtimePageComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });

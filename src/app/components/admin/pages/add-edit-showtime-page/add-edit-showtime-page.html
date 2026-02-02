@@ -1,13 +1,17 @@
 <div class="page-shell">
   <div class="page-header text-center">
     <h1 class="page-title">{{ isEditMode() ? 'Edit Showtime' : 'Add Showtime' }}</h1>
-    <p class="page-subtitle">{{ isEditMode() ? 'Update showtime details' : 'Create a new showtime session' }}</p>
+    <p class="page-subtitle">
+      {{ isEditMode() ? 'Update showtime details' : 'Create a new showtime session' }}
+    </p>
   </div>
 
   @if (loading()) {
     <div class="section-surface">
       <div class="flex items-center justify-center py-12">
-        <div class="h-10 w-10 animate-spin rounded-full border-4 border-[#2a3644] border-t-[#3d99f5]"></div>
+        <div
+          class="h-10 w-10 animate-spin rounded-full border-4 border-border-dark border-t-primary"
+        ></div>
       </div>
     </div>
   } @else {
@@ -26,7 +30,7 @@
             <select
               formControlName="cinema_id"
               (change)="onCinemaChange()"
-              class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white focus:border-[#3d99f5] focus:outline-none transition-colors text-base appearance-none cursor-pointer"
+              class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white focus:border-primary focus:outline-none transition-colors text-base appearance-none cursor-pointer"
             >
               <option value="">Select a cinema</option>
               @for (cinema of cinemas(); track cinema.id) {
@@ -43,7 +47,7 @@
             <label class="block text-sm font-semibold text-gray-200">Room *</label>
             <select
               formControlName="room_id"
-              class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white focus:border-[#3d99f5] focus:outline-none transition-colors text-base appearance-none cursor-pointer"
+              class="w-full px-4 py-3 bg-form border-2 border-border-dark rounded-lg text-white focus:border-[#3d99f5] focus:outline-none transition-colors text-base appearance-none cursor-pointer"
               [disabled]="rooms().length === 0"
             >
               <option value="">Select a room</option>
@@ -61,7 +65,7 @@
             <label class="block text-sm font-semibold text-gray-200">Movie *</label>
             <select
               formControlName="movie_id"
-              class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white focus:border-[#3d99f5] focus:outline-none transition-colors text-base appearance-none cursor-pointer"
+              class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white focus:border-primary focus:outline-none transition-colors text-base appearance-none cursor-pointer"
             >
               <option value="">Select a movie</option>
               @for (movie of movies(); track movie.id) {
@@ -79,7 +83,7 @@
             <input
               type="date"
               formControlName="screening_date"
-              class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white focus:border-[#3d99f5] focus:outline-none transition-colors text-base"
+              class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white focus:border-primary focus:outline-none transition-colors text-base"
             />
             @if (form.get('screening_date')?.invalid && form.get('screening_date')?.touched) {
               <p class="text-red-400 text-xs">{{ getErrorMessage('screening_date') }}</p>
@@ -92,7 +96,7 @@
             <input
               type="time"
               formControlName="screening_time"
-              class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white focus:border-[#3d99f5] focus:outline-none transition-colors text-base"
+              class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white focus:border-primary focus:outline-none transition-colors text-base"
             />
             @if (form.get('screening_time')?.invalid && form.get('screening_time')?.touched) {
               <p class="text-red-400 text-xs">{{ getErrorMessage('screening_time') }}</p>
@@ -106,7 +110,7 @@
               type="number"
               formControlName="price"
               placeholder="e.g., 12.99"
-              class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white placeholder-gray-500 focus:border-[#3d99f5] focus:outline-none transition-colors text-base"
+              class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-colors text-base"
               min="0"
               step="0.01"
             />
@@ -116,24 +120,24 @@
           </div>
         </div>
 
-        <div class="flex gap-4 pt-6 border-t border-[#2a3644]">
+        <div class="flex gap-4 pt-6 border-t border-border-dark">
           <button
             type="button"
             (click)="onCancel()"
-            class="flex-1 px-6 py-3 rounded-lg border-2 border-[#2a3644] text-gray-300 hover:border-[#3d99f5] hover:text-[#3d99f5] hover:bg-[#3d99f5]/5 transition-colors font-semibold text-base"
+            class="flex-1 px-6 py-3 rounded-lg border-2 border-border-dark text-gray-300 hover:border-primary hover:text-primary hover:bg-primary/10 transition-colors font-semibold text-base"
             [disabled]="loading()"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="flex-1 px-6 py-3 rounded-lg bg-[#3d99f5] text-white hover:bg-[#2e7bc8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold text-base"
+            class="flex-1 px-6 py-3 rounded-lg bg-primary text-white hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold text-base"
             [disabled]="loading() || form.invalid"
           >
             {{ loading() ? 'Saving...' : isEditMode() ? 'Update' : 'Create' }}
           </button>
         </div>
-        </form>
-      </div>
+      </form>
+    </div>
   }
 </div>

@@ -5,6 +5,7 @@ export interface MovieModel {
   duration_minutes: number;
   genre: string[];
   rating: string;
+  imdb_rating: string;
   cast: string[];
   director: string;
   writers: string[];

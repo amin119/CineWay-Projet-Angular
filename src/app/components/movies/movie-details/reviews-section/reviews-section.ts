@@ -1,11 +1,18 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, throwError } from 'rxjs';
-import { ReviewCreate, ReviewListResponse, ReviewRead } from '../../../../models/review.model';
+import {
+  ReviewCreate,
+  ReviewListResponse,
+  ReviewRead,
+  ReviewSummary,
+} from '../../../../models/review.model';
 import { ReviewsService } from '../../../../services/reviews-service';
 import { AddReview } from '../add-review/add-review';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../../../auth/services/auth.service';
+import { UserApi } from '../../../../services/user-api';
 
 @Component({
   selector: 'app-reviews-section',
@@ -14,75 +21,182 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './reviews-section.css',
 })
 export class ReviewsSection {
-    private reviewsApi = inject(ReviewsService);
+  private reviewsApi = inject(ReviewsService);
+  private authService = inject(AuthService);
+  private userApi = inject(UserApi);
   movieId = input.required<number>();
   movieTitle = input<string>('');
   modalOpen = signal(false);
   submitting = signal(false);
   submitError = signal<string | null>(null);
+  reactingToReview = signal<number | null>(null);
+  deletingReview = signal<number | null>(null);
+  editingReview = signal(false);
 
-   reviewsRxResource = rxResource({
-  params: () => ({
-    movieId: this.movieId(),
-    page: 1,
-    pageSize: 20,
-  }),
-  stream: ({ params }) =>
-    this.reviewsApi.getMovieReviews(params.movieId, params.page, params.pageSize).pipe(
-      map((res: ReviewListResponse) => res.reviews)
-    ),
-  defaultValue: [] as ReviewRead[],
-});
-reviews = computed(() => this.reviewsRxResource.value());
-reviewsLoading = this.reviewsRxResource.isLoading;
-reviewsError = this.reviewsRxResource.error;
+  currentUserId = computed(() => this.userApi.user()?.id || null);
 
+  // Find user's own review
+  userReview = computed(() => {
+    const userId = this.currentUserId();
+    if (!userId) return null;
+    return this.reviews().find((r) => r.user_id === userId) || null;
+  });
 
-sortedReviews = computed(() => {
-  return [...this.reviews()].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-});
-reviewIndex = signal(0);
+  hasUserReviewed = computed(() => !!this.userReview());
 
-currentReview = computed(() => this.sortedReviews()[this.reviewIndex()] ?? null);
-hasPrevReview = computed(() => this.reviewIndex() > 0);
-hasNextReview = computed(() => this.reviewIndex() < this.sortedReviews().length - 1);
+  reviewsRxResource = rxResource({
+    params: () => ({
+      movieId: this.movieId(),
+      page: 1,
+      pageSize: 20,
+    }),
+    stream: ({ params }) =>
+      this.reviewsApi
+        .getMovieReviews(params.movieId, params.page, params.pageSize)
+        .pipe(map((res: ReviewListResponse) => res.reviews)),
+    defaultValue: [] as ReviewRead[],
+  });
+  reviews = computed(() => this.reviewsRxResource.value());
+  reviewsLoading = this.reviewsRxResource.isLoading;
+  reviewsError = this.reviewsRxResource.error;
 
-prevReview() { if (this.hasPrevReview()) this.reviewIndex.update(i => i - 1); }
-nextReview() { if (this.hasNextReview()) this.reviewIndex.update(i => i + 1); }
+  // Fetch review summary for average rating
+  summaryRxResource = rxResource({
+    params: () => ({ movieId: this.movieId() }),
+    stream: ({ params }) => this.reviewsApi.getReviewSummary(params.movieId),
+  });
+  reviewSummary = computed(() => this.summaryRxResource.value());
+  averageRating = computed(() => this.reviewSummary()?.average_rating ?? 0);
+  totalReviews = computed(() => this.reviewSummary()?.total_reviews ?? 0);
 
- openAddReview() {
+  sortedReviews = computed(() => {
+    return [...this.reviews()].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+  });
+  reviewIndex = signal(0);
+
+  currentReview = computed(() => this.sortedReviews()[this.reviewIndex()] ?? null);
+  hasPrevReview = computed(() => this.reviewIndex() > 0);
+  hasNextReview = computed(() => this.reviewIndex() < this.sortedReviews().length - 1);
+
+  prevReview() {
+    if (this.hasPrevReview()) this.reviewIndex.update((i) => i - 1);
+  }
+  nextReview() {
+    if (this.hasNextReview()) this.reviewIndex.update((i) => i + 1);
+  }
+
+  openAddReview() {
+    this.editingReview.set(false);
     this.modalOpen.set(true);
   }
+
+  openEditReview() {
+    this.editingReview.set(true);
+    this.modalOpen.set(true);
+  }
+
   closeAddReview() {
     this.modalOpen.set(false);
+    this.editingReview.set(false);
   }
 
   async handleSubmit(payload: ReviewCreate) {
     this.submitting.set(true);
-      this.submitError.set(null);
+    this.submitError.set(null);
 
-    this.reviewsApi.createReview(this.movieId(), payload).pipe(
+    const isEditing = this.editingReview();
+    const reviewId = this.userReview()?.id;
+
+    const request$ =
+      isEditing && reviewId
+        ? this.reviewsApi.updateReview(reviewId, payload)
+        : this.reviewsApi.createReview(this.movieId(), payload);
+
+    request$
+      .pipe(
         catchError((err: HttpErrorResponse) => {
-          const msg = err?.error?.detail || 'Error while submitting review';
+          const msg =
+            err?.error?.detail || `Error while ${isEditing ? 'updating' : 'submitting'} review`;
           const _msg = String(msg).split('.')[0].trim();
           this.submitError.set(_msg);
           this.modalOpen.set(false);
           return throwError(() => err);
-        })
-      ).subscribe({
-    next: () => {
-      this.modalOpen.set(false);
-        this.reviewIndex.set(0);
-      this.reviewsRxResource.reload();
-      this.submitting.set(false);
-    },
-    error: () => {
-      this.submitting.set(false);
-    }
-  });
-    
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.modalOpen.set(false);
+          this.editingReview.set(false);
+          this.reviewIndex.set(0);
+          this.reviewsRxResource.reload();
+          this.summaryRxResource.reload();
+          this.submitting.set(false);
+        },
+        error: () => {
+          this.submitting.set(false);
+        },
+      });
   }
 
+  canDeleteReview(review: ReviewRead): boolean {
+    return review.user_id === this.currentUserId();
+  }
+
+  deleteReview(reviewId: number) {
+    if (!confirm('Are you sure you want to delete this review?')) return;
+
+    this.deletingReview.set(reviewId);
+    this.reviewsApi
+      .deleteReview(reviewId)
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          const msg = err?.error?.detail || 'Error deleting review';
+          this.submitError.set(msg);
+          return throwError(() => err);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.reviewsRxResource.reload();
+          this.summaryRxResource.reload();
+          this.deletingReview.set(null);
+          if (this.reviewIndex() >= this.sortedReviews().length - 1) {
+            this.reviewIndex.set(Math.max(0, this.sortedReviews().length - 2));
+          }
+        },
+        error: () => {
+          this.deletingReview.set(null);
+        },
+      });
+  }
+
+  deleteUserReview() {
+    const review = this.userReview();
+    if (!review) return;
+    this.deleteReview(review.id);
+  }
+
+  reactToReview(reviewId: number, reactionType: 'like' | 'dislike') {
+    this.reactingToReview.set(reviewId);
+    this.reviewsApi
+      .reactToReview(reviewId, { reaction_type: reactionType })
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          const msg = err?.error?.detail || 'Error reacting to review';
+          this.submitError.set(msg);
+          return throwError(() => err);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.reviewsRxResource.reload();
+          this.reactingToReview.set(null);
+        },
+        error: () => {
+          this.reactingToReview.set(null);
+        },
+      });
+  }
 }

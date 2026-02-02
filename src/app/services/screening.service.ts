@@ -13,7 +13,9 @@ export interface Screening {
   movie?: {
     id: number;
     title: string;
-    poster_url?: string;
+    image_url?: string;
+    rating?: string;
+    genre?: string[];
   };
   room?: {
     id: number;
@@ -34,7 +36,7 @@ export interface ScreeningCreate {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ScreeningService {
   private readonly http = inject(HttpClient);
@@ -52,11 +54,14 @@ export class ScreeningService {
     if (params?.cinema_id) httpParams = httpParams.set('cinema_id', params.cinema_id.toString());
     if (params?.date) httpParams = httpParams.set('date', params.date);
 
+    console.log('Calling screenings API:', this.baseUrl, 'with params:', params);
     return this.http.get<Screening[]>(this.baseUrl, { params: httpParams });
   }
 
   getScreening(id: number): Observable<Screening> {
-    return this.http.get<Screening>(`${this.baseUrl}/${id}`);
+    const url = `${this.baseUrl}${id}`;
+    console.log('Calling screening API:', url);
+    return this.http.get<Screening>(url);
   }
 
   createScreening(screening: ScreeningCreate): Observable<Screening> {

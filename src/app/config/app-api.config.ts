@@ -9,31 +9,28 @@ export const APP_API = {
     me : `${environment.apiUrl}/auth/me`,
     changePassword: `${environment.apiUrl}/auth/change-password`,
   },
-  movies:{
+  movies: {
     movies: `${environment.apiUrl}/movies`,
-    reviews: (movieId: number) =>
-      `${environment.apiUrl}/movies/${movieId}/reviews`, 
-    reviewSummary: (movieId: number) =>
-      `${environment.apiUrl}/movies/${movieId}/reviews/summary`,
+    reviews: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/reviews`,
+    reviewSummary: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/reviews/summary`,
+    showtimes: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/showtimes`,
   },
 
-   reviews: {
-    reviewById: (reviewId: number) =>
-      `${environment.apiUrl}/reviews/${reviewId}`,
-    reaction: (reviewId: number) =>
-      `${environment.apiUrl}/reviews/${reviewId}/reaction`,
+  reviews: {
+    reviewById: (reviewId: number) => `${environment.apiUrl}/movies/reviews/${reviewId}`,
+    reaction: (reviewId: number) => `${environment.apiUrl}/movies/reviews/${reviewId}/react`,
   },
 
   user: {
-    me:`${environment.apiUrl}/users/me`,
+    me: `${environment.apiUrl}/users/me`,
     preferences: `${environment.apiUrl}/users/me/preferences`,
     profilePicture: `${environment.apiUrl}/users/me/profile-picture`,
     admin: `${environment.apiUrl}/users/admin/users`,
   },
 
-  cinema:{
+  cinema: {
     list: `${environment.apiUrl}/cinemas/`,
-    search :`${environment.apiUrl}/cinemas/search`,
+    search: `${environment.apiUrl}/cinemas/search`,
     favorites: `${environment.apiUrl}/cinemas/favorites`,
   },
 
@@ -48,6 +45,6 @@ export const APP_API = {
       totalTickets: `${environment.apiUrl}/admin/stats/tickets/total`,
       revenue: `${environment.apiUrl}/admin/stats/revenue`,
       today: `${environment.apiUrl}/admin/stats/today`,
-    }
-  }
+    },
+  },
 };
