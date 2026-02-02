@@ -54,6 +54,7 @@ export class ScreeningService {
     if (params?.cinema_id) httpParams = httpParams.set('cinema_id', params.cinema_id.toString());
     if (params?.date) httpParams = httpParams.set('date', params.date);
 
+    console.log('Calling screenings API:', this.baseUrl, 'with params:', params);
     return this.http.get<Screening[]>(this.baseUrl, { params: httpParams });
   }
 

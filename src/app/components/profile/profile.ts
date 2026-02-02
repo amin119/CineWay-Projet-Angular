@@ -10,6 +10,7 @@ import { Toast, ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { APP_API } from '../../config/app-api.config';
 import { APP_ROUTES } from '../../config/app-routes.confg';
+import { ChangePasswordRequestDto } from '../../auth/services/auth.service';
 @Component({
   selector: 'app-profile',
   imports: [Sidebar, Content],

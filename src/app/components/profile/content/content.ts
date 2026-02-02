@@ -1,5 +1,5 @@
 import { Component, effect, EventEmitter, inject, Input, Output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserApi } from '../../../services/user-api';
 import { Profile } from '../../../models/profile.model';
 import { PaymentHistory } from '../../payment/history/history';
@@ -23,6 +23,7 @@ export class Content {
     emailChanged: boolean;
   }>();
   @Output() uploadProfilePicture = new EventEmitter<File>();
+  @Output() changePassword = new EventEmitter<ChangePasswordRequestDto>();
 
   selectedFile: File | null = null;
   previewUrl: string | null = null;
@@ -31,6 +32,15 @@ export class Content {
     full_name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
   });
+
+  passwordForm = this.fb.nonNullable.group(
+    {
+      current_password: ['', [Validators.required, Validators.minLength(6)]],
+      new_password: ['', [Validators.required, Validators.minLength(6)]],
+      confirm_new_password: ['', [Validators.required, Validators.minLength(6)]],
+    },
+    { validators: [this.passwordsMatchValidator] }
+  );
 
   constructor() {
     effect(() => {
@@ -42,6 +52,13 @@ export class Content {
         email: p.email,
       });
     });
+  }
+
+  private passwordsMatchValidator(control: AbstractControl) {
+    const newPassword = control.get('new_password')?.value;
+    const confirm = control.get('confirm_new_password')?.value;
+    if (!newPassword || !confirm) return null;
+    return newPassword === confirm ? null : { passwordMismatch: true };
   }
 
   onSave() {
