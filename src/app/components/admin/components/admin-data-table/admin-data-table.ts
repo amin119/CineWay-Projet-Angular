@@ -25,7 +25,10 @@ export class AdminDataTableComponent {
   // Inputs
   data = input.required<any[]>();
   columns = input.required<TableColumn[]>();
-  actions = input<TableAction[]>([{ type: 'edit', label: 'Edit' }, { type: 'delete', label: 'Delete' }]);
+  actions = input<TableAction[]>([
+    { type: 'edit', label: 'Edit' },
+    { type: 'delete', label: 'Delete' },
+  ]);
   loading = input<boolean>(false);
 
   // Outputs

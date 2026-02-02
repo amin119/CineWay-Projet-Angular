@@ -82,7 +82,7 @@ export class AddEditMoviePageComponent implements OnInit {
   addCastMember() {
     const castGroup = this.fb.group({
       name: ['', Validators.required],
-      image_url: ['']
+      image_url: [''],
     });
     this.castFormArray.push(castGroup);
   }
@@ -120,7 +120,7 @@ export class AddEditMoviePageComponent implements OnInit {
             movie.cast.forEach((castMember: any) => {
               const castGroup = this.fb.group({
                 name: [castMember.name || ''],
-                image_url: [castMember.image_url || '']
+                image_url: [castMember.image_url || ''],
               });
               this.castFormArray.push(castGroup);
             });
@@ -130,8 +130,12 @@ export class AddEditMoviePageComponent implements OnInit {
           }
 
           // Convert arrays to comma-separated strings for form
-          const writersString = Array.isArray(movie.writers) ? movie.writers.join(', ') : movie.writers;
-          const producersString = Array.isArray(movie.producers) ? movie.producers.join(', ') : movie.producers;
+          const writersString = Array.isArray(movie.writers)
+            ? movie.writers.join(', ')
+            : movie.writers;
+          const producersString = Array.isArray(movie.producers)
+            ? movie.producers.join(', ')
+            : movie.producers;
           const awardsString = Array.isArray(movie.awards) ? movie.awards.join(', ') : movie.awards;
 
           // Convert details object to JSON string for form
@@ -181,7 +185,9 @@ export class AddEditMoviePageComponent implements OnInit {
     }
 
     // Check if all cast members have names
-    const invalidCast = this.castFormArray.controls.some(control => !control.get('name')?.value?.trim());
+    const invalidCast = this.castFormArray.controls.some(
+      (control) => !control.get('name')?.value?.trim(),
+    );
     if (invalidCast) {
       this.error.set('All cast members must have a name');
       return;
@@ -198,8 +204,12 @@ export class AddEditMoviePageComponent implements OnInit {
     }));
 
     // Convert comma-separated strings to arrays
-    const writers = formData.writers ? formData.writers.split(',').map((w: string) => w.trim()) : [];
-    const producers = formData.producers ? formData.producers.split(',').map((p: string) => p.trim()) : [];
+    const writers = formData.writers
+      ? formData.writers.split(',').map((w: string) => w.trim())
+      : [];
+    const producers = formData.producers
+      ? formData.producers.split(',').map((p: string) => p.trim())
+      : [];
     const awards = formData.awards ? formData.awards.split(',').map((a: string) => a.trim()) : [];
 
     // Parse details as JSON if provided, otherwise empty object

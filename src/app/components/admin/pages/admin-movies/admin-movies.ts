@@ -12,12 +12,7 @@ type MovieState = 'SHOWING' | 'COMING_SOON' | 'ENDED';
 
 @Component({
   selector: 'app-admin-movies',
-  imports: [
-    CommonModule,
-    SearchInputComponent,
-    PaginationComponent,
-    PrimaryButtonComponent,
-  ],
+  imports: [CommonModule, SearchInputComponent, PaginationComponent, PrimaryButtonComponent],
   templateUrl: './admin-movies.html',
   styleUrls: ['./admin-movies.css'],
 })
@@ -37,17 +32,12 @@ export class AdminMoviesComponent implements OnInit {
   readonly updatingMovieId = signal<number | null>(null);
 
   // Computed
-  readonly stateOptions: (MovieState | 'all')[] = [
-    'all',
-    'SHOWING',
-    'COMING_SOON',
-    'ENDED',
-  ];
+  readonly stateOptions: (MovieState | 'all')[] = ['all', 'SHOWING', 'COMING_SOON', 'ENDED'];
 
   readonly stateDropdownOptions = computed(() =>
     this.stateOptions.map((s) => ({
       value: s,
-      label: s === 'all' ? 'All States' : this.formatStateLabel(s as MovieState)
+      label: s === 'all' ? 'All States' : this.formatStateLabel(s as MovieState),
     })),
   );
 
@@ -160,7 +150,7 @@ export class AdminMoviesComponent implements OnInit {
         next: (updatedMovie) => {
           // Update the movie in the list
           const currentMovies = this.movies();
-          const index = currentMovies.findIndex(m => m.id === movie.id);
+          const index = currentMovies.findIndex((m) => m.id === movie.id);
           if (index !== -1) {
             currentMovies[index] = { ...currentMovies[index], state: newState };
             this.movies.set([...currentMovies]);
@@ -189,18 +179,18 @@ export class AdminMoviesComponent implements OnInit {
 
   formatStateLabel(state: MovieState): string {
     const labels: Record<MovieState, string> = {
-      'SHOWING': 'Showing',
-      'COMING_SOON': 'Coming Soon',
-      'ENDED': 'Ended'
+      SHOWING: 'Showing',
+      COMING_SOON: 'Coming Soon',
+      ENDED: 'Ended',
     };
     return labels[state] || state;
   }
 
   getStateBadgeClass(state: MovieState): string {
     const classes: Record<MovieState, string> = {
-      'SHOWING': 'state-showing',
-      'COMING_SOON': 'state-coming-soon',
-      'ENDED': 'state-ended'
+      SHOWING: 'state-showing',
+      COMING_SOON: 'state-coming-soon',
+      ENDED: 'state-ended',
     };
     return classes[state] || '';
   }

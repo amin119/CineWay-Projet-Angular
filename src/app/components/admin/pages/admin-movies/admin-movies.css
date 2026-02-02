@@ -1,8 +1,8 @@
 :host {
   display: block;
-  background: radial-gradient(circle at 18% 15%, rgba(61, 153, 245, 0.08), transparent 32%),
-    radial-gradient(circle at 82% 10%, rgba(117, 73, 248, 0.06), transparent 30%),
-    #0b1220;
+  background:
+    radial-gradient(circle at 18% 15%, rgba(61, 153, 245, 0.08), transparent 32%),
+    radial-gradient(circle at 82% 10%, rgba(117, 73, 248, 0.06), transparent 30%), #0b1220;
   min-height: 100vh;
   color: #e9eef5;
 }
@@ -53,9 +53,10 @@
 
 .section-surface {
   border-radius: 14px;
-  background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.08), transparent 35%),
-              radial-gradient(circle at 80% 0%, rgba(147, 51, 234, 0.08), transparent 30%),
-              linear-gradient(145deg, rgba(12, 18, 30, 0.92) 0%, rgba(10, 16, 28, 0.95) 100%);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(147, 51, 234, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(12, 18, 30, 0.92) 0%, rgba(10, 16, 28, 0.95) 100%);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(16px);
 }
@@ -88,7 +89,10 @@
   color: #fca5a5;
   font-weight: 700;
   letter-spacing: 0.02em;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .retry-btn:hover {
@@ -285,5 +289,6 @@
   .movies-table th,
   .movies-table td {
     padding: 0.875rem 1rem;
-    font-size: 0.8125rem;  }
+    font-size: 0.8125rem;
+  }
 }

@@ -105,8 +105,10 @@ export class MoviesApi {
     // Only include fields that are present in the movie object
     if (movie.title !== undefined) payload.title = movie.title;
     if (movie.description !== undefined) payload.description = movie.description || null;
-    if (movie.duration_minutes !== undefined) payload.duration_minutes = parseInt(movie.duration_minutes, 10);
-    if (movie.genre !== undefined) payload.genre = Array.isArray(movie.genre) ? movie.genre : [movie.genre];
+    if (movie.duration_minutes !== undefined)
+      payload.duration_minutes = parseInt(movie.duration_minutes, 10);
+    if (movie.genre !== undefined)
+      payload.genre = Array.isArray(movie.genre) ? movie.genre : [movie.genre];
     if (movie.rating !== undefined) payload.rating = movie.rating ? String(movie.rating) : null;
     if (movie.state !== undefined) payload.state = movie.state;
     if (movie.cast !== undefined) {
@@ -132,8 +134,10 @@ export class MoviesApi {
     if (movie.country !== undefined) payload.country = movie.country || null;
     if (movie.language !== undefined) payload.language = movie.language || null;
     if (movie.budget !== undefined) payload.budget = movie.budget ? parseFloat(movie.budget) : null;
-    if (movie.revenue !== undefined) payload.revenue = movie.revenue ? parseFloat(movie.revenue) : null;
-    if (movie.production_company !== undefined) payload.production_company = movie.production_company || null;
+    if (movie.revenue !== undefined)
+      payload.revenue = movie.revenue ? parseFloat(movie.revenue) : null;
+    if (movie.production_company !== undefined)
+      payload.production_company = movie.production_company || null;
     if (movie.distributor !== undefined) payload.distributor = movie.distributor || null;
     if (movie.image_url !== undefined || movie.poster_url !== undefined) {
       payload.image_url = movie.poster_url || movie.image_url || null;
