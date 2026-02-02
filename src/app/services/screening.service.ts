@@ -60,7 +60,6 @@ export class ScreeningService {
 
   getScreening(id: number): Observable<Screening> {
     const url = `${this.baseUrl}${id}`;
-    console.log('Calling screening API:', url);
     return this.http.get<Screening>(url);
   }
 

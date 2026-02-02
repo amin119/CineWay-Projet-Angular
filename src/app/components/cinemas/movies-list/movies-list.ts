@@ -15,6 +15,7 @@ interface CinemaMoviesResponse {
   templateUrl: './movies-list.html',
   styleUrl: './movies-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class MoviesList {
   cinemaId = input.required<number>();

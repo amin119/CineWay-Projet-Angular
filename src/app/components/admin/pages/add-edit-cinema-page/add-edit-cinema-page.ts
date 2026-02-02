@@ -8,10 +8,7 @@ import { CinemaService } from '../../../../services/cinema.service';
 
 @Component({
   selector: 'app-add-edit-cinema-page',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-edit-cinema-page.html',
   styleUrls: ['./add-edit-cinema-page.css'],
 })
@@ -65,7 +62,8 @@ export class AddEditCinemaPageComponent implements OnInit {
 
   private loadCinema(id: number) {
     this.loading.set(true);
-    this.cinemasApi.getCinemaById(id)
+    this.cinemasApi
+      .getCinemaById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cinema: Cinema) => {
@@ -75,7 +73,6 @@ export class AddEditCinemaPageComponent implements OnInit {
         error: (err) => {
           this.error.set('Failed to load cinema');
           this.loading.set(false);
-          console.error(err);
         },
       });
   }
@@ -93,19 +90,16 @@ export class AddEditCinemaPageComponent implements OnInit {
       ? this.cinemasApi.updateCinema(this.cinemaId()!, cinemaData)
       : this.cinemasApi.createCinema(cinemaData);
 
-    request
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.router.navigate(['/admin/cinemas']);
-        },
-        error: (err) => {
-          this.error.set('Failed to save cinema');
-          this.loading.set(false);
-          console.error(err);
-        },
-      });
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/admin/cinemas']);
+      },
+      error: (err) => {
+        this.error.set('Failed to save cinema');
+        this.loading.set(false);
+      },
+    });
   }
 
   onCancel() {
@@ -130,7 +124,7 @@ export class AddEditCinemaPageComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });

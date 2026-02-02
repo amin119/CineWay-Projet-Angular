@@ -24,6 +24,14 @@ import { NotFound } from './components/not-found/not-found';
 import { MovieDetails } from './components/movies/movie-details/movie-details';
 import { ShowtimeSelectionComponent } from './components/movies/showtime-selection/showtime-selection';
 import { MovieShowtimesComponent } from './components/movies/movie-showtimes/movie-showtimes';
+import { SeatSelection } from './components/seat-selection/seat-selection';
+import { Payment } from './components/payment/payment';
+import { PaymentConfirmation } from './components/payment/confirmation/confirmation';
+import { PaymentHistory } from './components/payment/history/history';
+import { FavoritesComponent } from './components/favorites/favorites';
+import { ComingSoonComponent } from './components/coming-soon/coming-soon';
+import { TrendingComponent } from './components/trending/trending';
+import { ShowingNowComponent } from './components/showing-now/showing-now';
 
 export const routes: Routes = [
   {
@@ -36,10 +44,18 @@ export const routes: Routes = [
       { path: 'cinemas', component: Cinemas },
       { path: 'cinemas/:id', component: CinemaDetails },
       { path: 'profile', component: Profile },
+      { path: 'favorites', component: FavoritesComponent },
+      { path: 'coming-soon', component: ComingSoonComponent },
+      { path: 'trending', component: TrendingComponent },
+      { path: 'showing-now', component: ShowingNowComponent },
       { path: 'not-found', component: NotFound },
       { path: 'movies/:id', component: MovieDetails },
       { path: 'movies/:id/showtimes', component: MovieShowtimesComponent },
       { path: 'screenings/:id', component: ShowtimeSelectionComponent },
+      { path: 'seats/:id', component: SeatSelection },
+      { path: 'payment', component: Payment },
+      { path: 'payment/confirmation/:paymentId', component: PaymentConfirmation },
+      { path: 'payment/history', component: PaymentHistory },
     ],
   },
   {

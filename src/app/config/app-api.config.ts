@@ -6,11 +6,11 @@ export const APP_API = {
     signup: `${environment.apiUrl}/auth/register`,
     logout: `${environment.apiUrl}/auth/logout`,
     checkmail: `${environment.apiUrl}/auth/check-email`,
-    me : `${environment.apiUrl}/auth/me`,
-    changePassword: `${environment.apiUrl}/auth/change-password`,
+    me: `${environment.apiUrl}/auth/me`,
   },
   movies: {
     movies: `${environment.apiUrl}/movies`,
+    trending: `${environment.apiUrl}/movies/trending`,
     reviews: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/reviews`,
     reviewSummary: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/reviews/summary`,
     showtimes: (movieId: number) => `${environment.apiUrl}/movies/${movieId}/showtimes`,
@@ -32,10 +32,16 @@ export const APP_API = {
     list: `${environment.apiUrl}/cinemas/`,
     search: `${environment.apiUrl}/cinemas/search`,
     favorites: `${environment.apiUrl}/cinemas/favorites`,
+    movies: (cinemaId: number) => `${environment.apiUrl}/cinemas/${cinemaId}/movies`,
+    movieShowtimes: (cinemaId: number, movieId: number) =>
+      `${environment.apiUrl}/cinemas/${cinemaId}/movies/${movieId}/showtimes`,
   },
 
   screenings: `${environment.apiUrl}/screenings`,
-
+  showtimes: `${environment.apiUrl}/showtimes`,
+  rooms: {
+    list: `${environment.apiUrl}/rooms`,
+  },
   admin: {
     stats: {
       movies: `${environment.apiUrl}/admin/stats/movies`,

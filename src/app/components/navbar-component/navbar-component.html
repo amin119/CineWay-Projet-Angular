@@ -2,7 +2,11 @@
   <div class="max-w-7xl mx-auto flex items-center px-2 py-2">
     <!-- Logo -->
     <div class="flex items-center gap-2">
-      <img src="https://img.icons8.com/?size=100&id=111180&format=png&color=228BE6" class="h-7" alt="CineWay Logo" />
+      <img
+        src="https://img.icons8.com/?size=100&id=111180&format=png&color=228BE6"
+        class="h-7"
+        alt="CineWay Logo"
+      />
       <span class="text-xl font-semibold text-heading">CineWay</span>
     </div>
 
@@ -153,59 +157,84 @@
 
       <!--  Tabs + Auth -->
       <div class="flex items-center gap-8">
-        @if (isAuth()){
-        <div class="flex items-center gap-6">
-          <a [routerLink]="APP_ROUTES.explore" class="cw-li-navbar" routerLinkActive="active text-white">Movies</a>
-          <a routerLink="/cinemas" class="cw-li-navbar" routerLinkActive="active text-white">Cinemas</a>
-          <a href="#" class="cw-li-navbar">Special Offers</a>
-        </div>
-        <div class="relative ml-auto">
-          <!-- Avatar button -->
-          <button class="flex items-center gap-2 focus:outline-none" (click)="toggleMenu()">
-            <!--A CHANGER APRES UPDATE BACKEND-->
-            <img [src]="user()?.profile_picture_url
-    ? 'http://localhost:8000' + user()?.profile_picture_url
-    : '/assets/avatar.png'" alt="User avatar" class="w-10 h-10 rounded-full object-cover border border-gray-600" />
-            <span class="hidden lg:block text-sm text-gray-200">
-              {{ user()?.full_name }}
-            </span>
-            <i class="bi bi-chevron-down text-xs"></i>
-          </button>
-
-          <!-- Dropdown -->
-          @if (menuOpen) {
-          <div class="absolute left-0 mt-2 w-44 bg-gray-900 border border-gray-700  shadow-lg overflow-hidden z-50">
-            <button [routerLink]="APP_ROUTES.profile"
-              class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:bg-gray-800">
-              <i class="bi bi-person"></i>
-              View Profile
-            </button>
-
-            @if (user() && user()!.is_admin) {
-            <div class="border-t border-gray-700"></div>
-            <button [routerLink]="'/admin/overview'"
-              class="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-gray-800">
-              <i class="bi bi-sliders"></i>
-              Admin Dashboard
-            </button>
-            }
-
-            <div class="border-t border-gray-700"></div>
-
-            <button class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:bg-gray-800" (click)="logout()">
-              <i class="bi bi-box-arrow-right"></i>
-              Logout
-
-            </button>
+        @if (isAuth()) {
+          <div class="flex items-center gap-6">
+            <a
+              [routerLink]="APP_ROUTES.explore"
+              class="cw-li-navbar"
+              routerLinkActive="active text-white"
+              >Movies</a
+            >
+            <a routerLink="/cinemas" class="cw-li-navbar" routerLinkActive="active text-white"
+              >Cinemas</a
+            >
+            <a href="#" class="cw-li-navbar">Special Offers</a>
+            <a
+              [routerLink]="APP_ROUTES.favorites"
+              class="cw-li-navbar"
+              routerLinkActive="active text-white"
+            >
+              <i class="bi bi-heart"></i>
+            </a>
           </div>
-          }
-        </div>
+          <div class="relative ml-auto">
+            <!-- Avatar button -->
+            <button class="flex items-center gap-2 focus:outline-none" (click)="toggleMenu()">
+              <img
+                [src]="user()?.profile_picture_url || '/assets/avatar.png'"
+                alt="User avatar"
+                class="w-10 h-10 rounded-full object-cover border border-gray-600"
+              />
+              <span class="hidden lg:block text-sm text-gray-200">
+                {{ user()?.full_name }}
+              </span>
+              <i class="bi bi-chevron-down text-xs"></i>
+            </button>
+
+            <!-- Dropdown -->
+            @if (menuOpen) {
+              <div
+                class="absolute left-0 mt-2 w-44 bg-gray-900 border border-gray-700 shadow-lg overflow-hidden z-50"
+              >
+                <button
+                  [routerLink]="APP_ROUTES.profile"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:bg-gray-800"
+                >
+                  <i class="bi bi-person"></i>
+                  View Profile
+                </button>
+
+                @if (user() && user()!.is_admin) {
+                  <div class="border-t border-gray-700"></div>
+                  <button
+                    [routerLink]="'/admin/overview'"
+                    class="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-gray-800"
+                  >
+                    <i class="bi bi-sliders"></i>
+                    Admin Dashboard
+                  </button>
+                }
+
+                <div class="border-t border-gray-700"></div>
+
+                <button
+                  class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:bg-gray-800"
+                  (click)="logout()"
+                >
+                  <i class="bi bi-box-arrow-right"></i>
+                  Logout
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="flex items-center gap-2">
+            <button class="cw-btn-secondary" [routerLink]="['/' + APP_ROUTES.signup]">
+              Sign Up
+            </button>
+            <button class="cw-btn-primary" [routerLink]="['/' + APP_ROUTES.login]">Sign In</button>
+          </div>
         }
-        @else{
-        <div class="flex items-center gap-2">
-          <button class="cw-btn-secondary" [routerLink]="['/' + APP_ROUTES.signup]">Sign Up</button>
-          <button class="cw-btn-primary" [routerLink]="['/' + APP_ROUTES.login]">Sign In</button>
-        </div>}
       </div>
     </div>
   </div>
