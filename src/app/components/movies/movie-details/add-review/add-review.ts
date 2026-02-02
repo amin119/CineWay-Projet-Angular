@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, effect } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, effect, input } from '@angular/core';
 import { ReviewCreate, ReviewRead } from '../../../../models/review.model';
 import { FormsModule } from '@angular/forms';
 
@@ -9,11 +9,13 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './add-review.css',
 })
 export class AddReview {
-  @Input({ required: true }) open!: boolean;
+  open = input.required<boolean>();
 
-  @Input() movieTitle?: string;
+  movieTitle = input<string>();
 
-  @Input() initialData: ReviewRead | null = null;
+  initialData = input<ReviewRead | null>(null);
+
+  isEditing = input<boolean>(false);
 
   @Output() submitReview = new EventEmitter<ReviewCreate>();
   @Output() close = new EventEmitter<void>();
@@ -24,14 +26,19 @@ export class AddReview {
   rating = signal<number>(0);
   title = signal<string>('');
   comment = signal<string>('');
+  hoverRating = signal<number>(0);
 
   constructor() {
     // Watch for initialData changes and populate the form
     effect(() => {
-      if (this.initialData) {
-        this.rating.set(this.initialData.rating);
-        this.title.set(this.initialData.title || '');
-        this.comment.set(this.initialData.comment || '');
+      const data = this.initialData();
+      if (data) {
+        this.rating.set(data.rating);
+        this.title.set(data.title || '');
+        this.comment.set(data.comment || '');
+        this.hoverRating.set(0);
+      } else {
+        this.reset();
       }
     });
   }
@@ -40,11 +47,20 @@ export class AddReview {
     this.rating.set(v);
   }
 
+  onStarHover(rating: number) {
+    this.hoverRating.set(rating);
+  }
+
+  onStarLeave() {
+    this.hoverRating.set(0);
+  }
+
   reset() {
     this.errorMsg.set(null);
     this.rating.set(0);
     this.title.set('');
     this.comment.set('');
+    this.hoverRating.set(0);
   }
 
   onClose() {

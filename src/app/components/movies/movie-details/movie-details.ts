@@ -30,10 +30,50 @@ export class MovieDetails {
 
   movieId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
 
+  constructor() {
+    // Check if movie is in favorites when component loads
+    effect(() => {
+      const id = this.movieId();
+      if (id) {
+        this.checkIfFavorite(id);
+      }
+    });
+  }
+
+  private checkIfFavorite(movieId: number) {
+    this.favoritesService.getFavoriteMovies().subscribe({
+      next: (movies: MovieModel[]) => {
+        const isFav = movies.some((m) => m.id === movieId);
+        this.isFavorite.set(isFav);
+      },
+      error: (err: any) => {
+        // Handle error silently or show user-friendly message
+      },
+    });
+  }
+
   movieResource = httpResource<MovieModel>(() => ({
     url: `${APP_API.movies.movies}/${this.movieId()}`,
   }));
-  movie = computed(() => this.movieResource.value());
+  movie = computed(() => {
+    const movieData = this.movieResource.value();
+    if (!movieData) return movieData;
+    
+    // Return movieData with its existing status 
+    // Only add fallback if status is explicitly missing
+    if (movieData.status) {
+      return movieData;
+    }
+    
+    // Fallback: Set default status based on release date if not provided
+    const releaseDate = new Date(movieData.release_date);
+    const now = new Date();
+    const fallbackStatus = releaseDate > now ? 'COMING_SOON' : 'SHOWING';
+    return {
+      ...movieData,
+      status: fallbackStatus
+    };
+  });
   loading = this.movieResource.isLoading;
   error = this.movieResource.error;
 
@@ -79,9 +119,36 @@ export class MovieDetails {
     this.ytCommand(nextMuted ? 'mute' : 'unMute');
   }
 
+  toggleFavorite(event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const movieId = this.movieId();
+    if (this.isFavorite()) {
+      this.favoritesService.removeMovieFromFavorites(movieId).subscribe({
+        next: () => {
+          this.isFavorite.set(false);
+        },
+        error: (err: any) => {
+          // Handle error silently or show user-friendly message
+        },
+      });
+    } else {
+      this.favoritesService.addMovieToFavorites(movieId).subscribe({
+        next: () => {
+          this.isFavorite.set(true);
+        },
+        error: (err: any) => {
+          // Handle error silently or show user-friendly message
+        },
+      });
+    }
+  }
+
   viewShowtimes() {
     // Navigate to movie showtimes page
     const movieId = this.movieId();
+    const currentMovie = this.movie();
     if (movieId) {
       this.router.navigate(['/movies', movieId, 'showtimes']);
     }

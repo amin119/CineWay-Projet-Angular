@@ -161,9 +161,16 @@
     [open]="modalOpen()"
     [movieTitle]="movieTitle()"
     [initialData]="editingReview() ? userReview() : null"
+    [isEditing]="editingReview()"
     (close)="closeAddReview()"
     (submitReview)="handleSubmit($event)"
   ></app-add-review>
+
+  <app-delete-confirmation-modal
+    [open]="deleteConfirmationOpen()"
+    (confirm)="confirmDeleteReview()"
+    (cancel)="cancelDeleteReview()"
+  ></app-delete-confirmation-modal>
   @if (submitError()) {
     <div
       class="mt-4 flex items-start gap-3 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-300"

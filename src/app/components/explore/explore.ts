@@ -88,18 +88,30 @@ export class Explore implements OnInit, OnDestroy {
     this.isLoadingMovies$.next(true);
 
     this.moviesApi
-      .getMovies()
+      .getShowingMovies()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (movies) => {
-          this.allMovies = movies;
-          this.categorizeMovies(movies);
-          this.loadTrendingMovies();
+          this.nowShowingMovies = movies.slice(0, this.MOVIES_PER_CATEGORY);
+          this.featuredMovie = this.nowShowingMovies[0] || null;
+        },
+        error: (error) => {
+          console.error('Error loading showing movies:', error);
+        },
+      });
+
+    this.moviesApi
+      .getComingSoonMovies()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (movies) => {
+          this.comingSoonMovies = movies.slice(0, this.MOVIES_PER_CATEGORY);
           this.isLoadingMovies$.next(false);
         },
         error: (error) => {
           console.error('Error loading movies:', error);
           this.isLoadingMovies$.next(false);
+          console.error('Error loading coming soon movies:', error);
           this.toastr.error('Failed to load movies. Please try again later.', 'Error');
         },
       });
@@ -117,7 +129,7 @@ export class Explore implements OnInit, OnDestroy {
       .filter(movie => new Date(movie.release_date) > today)
       .slice(0, this.MOVIES_PER_CATEGORY);
 
-    this.featuredMovie = this.nowShowingMovies[0] || movies[0] || null;
+    this.loadTrendingMovies();
   }
 
   private loadTrendingMovies(): void {
