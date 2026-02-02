@@ -3,7 +3,6 @@ import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { APP_ROUTES } from '../../config/app-routes.confg';
 import { ToastrService } from 'ngx-toastr';
-// TODO : add logic for role based access
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);

@@ -21,7 +21,7 @@ export class Showtimes implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
 
-  readonly moviesRes = httpResource<MovieModel[]>(() => {
+  readonly moviesRes = httpResource<{ movies: MovieModel[] }>(() => {
     const cid = this.cinemaId();
     return {
       url: APP_API.cinema.movies(cid!),
@@ -33,7 +33,8 @@ export class Showtimes implements OnInit {
 
   constructor() {
     effect(() => {
-      const movies = this.moviesRes.value();
+      const moviesResponse = this.moviesRes.value();
+      const movies = moviesResponse?.movies;
       if (movies && movies.length > 0) {
         const cid = this.cinemaId();
         if (!cid) return;
@@ -49,7 +50,7 @@ export class Showtimes implements OnInit {
             this.showtimesData.set(showtimeResponses);
           },
           error: (err) => {
-            // Error loading showtimes
+            console.error('Error loading showtimes:', err);
           },
         });
       }

@@ -17,8 +17,11 @@ export class Cinemas {
   cinemas = signal<Cinema[]>([]);
   error = this.cinemaService.error;
   isLoading = this.cinemaService.isLoading;
+  total = this.cinemaService.total;
 
-  hasMore = computed(() => !this.isLoading());
+  hasMore = computed(() => {
+    return this.cinemas().length < this.total();
+  });
 
   constructor() {
     effect(() => {
