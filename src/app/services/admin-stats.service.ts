@@ -10,17 +10,7 @@ type CountResponse = {
   total_tickets_sold?: number;
 };
 
-export type RecentBooking = {
-  id: number;
-  user_id: number;
-  screening_id: number;
-  seat_id: number | null;
-  price: number;
-  status: string;
-  booked_at: string;
-};
-
-type RecentBookingsResponse = { recent_bookings?: RecentBooking[] };
+type RecentBookingsResponse = { recent_bookings?: unknown[] };
 type TodayStatsResponse = { today_bookings?: number; today_revenue?: number };
 
 @Injectable({ providedIn: 'root' })
@@ -54,17 +44,6 @@ export class AdminStatsService {
       .pipe(
         map((res) => res.recent_bookings?.length ?? 0),
         catchError(() => of(0))
-      );
-  }
-
-  getRecentBookings(days = 7, limit = 10): Observable<RecentBooking[]> {
-    return this.http
-      .get<RecentBookingsResponse>(
-        `${APP_API.admin.stats.recentBookings}?days=${days}&limit=${limit}`
-      )
-      .pipe(
-        map((res) => res.recent_bookings ?? []),
-        catchError(() => of([]))
       );
   }
 

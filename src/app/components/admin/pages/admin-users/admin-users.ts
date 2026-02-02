@@ -8,11 +8,7 @@ import { PaginationComponent } from '../../components/pagination/pagination';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { SearchInputComponent } from '../../components/search-input/search-input';
-import {
-  AdminDataTableComponent,
-  TableColumn,
-  TableAction,
-} from '../../components/admin-data-table/admin-data-table';
+import { AdminDataTableComponent, TableColumn, TableAction } from '../../components/admin-data-table/admin-data-table';
 
 @Component({
   selector: 'app-admin-users',
@@ -82,9 +78,7 @@ export class AdminUsersComponent implements OnInit {
         (status === 'inactive' && !user.is_active);
 
       const matchesRole =
-        role === 'all' ||
-        (role === 'admin' && user.is_admin) ||
-        (role === 'user' && !user.is_admin);
+        role === 'all' || (role === 'admin' && user.is_admin) || (role === 'user' && !user.is_admin);
 
       return matchesSearch && matchesStatus && matchesRole;
     });
@@ -99,9 +93,7 @@ export class AdminUsersComponent implements OnInit {
   });
 
   readonly startIndex = computed(() => (this.page() - 1) * this.itemsPerPage + 1);
-  readonly endIndex = computed(() =>
-    Math.min(this.page() * this.itemsPerPage, this.filteredUsers().length),
-  );
+  readonly endIndex = computed(() => Math.min(this.page() * this.itemsPerPage, this.filteredUsers().length));
 
   ngOnInit(): void {
     this.loadUsers();
@@ -111,8 +103,7 @@ export class AdminUsersComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.usersApi
-      .getUsers()
+    this.usersApi.getUsers()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (users) => {
@@ -121,6 +112,7 @@ export class AdminUsersComponent implements OnInit {
         },
         error: (err) => {
           this.error.set('Failed to load users');
+          console.error(err);
           this.loading.set(false);
         },
       });
@@ -145,7 +137,7 @@ export class AdminUsersComponent implements OnInit {
     this.router.navigate(['/admin/users/add']);
   }
 
-  onTableAction(event: { action: 'edit' | 'delete'; row: UserModel }): void {
+  onTableAction(event: { action: 'edit' | 'delete', row: UserModel }): void {
     if (event.action === 'edit') {
       this.router.navigate(['/admin/users/edit', event.row.id]);
     } else if (event.action === 'delete') {
@@ -154,20 +146,18 @@ export class AdminUsersComponent implements OnInit {
   }
 
   private onDeleteUser(user: UserModel): void {
-    const confirmed = confirm(
-      `Are you sure you want to delete "${user.full_name}"? This action cannot be undone.`,
-    );
+    const confirmed = confirm(`Are you sure you want to delete "${user.full_name}"? This action cannot be undone.`);
     if (!confirmed) return;
 
-    this.usersApi
-      .deleteUser(user.id)
+    this.usersApi.deleteUser(user.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.users.update((users) => users.filter((u) => u.id !== user.id));
+          this.users.update(users => users.filter(u => u.id !== user.id));
         },
         error: (err) => {
           this.error.set('Failed to delete user');
+          console.error('Delete failed:', err);
         },
       });
   }
@@ -184,3 +174,4 @@ export class AdminUsersComponent implements OnInit {
     }
   }
 }
+

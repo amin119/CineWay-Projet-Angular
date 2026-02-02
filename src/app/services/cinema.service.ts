@@ -10,30 +10,22 @@ export class CinemaService {
   readonly limit = 4;
   private skip = signal(0);
   private http = inject(HttpClient);
-  private favoritesTrigger = signal(0);
 
-  readonly cinemaResource = httpResource<CinemaResponse>(() => {
-    return {
-      url: APP_API.cinema.list,
-      method: 'GET',
-      params: {
-        limit: this.limit,
-        skip: this.skip(),
-      },
-    };
-  });
-  cinemas = computed(() => {
-    const value = this.cinemaResource.value();
-    return value?.cinemas ?? [];
-  });
-
-  error = computed(() => {
-    const err = this.cinemaResource.error() as HttpErrorResponse;
-    return err;
-  });
+  readonly cinemaResource = httpResource<CinemaResponse>(() => ({
+    url: APP_API.cinema.list,
+    method: 'GET',
+    params: {
+      limit: this.limit,
+      skip: this.skip(),
+    }
+  }));
+  cinemas = computed(() => this.cinemaResource.value()?.cinemas);
+  total = computed(() => this.cinemaResource.value()?.total);
+  error = computed(() => this.cinemaResource.error() as HttpErrorResponse);
   isLoading = this.cinemaResource.isLoading;
 
   next() {
+    if(this.skip() + this.limit >= (this.total() || 0)) return;
     this.skip.update((s) => s + this.limit);
   }
 
@@ -43,24 +35,18 @@ export class CinemaService {
   }
   addToFavorites(cinemaId: number) {
     return this.http.post(`${APP_API.cinema.list}${cinemaId}/favorite`, {});
-  }
+}
   removeFromFavorites(cinemaId: number) {
     return this.http.delete(`${APP_API.cinema.list}${cinemaId}/favorite`);
   }
 
-  favoriteCinemas = httpResource<Cinema[]>(() => {
-    this.favoritesTrigger();
-    return {
-      url: APP_API.cinema.favorites,
-      method: 'GET',
-    };
-  });
-  favorites = computed(() => this.favoriteCinemas.value() ?? []);
+  favoriteCinemas = httpResource<Cinema[]>(()=>({
+    url: APP_API.cinema.favorites,
+    method: 'GET',
+  }));
+  favorites = computed(() => this.favoriteCinemas.value());
 
-  reloadFavorites() {
-    this.favoritesTrigger.update((v) => v + 1);
-  }
-
+  
   getCinemaById(id: number) {
     return this.http.get<Cinema>(`${APP_API.cinema.list}${id}`);
   }
@@ -74,16 +60,13 @@ export class CinemaService {
     const preparedPayload = this.prepareCinemaPayload(payload);
     return this.http.put<Cinema>(`${APP_API.cinema.list}${id}`, preparedPayload);
   }
-
+  
   private prepareCinemaPayload(cinema: any) {
     // Helper function to convert comma-separated string to array
     const stringToArray = (value: string | string[] | null | undefined): string[] | null => {
       if (!value) return null;
       if (Array.isArray(value)) return value;
-      return value
-        .split(',')
-        .map((item) => item.trim())
-        .filter((item) => item.length > 0);
+      return value.split(',').map(item => item.trim()).filter(item => item.length > 0);
     };
 
     return {
@@ -93,7 +76,7 @@ export class CinemaService {
       amenities: stringToArray(cinema.amenities) || [],
     };
   }
-
+  
   getCinemas() {
     return this.http.get<CinemaResponse>(`${APP_API.cinema.list}`);
   }

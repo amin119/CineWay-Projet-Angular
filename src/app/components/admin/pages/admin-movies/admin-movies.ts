@@ -2,10 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  AdminDataTableComponent,
-  TableColumn,
-} from '../../components/admin-data-table/admin-data-table';
+import { AdminDataTableComponent, TableColumn } from '../../components/admin-data-table/admin-data-table';
 import { SearchInputComponent } from '../../components/search-input/search-input';
 import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { PaginationComponent } from '../../components/pagination/pagination';
@@ -43,16 +40,10 @@ export class AdminMoviesComponent implements OnInit {
   readonly page = signal(1);
 
   // Computed
-  readonly statusOptions: (MovieStatus | 'all')[] = [
-    'all',
-    'Published',
-    'Upcoming',
-    'Draft',
-    'Archived',
-  ];
+  readonly statusOptions: (MovieStatus | 'all')[] = ['all', 'Published', 'Upcoming', 'Draft', 'Archived'];
 
   readonly statusDropdownOptions = computed(() =>
-    this.statusOptions.map((s) => ({ value: s, label: s === 'all' ? 'All statuses' : s })),
+    this.statusOptions.map((s) => ({ value: s, label: s === 'all' ? 'All statuses' : s }))
   );
 
   readonly filteredMovies = computed(() => {
@@ -114,8 +105,7 @@ export class AdminMoviesComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.moviesApi
-      .getMovies()
+    this.moviesApi.getMovies()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
@@ -123,6 +113,7 @@ export class AdminMoviesComponent implements OnInit {
           this.loading.set(false);
         },
         error: (err) => {
+          console.error('Error loading movies:', err);
           this.error.set('Failed to load movies. Please try again.');
           this.loading.set(false);
         },
@@ -139,14 +130,14 @@ export class AdminMoviesComponent implements OnInit {
 
   onDelete(movie: MovieModel) {
     if (confirm(`Are you sure you want to delete "${movie.title}"?`)) {
-      this.moviesApi
-        .deleteMovie(movie.id)
+      this.moviesApi.deleteMovie(movie.id)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.loadMovies();
           },
           error: (err) => {
+            console.error('Error deleting movie:', err);
             this.error.set('Failed to delete movie. Please try again.');
           },
         });
