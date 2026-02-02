@@ -7,7 +7,6 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { AuthService } from '../../auth/services/auth.service';
 import { MoviesApi } from '../../services/movies-api';
-import { FavoritesService } from '../../services/favorites.service';
 import { MovieModel } from '../../models/movie.model';
 import { ToastrService } from 'ngx-toastr';
 
@@ -21,13 +20,12 @@ interface SearchHistory {
   selector: 'app-explore',
   templateUrl: './explore.html',
   styleUrls: ['./explore.css'],
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule,RouterLink],
   standalone: true,
 })
 export class Explore implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly moviesApi = inject(MoviesApi);
-  private readonly favoritesService = inject(FavoritesService);
   private readonly router = inject(Router);
   private readonly toastr = inject(ToastrService);
 
@@ -48,11 +46,10 @@ export class Explore implements OnInit, OnDestroy {
   featuredMovie: MovieModel | null = null;
 
   recentSearches: SearchHistory[] = [];
-  favoriteMovieIds: Set<number> = new Set();
 
   isLoadingMovies$ = new BehaviorSubject<boolean>(false);
 
-  private readonly MOVIES_PER_CATEGORY = 5;
+  private readonly MOVIES_PER_CATEGORY = 10;
   private readonly RECENT_SEARCHES_LIMIT = 3;
   private readonly TRENDING_MOVIES_LIMIT = 5;
   private readonly SEARCH_DEBOUNCE_TIME = 300;
@@ -73,25 +70,6 @@ export class Explore implements OnInit, OnDestroy {
     this.setupSearchDebounce();
     this.loadAllMovies();
     this.loadRecentSearches();
-    this.loadFavorites();
-  }
-
-  private loadFavorites(): void {
-    this.favoritesService
-      .getFavoriteMovies()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (movies) => {
-          this.favoriteMovieIds = new Set(movies.map((m) => m.id));
-        },
-        error: (error) => {
-          console.error('Error loading favorites:', error);
-        },
-      });
-  }
-
-  isFavorite(movieId: number): boolean {
-    return this.favoriteMovieIds.has(movieId);
   }
 
   private setupSearchDebounce(): void {
@@ -99,9 +77,9 @@ export class Explore implements OnInit, OnDestroy {
       .pipe(
         debounceTime(this.SEARCH_DEBOUNCE_TIME),
         distinctUntilChanged(),
-        takeUntil(this.destroy$),
+        takeUntil(this.destroy$)
       )
-      .subscribe((searchTerm) => {
+      .subscribe(searchTerm => {
         this.performSearch(searchTerm);
       });
   }
@@ -131,34 +109,36 @@ export class Explore implements OnInit, OnDestroy {
           this.isLoadingMovies$.next(false);
         },
         error: (error) => {
+          console.error('Error loading movies:', error);
           this.isLoadingMovies$.next(false);
           console.error('Error loading coming soon movies:', error);
           this.toastr.error('Failed to load movies. Please try again later.', 'Error');
         },
       });
+  }
+
+  private categorizeMovies(movies: MovieModel[]): void {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    this.nowShowingMovies = movies
+      .filter(movie => new Date(movie.release_date) <= today)
+      .slice(0, this.MOVIES_PER_CATEGORY);
+
+    this.comingSoonMovies = movies
+      .filter(movie => new Date(movie.release_date) > today)
+      .slice(0, this.MOVIES_PER_CATEGORY);
 
     this.loadTrendingMovies();
   }
 
   private loadTrendingMovies(): void {
-    this.moviesApi
-      .getTrendingMovies()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (movies) => {
-          this.trendingMovies = movies
-            .map((movie) => ({ ...movie, status: movie.status || 'SHOWING' }))
-            .slice(0, this.TRENDING_MOVIES_LIMIT);
-        },
-        error: (error) => {
-          console.error('Failed to load trending movies:', error);
-          // Fallback to sorting from allMovies if API fails
-          this.trendingMovies = this.allMovies
-            .sort((a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime())
-            .map((movie) => ({ ...movie, status: movie.status || 'SHOWING' }))
-            .slice(0, this.TRENDING_MOVIES_LIMIT);
-        },
-      });
+    this.trendingMovies = this.allMovies
+      .sort(
+        (a, b) =>
+          new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
+      )
+      .slice(0, this.TRENDING_MOVIES_LIMIT);
   }
 
   private loadRecentSearches(): void {
@@ -171,6 +151,7 @@ export class Explore implements OnInit, OnDestroy {
         }));
       }
     } catch (error) {
+      console.error('Error loading search history:', error);
       this.recentSearches = [];
     }
   }
@@ -179,7 +160,7 @@ export class Explore implements OnInit, OnDestroy {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.recentSearches));
     } catch (error) {
-      // Error saving search history
+      console.error('Error saving search history:', error);
     }
   }
 
@@ -228,7 +209,9 @@ export class Explore implements OnInit, OnDestroy {
 
     const query = searchTerm.toLowerCase();
 
-    this.searchResults = this.allMovies.filter((movie) => this.matchesSearchCriteria(movie, query));
+    this.searchResults = this.allMovies.filter(movie =>
+      this.matchesSearchCriteria(movie, query)
+    );
 
     this.isSearching = false;
   }
@@ -236,14 +219,14 @@ export class Explore implements OnInit, OnDestroy {
   private matchesSearchCriteria(movie: MovieModel, query: string): boolean {
     return (
       movie.title.toLowerCase().includes(query) ||
-      movie.genre.some((g) => g.toLowerCase().includes(query)) ||
+      movie.genre.some(g => g.toLowerCase().includes(query)) ||
       (movie.description?.toLowerCase().includes(query) ?? false)
     );
   }
 
   private saveToRecentSearches(query: string, type: 'movie' | 'cinema'): void {
     const existingIndex = this.recentSearches.findIndex(
-      (s) => s.query.toLowerCase() === query.toLowerCase(),
+      s => s.query.toLowerCase() === query.toLowerCase()
     );
 
     if (existingIndex !== -1) {
@@ -257,7 +240,10 @@ export class Explore implements OnInit, OnDestroy {
     });
 
     if (this.recentSearches.length > this.RECENT_SEARCHES_LIMIT) {
-      this.recentSearches = this.recentSearches.slice(0, this.RECENT_SEARCHES_LIMIT);
+      this.recentSearches = this.recentSearches.slice(
+        0,
+        this.RECENT_SEARCHES_LIMIT
+      );
     }
 
     this.saveSearchHistory();
@@ -289,6 +275,7 @@ export class Explore implements OnInit, OnDestroy {
     }
   }
 
+ 
   onGetTickets(): void {
     if (this.featuredMovie) {
       this.router.navigate(['/cinemas']);
@@ -297,44 +284,12 @@ export class Explore implements OnInit, OnDestroy {
   }
 
   onSeeAllNowShowing(): void {
-    this.router.navigate(['/showing-now']);
+    this.router.navigate(['/home']);
+    this.toastr.info('Viewing all now showing movies on home page.');
   }
 
   onSeeAllComingSoon(): void {
-    this.router.navigate(['/coming-soon']);
-  }
-
-  onSeeAllTrending(): void {
-    this.router.navigate(['/trending']);
-  }
-
-  toggleFavorite(movie: MovieModel, event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
-
-    const isFavorited = this.favoriteMovieIds.has(movie.id);
-
-    if (isFavorited) {
-      // Remove from favorites
-      this.favoritesService.removeMovieFromFavorites(movie.id).subscribe({
-        next: () => {
-          this.favoriteMovieIds.delete(movie.id);
-        },
-        error: (error) => {
-          console.error('Error removing from favorites:', error);
-        },
-      });
-    } else {
-      // Add to favorites
-      this.favoritesService.addMovieToFavorites(movie.id).subscribe({
-        next: () => {
-          this.favoriteMovieIds.add(movie.id);
-        },
-        error: (error) => {
-          console.error('Error adding to favorites:', error);
-        },
-      });
-    }
+    this.toastr.info('Coming soon movies full list is under development!', 'Coming Soon');
   }
 
   trackByMovieId(_: number, movie: MovieModel): number {
@@ -343,31 +298,5 @@ export class Explore implements OnInit, OnDestroy {
 
   trackByIndex(index: number): number {
     return index;
-  }
-
-  getMovieStatusClass(status: string): string {
-    switch (status) {
-      case 'SHOWING':
-        return 'bg-green-600 text-white';
-      case 'COMING_SOON':
-        return 'bg-blue-600 text-white';
-      case 'ENDED':
-        return 'bg-gray-600 text-white';
-      default:
-        return 'bg-green-600 text-white';
-    }
-  }
-
-  getMovieStatusText(status: string): string {
-    switch (status) {
-      case 'SHOWING':
-        return 'Now Showing';
-      case 'COMING_SOON':
-        return 'Coming Soon';
-      case 'ENDED':
-        return 'Ended';
-      default:
-        return 'Now Showing';
-    }
   }
 }

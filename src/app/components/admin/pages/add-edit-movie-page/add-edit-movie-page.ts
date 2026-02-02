@@ -74,27 +74,17 @@ export class AddEditMoviePageComponent implements OnInit {
 
   private loadMovie(id: number) {
     this.loading.set(true);
-    this.moviesApi
-      .getMovieById(id)
+    this.moviesApi.getMovieById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (movie) => {
-          // Convert cast array to comma-separated string for form
-          const castString = Array.isArray(movie.cast)
-            ? movie.cast
-                .map((actor: any) => (typeof actor === 'string' ? actor : actor.actor_name))
-                .join(', ')
-            : movie.cast;
-
-          this.form.patchValue({
-            ...movie,
-            cast: castString,
-          });
+          this.form.patchValue(movie);
           this.loading.set(false);
         },
         error: (err) => {
           this.error.set('Failed to load movie');
           this.loading.set(false);
+          console.error(err);
         },
       });
   }
@@ -106,42 +96,24 @@ export class AddEditMoviePageComponent implements OnInit {
     }
 
     this.loading.set(true);
-    const formData = this.form.value;
-
-    // Convert cast string to CastMember array
-    const castMembers = formData.cast
-      ? formData.cast.split(',').map((name: string, index: number) => ({
-          character_name: `Character ${index + 1}`,
-          role: 'Actor',
-          actor_name: name.trim(),
-          profile_image_url: null,
-          is_lead: index < 2,
-          order: index,
-          id: 0,
-          movie_id: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }))
-      : [];
-
-    const movieData = {
-      ...formData,
-      cast: castMembers,
-    };
+    const movieData = this.form.value;
 
     const request$ = this.isEditMode()
       ? this.moviesApi.updateMovie(this.movieId()!, movieData)
       : this.moviesApi.createMovie(movieData);
 
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.router.navigate(['/admin/movies']);
-      },
-      error: (err) => {
-        this.error.set('Failed to save movie');
-        this.loading.set(false);
-      },
-    });
+    request$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/admin/movies']);
+        },
+        error: (err) => {
+          this.error.set('Failed to save movie');
+          this.loading.set(false);
+          console.error(err);
+        },
+      });
   }
 
   onCancel() {
@@ -160,8 +132,7 @@ export class AddEditMoviePageComponent implements OnInit {
     if (!control || !control.errors || !control.touched) return '';
 
     if (control.errors['required']) return `${fieldName} is required`;
-    if (control.errors['minlength'])
-      return `${fieldName} must be at least ${control.errors['minlength'].requiredLength} characters`;
+    if (control.errors['minlength']) return `${fieldName} must be at least ${control.errors['minlength'].requiredLength} characters`;
     if (control.errors['min']) return `${fieldName} must be at least ${control.errors['min'].min}`;
     if (control.errors['max']) return `${fieldName} must not exceed ${control.errors['max'].max}`;
 

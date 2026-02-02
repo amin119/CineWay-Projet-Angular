@@ -10,6 +10,7 @@ import { UserModel } from '../models/user.model';
   providedIn: 'root',
 })
 export class UserApi {
+
   private http = inject(HttpClient);
 
   private _user = signal<User | null>(null);
@@ -27,7 +28,7 @@ export class UserApi {
     return {
       email: u.email,
       full_name: u.full_name,
-      is_admin: u.is_admin,
+      is_admin:u.is_admin,
       profile_picture_url: u.profile_picture_url ?? null,
       dark_mode: u.dark_mode,
       notifications_enabled: u.notifications_enabled,
@@ -55,7 +56,7 @@ export class UserApi {
       }),
       finalize(() => {
         this._loading.set(false);
-      }),
+      })
     );
   }
 
@@ -89,7 +90,7 @@ export class UserApi {
         if (payload.email !== undefined) {
           this._user.set(updatedUser);
         }
-      }),
+      })
     );
   }
 
@@ -101,23 +102,18 @@ export class UserApi {
     return this.http.put<User>(APP_API.user.preferences, payload).pipe(
       tap((updatedUser) => {
         this._user.set(updatedUser);
-      }),
+      })
     );
   }
 
   uploadProfilePicture(file: File): Observable<User> {
     const formData = new FormData();
-    formData.append('profile_picture', file);
+    formData.append('file', file);
 
-    const request = this.http.put<User>(APP_API.user.profilePicture, formData);
-
-    return request.pipe(
-      tap((response) => {
+    return this.http.put<User>(APP_API.user.profilePicture, formData).pipe(
+      tap(() => {
         this.reload();
-      }),
-      catchError((error) => {
-        throw error;
-      }),
+      })
     );
   }
 

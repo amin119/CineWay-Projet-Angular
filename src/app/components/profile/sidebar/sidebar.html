@@ -1,90 +1,59 @@
-<aside class="sidebar" [class.collapsed]="isCollapsed">
-  <!-- Header with Toggle and User Profile -->
-  <div class="sidebar-header">
-    <!-- Toggle Button Inside -->
-    <button class="sidebar-toggle-inside" (click)="toggleSidebar()">
-      <span class="bi bi-list" *ngIf="isCollapsed"></span>
-      <span class="bi bi-x-lg" *ngIf="!isCollapsed"></span>
-    </button>
+<aside class=" bg-gray-950 p-6 flex flex-col justify-between relative min-h-screen  mt-14">
 
-    @if (user() && !isCollapsed) {
-      <div class="user-profile">
-        <img [src]="user()?.profile_picture_url || '/assets/avatar.png'" class="user-avatar" />
-        <div class="user-info">
-          <div class="user-name">{{ user()?.full_name }}</div>
-          <div class="user-email">{{ user()?.email }}</div>
-        </div>
+  <div>
+    <div class="flex gap-2 mb-8">
+  <a [routerLink]="APP_Routes.home" class="cw-li-navbar">
+    <span class="bi bi-arrow-left">  Back Home</span>
+  </a>
+</div>
+   
+    <!-- User info -->
+     @if(user()){
+        <div class="flex flex-col items-center gap-2 mb-10">
+    
+<img
+  [src]="user()?.profile_picture_url
+    ? 'http://localhost:8000' + user()?.profile_picture_url
+    : '/assets/avatar.png'"
+        class="w-12 h-12 rounded-full object-cover"
+      /> <!--A CHANGER APRES UPDATE BACKEND-->
+      <div>
+        <p class="text-sm font-medium">{{ user()?.full_name }}</p>
+        <p class="text-xs text-gray-400">{{ user()?.email }}</p>
       </div>
-    }
+    </div>
+     }
+    
 
-    @if (user() && isCollapsed) {
-      <div class="user-profile-collapsed">
-        <img
-          [src]="user()?.profile_picture_url || '/assets/avatar.png'"
-          class="user-avatar-small"
-        />
-      </div>
-    }
+    <!-- Menu -->
+    <nav class="flex flex-col  gap-4 text-extrabold pt-12">
+     <button
+  class="cw-li-navbar"
+  (click)="selectSection('profile')"
+>
+  <span class="bi bi-person"></span> Profile Details
+</button>
+
+<button
+  class="cw-li-navbar"
+  (click)="selectSection('preferences')"
+>
+  <span class="bi bi-sliders"></span> Preferences
+</button>
+
+<button
+  class="cw-li-navbar"
+  (click)="selectSection('help')"
+>
+  <span class="bi bi-info-circle"></span> Help & Support
+</button>
+    </nav>
   </div>
 
-  <!-- Navigation Menu -->
-  <nav class="sidebar-nav">
-    <button
-      class="nav-item"
-      [class.active]="selectedSection === 'profile'"
-      (click)="selectSection('profile')"
-      [title]="isCollapsed ? 'Profile Details' : ''"
-    >
-      <span class="bi bi-person nav-icon"></span>
-      <span class="nav-label" *ngIf="!isCollapsed">Profile Details</span>
-    </button>
-
-    <button
-      class="nav-item"
-      [class.active]="selectedSection === 'preferences'"
-      (click)="selectSection('preferences')"
-      [title]="isCollapsed ? 'Preferences' : ''"
-    >
-      <span class="bi bi-sliders nav-icon"></span>
-      <span class="nav-label" *ngIf="!isCollapsed">Preferences</span>
-    </button>
-
-    <a
-      routerLink="/favorites"
-      class="nav-item"
-      routerLinkActive="active"
-      [title]="isCollapsed ? 'My Favorites' : ''"
-    >
-      <span class="bi bi-heart nav-icon"></span>
-      <span class="nav-label" *ngIf="!isCollapsed">My Favorites</span>
-    </a>
-
-    <button
-      class="nav-item"
-      [class.active]="selectedSection === 'history'"
-      (click)="selectSection('history')"
-      [title]="isCollapsed ? 'Purchase History' : ''"
-    >
-      <span class="bi bi-receipt nav-icon"></span>
-      <span class="nav-label" *ngIf="!isCollapsed">Purchase History</span>
-    </button>
-
-    <button
-      class="nav-item"
-      [class.active]="selectedSection === 'help'"
-      (click)="selectSection('help')"
-      [title]="isCollapsed ? 'Help & Support' : ''"
-    >
-      <span class="bi bi-headset nav-icon"></span>
-      <span class="nav-label" *ngIf="!isCollapsed">Help & Support</span>
-    </button>
-  </nav>
-
-  <!-- Footer with Logout -->
-  <div class="sidebar-footer">
-    <button class="logout-btn" (click)="onLogoutClick()" [title]="isCollapsed ? 'Log Out' : ''">
-      <span class="bi bi-box-arrow-left nav-icon"></span>
-      <span class="nav-label" *ngIf="!isCollapsed">Log Out</span>
-    </button>
-  </div>
+  <!-- Bottom logout -->
+  <button
+  class="flex items-center gap-2 text-red-400 hover:text-red-300 mt-6"
+  (click)="onLogoutClick()"
+>
+  </button>
 </aside>

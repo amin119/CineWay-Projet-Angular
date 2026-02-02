@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
@@ -13,7 +13,6 @@ import { ReviewsService } from '../../../services/reviews-service';
 import { ReviewListResponse, ReviewRead } from '../../../models/review.model';
 import { map } from 'rxjs/operators';
 import { ReviewsSection } from './reviews-section/reviews-section';
-import { FavoritesService } from '../../../services/favorites.service';
 
 const DEFAULT_TRAILER = 'https://www.youtube-nocookie.com/embed/EP34Yoxs3FQ';
 
@@ -27,9 +26,7 @@ export class MovieDetails {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
-  private favoritesService = inject(FavoritesService);
   isMuted = signal(true);
-  isFavorite = signal(false);
 
   movieId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
 

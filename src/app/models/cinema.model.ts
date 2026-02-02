@@ -1,5 +1,3 @@
-import { MovieModel } from './movie.model';
-
 export interface Cinema {
   id: number;
   name: string;
@@ -11,7 +9,6 @@ export interface Cinema {
   email?: string;
   gallery_image_url?: string;
   seating_layout?: string;
-  movies?: MovieModel[];
 }
 
 export default interface CinemaResponse {
