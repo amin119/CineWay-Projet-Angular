@@ -1,11 +1,20 @@
-import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from "@angular/router";
+import { Component, inject, signal, HostListener, ElementRef } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { APP_ROUTES } from '../../config/app-routes.confg';
 import { AuthService } from '../../auth/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserApi } from '../../services/user-api';
 import { AbstractControl, FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { catchError, combineLatest, debounceTime, distinctUntilChanged, filter, map, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MoviesApi } from '../../services/movies-api';
 import { CinemaService } from '../../services/cinema.service';
@@ -18,16 +27,17 @@ import { CommonModule } from '@angular/common';
   styleUrl: './navbar-component.css',
 })
 export class NavbarComponent {
-  private authService = inject(AuthService)
+  private authService = inject(AuthService);
   private router = inject(Router);
   private toastrService = inject(ToastrService);
   private formBuilder = inject(FormBuilder);
   private moviesApi = inject(MoviesApi);
   private cinemaService = inject(CinemaService);
+  private elementRef = inject(ElementRef);
 
   APP_ROUTES = APP_ROUTES;
   menuOpen = false;
-  userApi = inject(UserApi)
+  userApi = inject(UserApi);
   searchDropdownOpen = false;
 
   // Filter state: 'all', 'movies', 'cinemas'
@@ -52,39 +62,45 @@ export class NavbarComponent {
 
           if (filter === 'movies') {
             return this.moviesApi.getMovies().pipe(
-              map(movies => ({
-                movies: movies.filter(m =>
-                  m.title.toLowerCase().includes(q.toLowerCase()) ||
-                  m.genre.some(g => g.toLowerCase().includes(q.toLowerCase()))
-                ).slice(0, 5),
-                cinemas: []
+              map((movies) => ({
+                movies: movies
+                  .filter(
+                    (m) =>
+                      m.title.toLowerCase().includes(q.toLowerCase()) ||
+                      m.genre.some((g) => g.toLowerCase().includes(q.toLowerCase())),
+                  )
+                  .slice(0, 5),
+                cinemas: [],
               })),
-              catchError(() => of({ movies: [], cinemas: [] }))
+              catchError(() => of({ movies: [], cinemas: [] })),
             );
           } else if (filter === 'cinemas') {
             return this.cinemaService.searchCinemas(q).pipe(
-              map(cinemas => ({ movies: [], cinemas: cinemas.slice(0, 5) })),
-              catchError(() => of({ movies: [], cinemas: [] }))
+              map((cinemas) => ({ movies: [], cinemas: cinemas.slice(0, 5) })),
+              catchError(() => of({ movies: [], cinemas: [] })),
             );
           } else {
             // Search both
             return combineLatest([
               this.moviesApi.getMovies().pipe(
-                map(movies => movies.filter(m =>
-                  m.title.toLowerCase().includes(q.toLowerCase()) ||
-                  m.genre.some(g => g.toLowerCase().includes(q.toLowerCase()))
-                ).slice(0, 3)),
-                catchError(() => of([]))
+                map((movies) =>
+                  movies
+                    .filter(
+                      (m) =>
+                        m.title.toLowerCase().includes(q.toLowerCase()) ||
+                        m.genre.some((g) => g.toLowerCase().includes(q.toLowerCase())),
+                    )
+                    .slice(0, 3),
+                ),
+                catchError(() => of([])),
               ),
               this.cinemaService.searchCinemas(q).pipe(
-                map(cinemas => cinemas.slice(0, 3)),
-                catchError(() => of([]))
-              )
-            ]).pipe(
-              map(([movies, cinemas]) => ({ movies, cinemas }))
-            );
+                map((cinemas) => cinemas.slice(0, 3)),
+                catchError(() => of([])),
+              ),
+            ]).pipe(map(([movies, cinemas]) => ({ movies, cinemas })));
           }
-        })
+        }),
       ),
     defaultValue: { movies: [], cinemas: [] },
   });
@@ -93,10 +109,25 @@ export class NavbarComponent {
     this.menuOpen = !this.menuOpen;
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    if (this.menuOpen && !this.elementRef.nativeElement.contains(event.target)) {
+      this.menuOpen = false;
+    }
+
+    if (this.searchDropdownOpen && !this.elementRef.nativeElement.contains(event.target)) {
+      this.searchDropdownOpen = false;
+    }
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/']);
     this.toastrService.warning('Good bye!');
+  }
+
+  navigateToHome() {
+    this.router.navigate(['/home']);
   }
 
   isAuth() {

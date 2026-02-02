@@ -21,9 +21,19 @@ import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
 import { adminGuard } from './auth/guards/admin/admin.guard';
 import { NotFound } from './components/not-found/not-found';
-import { MovieDetails } from './components/movies/movie-details/movie-details';
-import { ShowtimeSelectionComponent } from './components/movies/showtime-selection/showtime-selection';
-import { MovieShowtimesComponent } from './components/movies/movie-showtimes/movie-showtimes';
+import { SeatSelection } from './components/seat-selection/seat-selection';
+import { Payment } from './components/payment/payment';
+import { PaymentConfirmation } from './components/payment/confirmation/confirmation';
+import { PaymentHistory } from './components/payment/history/history';
+import { FavoritesComponent } from './components/favorites/favorites';
+import { ComingSoonComponent } from './components/coming-soon/coming-soon';
+import { TrendingComponent } from './components/trending/trending';
+import { ShowingNowComponent } from './components/showing-now/showing-now';
+import { Faq } from './components/faq/faq';
+import { About } from './components/about/about';
+import { SpecialOffers } from './components/special-offers/special-offers';
+import { AdminFaqsComponent } from './components/admin/pages/admin-faqs/admin-faqs';
+import { AddEditFaqPageComponent } from './components/admin/pages/add-edit-faq-page/add-edit-faq-page';
 
 export const routes: Routes = [
   {
@@ -36,10 +46,37 @@ export const routes: Routes = [
       { path: 'cinemas', component: Cinemas },
       { path: 'cinemas/:id', component: CinemaDetails },
       { path: 'profile', component: Profile },
+      { path: 'favorites', component: FavoritesComponent },
+      { path: 'coming-soon', component: ComingSoonComponent },
+      { path: 'trending', component: TrendingComponent },
+      { path: 'showing-now', component: ShowingNowComponent },
+      { path: 'faq', component: Faq },
+      { path: 'about', component: About },
+      { path: 'special-offers', component: SpecialOffers },
       { path: 'not-found', component: NotFound },
-      { path: 'movies/:id', component: MovieDetails },
-      { path: 'movies/:id/showtimes', component: MovieShowtimesComponent },
-      { path: 'screenings/:id', component: ShowtimeSelectionComponent },
+      {
+        path: 'movies/:id',
+        loadComponent: () =>
+          import('./components/movies/movie-details/movie-details').then((m) => m.MovieDetails),
+      },
+      {
+        path: 'movies/:id/showtimes',
+        loadComponent: () =>
+          import('./components/movies/movie-showtimes/movie-showtimes').then(
+            (m) => m.MovieShowtimesComponent,
+          ),
+      },
+      {
+        path: 'screenings/:id',
+        loadComponent: () =>
+          import('./components/movies/showtime-selection/showtime-selection').then(
+            (m) => m.ShowtimeSelectionComponent,
+          ),
+      },
+      { path: 'seats/:id', component: SeatSelection },
+      { path: 'payment', component: Payment },
+      { path: 'payment/confirmation/:paymentId', component: PaymentConfirmation },
+      { path: 'payment/history', component: PaymentHistory },
     ],
   },
   {
@@ -95,6 +132,9 @@ export const routes: Routes = [
       { path: 'showtimes', component: AdminShowtimesComponent },
       { path: 'showtimes/add', component: AddEditShowtimePageComponent },
       { path: 'showtimes/edit/:id', component: AddEditShowtimePageComponent },
+      { path: 'faqs', component: AdminFaqsComponent },
+      { path: 'faqs/add', component: AddEditFaqPageComponent },
+      { path: 'faqs/edit/:id', component: AddEditFaqPageComponent },
     ],
   },
   {

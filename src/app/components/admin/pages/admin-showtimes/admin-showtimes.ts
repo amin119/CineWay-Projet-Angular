@@ -3,18 +3,17 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScreeningService, Screening } from '../../../../services/screening.service';
-import { AdminDataTableComponent, TableColumn, TableAction } from '../../components/admin-data-table/admin-data-table';
+import {
+  AdminDataTableComponent,
+  TableColumn,
+  TableAction,
+} from '../../components/admin-data-table/admin-data-table';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { PaginationComponent } from '../../components/pagination/pagination';
 
 @Component({
   selector: 'app-admin-showtimes',
-  imports: [
-    CommonModule,
-    AdminDataTableComponent,
-    PrimaryButtonComponent,
-    PaginationComponent,
-  ],
+  imports: [CommonModule, AdminDataTableComponent, PrimaryButtonComponent, PaginationComponent],
   templateUrl: './admin-showtimes.html',
   styleUrl: './admin-showtimes.css',
 })
@@ -60,7 +59,8 @@ export class AdminShowtimesComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.screeningService.getScreenings()
+    this.screeningService
+      .getScreenings({ limit: 1000 })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (showtimes) => {
@@ -91,7 +91,8 @@ export class AdminShowtimesComponent implements OnInit {
       return;
     }
 
-    this.screeningService.deleteScreening(showtime.id)
+    this.screeningService
+      .deleteScreening(showtime.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -105,13 +106,13 @@ export class AdminShowtimesComponent implements OnInit {
 
   previousPage(): void {
     if (this.page() > 1) {
-      this.page.update(p => p - 1);
+      this.page.update((p) => p - 1);
     }
   }
 
   nextPage(): void {
     if (this.page() < this.totalPages()) {
-      this.page.update(p => p + 1);
+      this.page.update((p) => p + 1);
     }
   }
 }

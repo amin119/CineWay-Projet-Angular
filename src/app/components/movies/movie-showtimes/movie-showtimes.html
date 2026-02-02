@@ -49,7 +49,9 @@
                 (click)="selectDate(date)"
                 [class.bg-primary]="selectedDate() === date"
                 [class.bg-bg-dark]="selectedDate() !== date"
-                class="shrink-0 px-10 py-6 rounded-lg transition-colors hover:bg-primary-600 min-w-40"
+                [class.opacity-50]="!datesWithShowtimes().has(date)"
+                [class.cursor-not-allowed]="!datesWithShowtimes().has(date)"
+                class="shrink-0 px-6 py-4 rounded-lg transition-colors hover:bg-primary-600 min-w-32 relative"
               >
                 <div class="text-center">
                   @if (isToday(date)) {
@@ -58,8 +60,11 @@
                     <div class="text-lg font-semibold">Tomorrow</div>
                   }
                   <div class="text-lg" [class.font-semibold]="!isToday(date) && !isTomorrow(date)">
-                    {{ formatDate(date) }}
+                    {{ date | showtimeDate: 'short' }}
                   </div>
+                  @if (!datesWithShowtimes().has(date)) {
+                    <div class="text-xs text-gray-500 mt-1">No showtimes</div>
+                  }
                 </div>
               </button>
             }
@@ -98,7 +103,7 @@
                       class="flex flex-col items-center justify-center p-4 bg-bg-medium-dark hover:bg-primary rounded-lg transition-colors group"
                     >
                       <span class="text-lg font-bold group-hover:text-white">
-                        {{ formatTime(showtime.screening_time) }}
+                        {{ showtime.screening_time | showtimeDate: 'time' }}
                       </span>
                       <span class="text-xs text-gray-400 group-hover:text-white/80 mt-1">
                         {{ showtime.room.name }}

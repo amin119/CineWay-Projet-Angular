@@ -1,31 +1,54 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { APP_ROUTES } from '../../../config/app-routes.confg';
 import { User } from '../../../auth/model/user';
 import { UserApi } from '../../../services/user-api';
+import { CommonModule } from '@angular/common';
+
+type SectionType = 'profile' | 'payment' | 'history' | 'help';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
-export class Sidebar {
-APP_Routes=APP_ROUTES;
+export class Sidebar implements OnChanges {
+  APP_Routes = APP_ROUTES;
   private userApi = inject(UserApi);
 
- 
   user = this.userApi.user;
+  selectedSection: SectionType = 'profile';
+  isCollapsed = false;
 
-@Output() logout = new EventEmitter<void>();
-@Output() sectionChange = new EventEmitter<'profile' | 'preferences' | 'help'>();
+  @Input() currentSection: SectionType = 'profile';
+  @Output() logout = new EventEmitter<void>();
+  @Output() sectionChange = new EventEmitter<SectionType>();
 
-onLogoutClick() {
-  this.logout.emit();
-}
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentSection']) {
+      this.selectedSection = this.currentSection;
+    }
+  }
 
-selectSection(section: 'profile' | 'preferences' | 'help') {
-  this.sectionChange.emit(section);
-}
+  onLogoutClick() {
+    this.logout.emit();
+  }
 
+  selectSection(section: SectionType) {
+    this.selectedSection = section;
+    this.sectionChange.emit(section);
+  }
+
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
 }

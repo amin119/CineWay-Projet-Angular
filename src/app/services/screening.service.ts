@@ -47,20 +47,20 @@ export class ScreeningService {
     room_id?: number;
     cinema_id?: number;
     date?: string;
+    limit?: number;
   }): Observable<Screening[]> {
     let httpParams = new HttpParams();
     if (params?.movie_id) httpParams = httpParams.set('movie_id', params.movie_id.toString());
     if (params?.room_id) httpParams = httpParams.set('room_id', params.room_id.toString());
     if (params?.cinema_id) httpParams = httpParams.set('cinema_id', params.cinema_id.toString());
     if (params?.date) httpParams = httpParams.set('date', params.date);
+    if (params?.limit) httpParams = httpParams.set('limit', params.limit.toString());
 
-    console.log('Calling screenings API:', this.baseUrl, 'with params:', params);
     return this.http.get<Screening[]>(this.baseUrl, { params: httpParams });
   }
 
   getScreening(id: number): Observable<Screening> {
     const url = `${this.baseUrl}${id}`;
-    console.log('Calling screening API:', url);
     return this.http.get<Screening>(url);
   }
 

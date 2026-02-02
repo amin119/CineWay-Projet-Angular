@@ -14,7 +14,7 @@ export class AdminHeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private toastrService = inject(ToastrService);
-  userApi=inject(UserApi)
+  userApi = inject(UserApi);
 
   user = this.userApi.user;
   menuOpen = false;
@@ -27,5 +27,9 @@ export class AdminHeaderComponent {
     this.authService.logout();
     this.router.navigate(['/']);
     this.toastrService.warning('Good bye!');
+  }
+
+  navigateToHome() {
+    this.router.navigate(['/home']);
   }
 }

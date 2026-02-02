@@ -2,26 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AdminDataTableComponent, TableColumn } from '../../components/admin-data-table/admin-data-table';
 import { SearchInputComponent } from '../../components/search-input/search-input';
-import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { PaginationComponent } from '../../components/pagination/pagination';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
 import { MoviesApi } from '../../../../services/movies-api';
 import { MovieModel } from '../../../../models/movie.model';
 
-type MovieStatus = 'Published' | 'Upcoming' | 'Draft' | 'Archived';
+type MovieState = 'SHOWING' | 'COMING_SOON' | 'ENDED';
 
 @Component({
   selector: 'app-admin-movies',
-  imports: [
-    CommonModule,
-    AdminDataTableComponent,
-    SearchInputComponent,
-    FilterDropdownComponent,
-    PaginationComponent,
-    PrimaryButtonComponent,
-  ],
+  imports: [CommonModule, SearchInputComponent, PaginationComponent, PrimaryButtonComponent],
   templateUrl: './admin-movies.html',
   styleUrls: ['./admin-movies.css'],
 })
@@ -36,27 +27,29 @@ export class AdminMoviesComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly searchTerm = signal('');
-  readonly statusFilter = signal<MovieStatus | 'all'>('all');
+  readonly stateFilter = signal<MovieState | 'all'>('all');
   readonly page = signal(1);
+  readonly updatingMovieId = signal<number | null>(null);
 
   // Computed
-  readonly statusOptions: (MovieStatus | 'all')[] = ['all', 'Published', 'Upcoming', 'Draft', 'Archived'];
+  readonly stateOptions: (MovieState | 'all')[] = ['all', 'SHOWING', 'COMING_SOON', 'ENDED'];
 
-  readonly statusDropdownOptions = computed(() =>
-    this.statusOptions.map((s) => ({ value: s, label: s === 'all' ? 'All statuses' : s }))
+  readonly stateDropdownOptions = computed(() =>
+    this.stateOptions.map((s) => ({
+      value: s,
+      label: s === 'all' ? 'All States' : this.formatStateLabel(s as MovieState),
+    })),
   );
 
   readonly filteredMovies = computed(() => {
     const term = this.searchTerm().toLowerCase();
-    const status = this.statusFilter();
 
     return this.movies().filter((movie) => {
       const matchesTerm =
         !term ||
         movie.title.toLowerCase().includes(term) ||
         movie.description.toLowerCase().includes(term);
-      const matchesStatus = status === 'all' || this.getMovieStatus(movie) === status;
-      return matchesTerm && matchesStatus;
+      return matchesTerm;
     });
   });
 
@@ -80,23 +73,6 @@ export class AdminMoviesComponent implements OnInit {
     return total === 0 ? 0 : Math.min(this.page() * this.pageSize, total);
   });
 
-  readonly tableColumns: TableColumn[] = [
-    { key: 'title', label: 'Movie Title', align: 'left' },
-    { key: 'release_date', label: 'Release Date', align: 'left' },
-    {
-      key: 'duration_minutes',
-      label: 'Duration',
-      align: 'left',
-      format: (value) => this.formatDuration(value),
-    },
-    {
-      key: 'rating',
-      label: 'Rating',
-      align: 'center',
-      format: (value) => (value ? `${value}/10` : 'N/A'),
-    },
-  ];
-
   ngOnInit() {
     this.loadMovies();
   }
@@ -105,7 +81,11 @@ export class AdminMoviesComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.moviesApi.getMovies()
+    const state = this.stateFilter();
+    const stateParam = state === 'all' ? undefined : state;
+
+    this.moviesApi
+      .getMovies(stateParam)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
@@ -113,7 +93,6 @@ export class AdminMoviesComponent implements OnInit {
           this.loading.set(false);
         },
         error: (err) => {
-          console.error('Error loading movies:', err);
           this.error.set('Failed to load movies. Please try again.');
           this.loading.set(false);
         },
@@ -124,31 +103,27 @@ export class AdminMoviesComponent implements OnInit {
     this.router.navigate(['/admin/movies/add']);
   }
 
+  onAddScreening(movie: MovieModel) {
+    this.router.navigate(['/admin/showtimes/add'], { queryParams: { movie_id: movie.id } });
+  }
+
   onEdit(movie: MovieModel) {
     this.router.navigate(['/admin/movies/edit', movie.id]);
   }
 
   onDelete(movie: MovieModel) {
     if (confirm(`Are you sure you want to delete "${movie.title}"?`)) {
-      this.moviesApi.deleteMovie(movie.id)
+      this.moviesApi
+        .deleteMovie(movie.id)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.loadMovies();
           },
           error: (err) => {
-            console.error('Error deleting movie:', err);
             this.error.set('Failed to delete movie. Please try again.');
           },
         });
-    }
-  }
-
-  onTableAction(event: { action: 'edit' | 'delete'; row: MovieModel }) {
-    if (event.action === 'edit') {
-      this.onEdit(event.row);
-    } else {
-      this.onDelete(event.row);
     }
   }
 
@@ -157,9 +132,37 @@ export class AdminMoviesComponent implements OnInit {
     this.page.set(1);
   }
 
-  updateStatus(value: string) {
-    this.statusFilter.set(value as MovieStatus | 'all');
+  updateStateFilter(state: MovieState | 'all') {
+    this.stateFilter.set(state);
     this.page.set(1);
+    this.loadMovies();
+  }
+
+  changeMovieState(movie: MovieModel, newState: MovieState) {
+    if (movie.state === newState) return;
+
+    this.updatingMovieId.set(movie.id);
+
+    this.moviesApi
+      .updateMovie(movie.id, { state: newState } as any)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updatedMovie) => {
+          // Update the movie in the list
+          const currentMovies = this.movies();
+          const index = currentMovies.findIndex((m) => m.id === movie.id);
+          if (index !== -1) {
+            currentMovies[index] = { ...currentMovies[index], state: newState };
+            this.movies.set([...currentMovies]);
+          }
+          this.updatingMovieId.set(null);
+        },
+        error: (err) => {
+          this.error.set('Failed to update movie state. Please try again.');
+          this.updatingMovieId.set(null);
+          setTimeout(() => this.error.set(null), 3000);
+        },
+      });
   }
 
   previousPage() {
@@ -174,19 +177,25 @@ export class AdminMoviesComponent implements OnInit {
     }
   }
 
-  private getMovieStatus(movie: MovieModel): MovieStatus {
-    if (!movie.release_date) return 'Draft';
-    const release = new Date(movie.release_date);
-    const now = new Date();
-    const monthFromNow = new Date();
-    monthFromNow.setMonth(monthFromNow.getMonth() + 1);
-
-    if (release <= now) return 'Published';
-    if (release <= monthFromNow) return 'Upcoming';
-    return 'Draft';
+  formatStateLabel(state: MovieState): string {
+    const labels: Record<MovieState, string> = {
+      SHOWING: 'Showing',
+      COMING_SOON: 'Coming Soon',
+      ENDED: 'Ended',
+    };
+    return labels[state] || state;
   }
 
-  private formatDuration(minutes: number | undefined): string {
+  getStateBadgeClass(state: MovieState): string {
+    const classes: Record<MovieState, string> = {
+      SHOWING: 'state-showing',
+      COMING_SOON: 'state-coming-soon',
+      ENDED: 'state-ended',
+    };
+    return classes[state] || '';
+  }
+
+  formatDuration(minutes: number | undefined): string {
     if (!minutes || minutes <= 0) return 'N/A';
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;

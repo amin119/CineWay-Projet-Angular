@@ -1,8 +1,18 @@
-import { Component, computed, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  OnInit,
+  DestroyRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScreeningService, Screening } from '../../../services/screening.service';
+import { TicketTotalPipe } from '../../../pipes/ticket-total.pipe';
+import { ShowtimeDatePipe } from '../../../pipes/showtime-date.pipe';
 
 interface TicketType {
   id: string;
@@ -15,8 +25,9 @@ interface TicketType {
 
 @Component({
   selector: 'app-showtime-selection',
-  imports: [CommonModule],
+  imports: [CommonModule, TicketTotalPipe, ShowtimeDatePipe],
   templateUrl: './showtime-selection.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowtimeSelectionComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -29,7 +40,6 @@ export class ShowtimeSelectionComponent implements OnInit {
 
   // Data
   screening = signal<Screening | null>(null);
-  otherShowtimes = signal<Screening[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
 
@@ -86,26 +96,6 @@ export class ShowtimeSelectionComponent implements OnInit {
 
   canProceed = computed(() => this.totalTickets() > 0);
 
-  // Group other showtimes by cinema
-  groupedOtherShowtimes = computed(() => {
-    const showtimes = this.otherShowtimes();
-    const grouped = new Map<number, { cinema: any; showtimes: Screening[] }>();
-
-    showtimes.forEach((showtime) => {
-      const cinemaId = showtime.room?.cinema?.id;
-      if (!cinemaId) return;
-      if (!grouped.has(cinemaId)) {
-        grouped.set(cinemaId, {
-          cinema: showtime.room!.cinema!,
-          showtimes: [],
-        });
-      }
-      grouped.get(cinemaId)!.showtimes.push(showtime);
-    });
-
-    return Array.from(grouped.values());
-  });
-
   // Format date helper
   formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -116,32 +106,6 @@ export class ShowtimeSelectionComponent implements OnInit {
       year: 'numeric',
     };
     return date.toLocaleDateString('en-US', options);
-  }
-  private loadOtherShowtimes(movieId: number, excludeId: number): void {
-    console.log(
-      'Loading other showtimes for movie ID:',
-      movieId,
-      'excluding screening ID:',
-      excludeId,
-    );
-    this.screeningService
-      .getScreenings({ movie_id: movieId })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (showtimes) => {
-          console.log('Other showtimes data received:', showtimes);
-          const other = showtimes.filter((s) => s.id !== excludeId);
-          console.log('Filtered other showtimes:', other);
-          this.otherShowtimes.set(other);
-        },
-        error: (err) => {
-          console.error('Error loading other showtimes:', err);
-          console.error('Error details:', err.error);
-          console.error('Error status:', err.status);
-          console.error('Error message:', err.message);
-          // Don't set error, just leave empty
-        },
-      });
   }
   // Format time helper
   formatTime(dateString: string): string {
@@ -154,21 +118,34 @@ export class ShowtimeSelectionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
-      this.router.navigate(['/explore']);
-      return;
-    }
+    // Subscribe to route parameter changes to handle navigation to different screenings
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const id = params.get('id');
 
-    this.screeningId.set(Number(id));
-    this.loadScreening();
+      if (!id) {
+        this.router.navigate(['/explore']);
+        return;
+      }
+
+      const numericId = Number(id);
+
+      if (isNaN(numericId) || numericId <= 0) {
+        this.error.set('Invalid screening ID');
+        return;
+      }
+
+      // Only reload if the screening ID has actually changed
+      if (this.screeningId() !== numericId) {
+        this.screeningId.set(numericId);
+        this.loadScreening();
+      }
+    });
   }
 
   private loadScreening(): void {
     const id = this.screeningId();
     if (!id) return;
 
-    console.log('Loading screening with ID:', id);
     this.loading.set(true);
     this.error.set(null);
 
@@ -177,9 +154,6 @@ export class ShowtimeSelectionComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (screening) => {
-          console.log('Screening data received:', screening);
-          console.log('Movie data:', screening.movie);
-          console.log('Room data:', screening.room);
           this.screening.set(screening);
           this.loading.set(false);
 
@@ -192,16 +166,22 @@ export class ShowtimeSelectionComponent implements OnInit {
               })),
             );
           }
-
-          // Load other showtimes for the same movie
-          this.loadOtherShowtimes(screening.movie_id, id);
         },
         error: (err) => {
-          console.error('Error loading screening:', err);
-          console.error('Error details:', err.error);
-          console.error('Error status:', err.status);
-          console.error('Error message:', err.message);
-          this.error.set('Failed to load showtime details');
+          let errorMessage = 'Failed to load showtime details';
+
+          if (err.status === 0) {
+            errorMessage =
+              'Cannot connect to server. Please check if the backend server is running and CORS is configured properly.';
+          } else if (err.status === 404) {
+            errorMessage = 'Showtime not found. This showtime may have been cancelled or removed.';
+          } else if (err.status === 500) {
+            errorMessage = 'Server error occurred. Please try again later or contact support.';
+          } else if (err.status === 403) {
+            errorMessage = 'Access denied. Please login and try again.';
+          }
+
+          this.error.set(errorMessage);
           this.loading.set(false);
         },
       });
@@ -247,12 +227,17 @@ export class ShowtimeSelectionComponent implements OnInit {
     const screeningId = this.screeningId();
     if (!screeningId) return;
 
-    // Navigate to seat selection page
-    // For now, just show an alert
-    alert('Proceeding to seat selection...');
+    // Navigate to seat selection page with state
+    this.router.navigate(['/seats', screeningId], {
+      state: {
+        movie: this.screening()?.movie,
+        ticketCount: this.totalTickets(),
+      },
+    });
   }
 
-  selectOtherShowtime(showtimeId: number): void {
-    this.router.navigate(['/screenings', showtimeId]);
+  retryLoadScreening(): void {
+    this.error.set(null);
+    this.loadScreening();
   }
 }

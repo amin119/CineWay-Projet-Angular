@@ -11,13 +11,21 @@
     <!-- Error State -->
     @else if (error()) {
       <div class="flex flex-col items-center justify-center py-20">
-        <div class="text-red-400 text-lg mb-4">{{ error() }}</div>
-        <button
-          (click)="goBack()"
-          class="px-6 py-2 bg-primary hover:bg-primary-600 rounded-lg transition-colors"
-        >
-          Go Back
-        </button>
+        <div class="text-red-400 text-lg mb-4 text-center max-w-md">{{ error() }}</div>
+        <div class="flex gap-4">
+          <button
+            (click)="retryLoadScreening()"
+            class="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+          >
+            Try Again
+          </button>
+          <button
+            (click)="goBack()"
+            class="px-6 py-2 bg-primary hover:bg-primary-600 rounded-lg transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     }
     <!-- Content -->
@@ -64,12 +72,12 @@
                   @if (screening()?.screening_time) {
                     <div class="flex items-center gap-2">
                       <span class="bi bi-calendar3 text-lg"></span>
-                      <span>{{ formatDate(screening()!.screening_time) }}</span>
+                      <span>{{ screening()!.screening_time | showtimeDate: 'full' }}</span>
                     </div>
 
                     <div class="flex items-center gap-2">
                       <span class="bi bi-clock text-lg"></span>
-                      <span>{{ formatTime(screening()!.screening_time) }}</span>
+                      <span>{{ screening()!.screening_time | showtimeDate: 'time' }}</span>
                     </div>
                   }
 
@@ -138,7 +146,7 @@
                   @for (item of getTicketSummary(); track item.name) {
                     <div class="flex justify-between">
                       <span class="text-gray-300">{{ item.name }} x {{ item.count }}</span>
-                      <span class="text-white">${{ item.price.toFixed(2) }}</span>
+                      <span class="text-white">{{ item | ticketTotal: 'currency' }}</span>
                     </div>
                   }
 
@@ -147,61 +155,27 @@
                     <span class="text-white">${{ bookingFee().toFixed(2) }}</span>
                   </div>
                 </div>
+
+                <div class="border-t border-white/10 pt-4 flex justify-between items-center">
+                  <span class="text-white text-lg font-bold">Total</span>
+                  <span class="text-[#3d99f5] text-2xl font-bold"> ${{ total().toFixed(2) }} </span>
+                </div>
               } @else {
                 <div class="text-gray-400 text-sm text-center py-4">No tickets selected</div>
               }
-
-              <div class="border-t border-white/10 pt-4 flex justify-between items-center">
-                <span class="text-white text-lg font-bold">Total</span>
-                <span class="text-[#3d99f5] text-2xl font-bold"> ${{ total().toFixed(2) }} </span>
-              </div>
 
               <button
                 (click)="proceedToSeatSelection()"
                 [disabled]="!canProceed()"
                 class="flex w-full min-w-21 cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                [class.bg-primary-1in00]="canProceed()"
+                [class.text-white]="canProceed()"
               >
                 <span class="truncate">Select Seats</span>
               </button>
             </div>
           </div>
         </div>
-
-        <!-- Other Showtimes -->
-        @if (groupedOtherShowtimes().length > 0) {
-          <div class="flex flex-col gap-4 p-6 bg-bg-dark rounded-xl">
-            <h3 class="text-lg md:text-xl font-bold">Other Showtimes for This Movie</h3>
-
-            <div class="space-y-4">
-              @for (group of groupedOtherShowtimes(); track group.cinema.id) {
-                <div class="bg-bg-medium-dark rounded-lg p-4">
-                  <!-- Cinema Info -->
-                  <h4 class="text-md font-semibold mb-3">{{ group.cinema.name }}</h4>
-
-                  <!-- Showtimes -->
-                  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    @for (showtime of group.showtimes; track showtime.id) {
-                      <button
-                        (click)="selectOtherShowtime(showtime.id)"
-                        class="flex flex-col items-center justify-center p-3 bg-primary hover:bg-primary-600 rounded-lg transition-colors group"
-                      >
-                        <span class="text-sm font-bold group-hover:text-white">
-                          {{ formatTime(showtime.screening_time) }}
-                        </span>
-                        <span class="text-xs text-gray-300 group-hover:text-white/80 mt-1">
-                          {{ showtime.room?.name }}
-                        </span>
-                        <span class="text-xs text-gray-400 group-hover:text-white/60 mt-1">
-                          ${{ showtime.price.toFixed(2) }}
-                        </span>
-                      </button>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
       </div>
     }
   </main>
