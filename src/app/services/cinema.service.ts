@@ -27,6 +27,11 @@ export class CinemaService {
     return value?.cinemas ?? [];
   });
 
+  total = computed(() => {
+    const value = this.cinemaResource.value();
+    return value?.total ?? 0;
+  });
+
   error = computed(() => {
     const err = this.cinemaResource.error() as HttpErrorResponse;
     return err;

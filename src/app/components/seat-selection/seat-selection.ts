@@ -500,7 +500,6 @@ export class SeatSelection implements OnInit, OnDestroy {
     this.isProcessing.set(true);
     this.reservationError.set(null);
 
-    // ✅ Use the new toggle endpoint
     this.seatReservationService
       .toggleSeatReservation({
         screening_id: screeningId,
@@ -544,7 +543,7 @@ export class SeatSelection implements OnInit, OnDestroy {
               this.holdExpiresAt.set(expiresAt);
             }
 
-            // ⚡ Optimistic update: Mark seat as reserved_by_me
+            //Mark seat as reserved_by_me
             const statusMap = new Map(this.seatStatuses());
             const existingSeat = statusMap.get(seatId);
             statusMap.set(seatId, {
@@ -566,7 +565,7 @@ export class SeatSelection implements OnInit, OnDestroy {
             const currentIds = this.reservationIds();
             this.reservationIds.set(currentIds.filter((id) => !idsToRemove.includes(id)));
 
-            // ⚡ Optimistic update: Mark seat as available
+            //Mark seat as available
             const statusMap = new Map(this.seatStatuses());
             const existingSeat = statusMap.get(seatId);
             statusMap.set(seatId, {
