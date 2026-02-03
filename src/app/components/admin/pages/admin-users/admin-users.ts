@@ -6,7 +6,6 @@ import { UserModel } from '../../../../models/user.model';
 import { UserApi } from '../../../../services/user-api';
 import { PaginationComponent } from '../../components/pagination/pagination';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button';
-import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown';
 import { SearchInputComponent } from '../../components/search-input/search-input';
 import {
   AdminDataTableComponent,
@@ -20,7 +19,6 @@ import {
     CommonModule,
     PaginationComponent,
     PrimaryButtonComponent,
-    FilterDropdownComponent,
     SearchInputComponent,
     AdminDataTableComponent,
   ],
@@ -33,11 +31,10 @@ export class AdminUsersComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   readonly tableColumns: TableColumn[] = [
-    { key: 'full_name', label: 'User Name', width: '20%' },
-    { key: 'email', label: 'Email', width: '25%' },
-    { key: 'created_at', label: 'Joined', width: '15%', format: 'date' },
-    { key: 'is_active', label: 'Status', width: '15%', format: 'status' },
-    { key: 'is_admin', label: 'Role', width: '10%', format: 'role' },
+    { key: 'full_name', label: 'User Name', width: '25%' },
+    { key: 'email', label: 'Email', width: '30%' },
+    { key: 'created_at', label: 'Joined', width: '20%', format: 'date' },
+    { key: 'is_admin', label: 'Role', width: '15%', format: 'role' },
   ];
 
   readonly tableActions: TableAction[] = [
@@ -47,19 +44,12 @@ export class AdminUsersComponent implements OnInit {
 
   readonly users = signal<UserModel[]>([]);
   readonly searchQuery = signal<string>('');
-  readonly statusFilter = signal<string>('all');
   readonly roleFilter = signal<string>('all');
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
 
   readonly page = signal(1);
   private readonly itemsPerPage = 10;
-
-  readonly statusOptions = [
-    { label: 'All Status', value: 'all' },
-    { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' },
-  ];
 
   readonly roleOptions = [
     { label: 'All Roles', value: 'all' },
@@ -69,24 +59,18 @@ export class AdminUsersComponent implements OnInit {
 
   readonly filteredUsers = computed(() => {
     const query = this.searchQuery().toLowerCase();
-    const status = this.statusFilter();
     const role = this.roleFilter();
 
     return this.users().filter((user) => {
       const matchesSearch =
         user.full_name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query);
 
-      const matchesStatus =
-        status === 'all' ||
-        (status === 'active' && user.is_active) ||
-        (status === 'inactive' && !user.is_active);
-
       const matchesRole =
         role === 'all' ||
         (role === 'admin' && user.is_admin) ||
         (role === 'user' && !user.is_admin);
 
-      return matchesSearch && matchesStatus && matchesRole;
+      return matchesSearch && matchesRole;
     });
   });
 
@@ -128,11 +112,6 @@ export class AdminUsersComponent implements OnInit {
 
   onSearch(query: string): void {
     this.searchQuery.set(query);
-    this.page.set(1);
-  }
-
-  onStatusChange(status: string): void {
-    this.statusFilter.set(status);
     this.page.set(1);
   }
 

@@ -24,7 +24,22 @@
     <div class="flex justify-center items-start min-h-[calc(100vh-300px)]">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="w-full max-w-2xl space-y-6 px-6 py-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Cinema Selection -->
+          <div class="md:col-span-2 space-y-2">
+            <label class="block text-sm font-semibold text-gray-200">Movie *</label>
+            <select
+              formControlName="movie_id"
+              class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white focus:border-primary focus:outline-none transition-colors text-base appearance-none cursor-pointer"
+            >
+              <option value="">Select a movie</option>
+              @for (movie of movies(); track movie.id) {
+                <option [value]="movie.id">{{ movie.title }}</option>
+              }
+            </select>
+            @if (form.get('movie_id')?.invalid && form.get('movie_id')?.touched) {
+              <p class="text-red-400 text-xs">Movie is required</p>
+            }
+          </div>
+
           <div class="space-y-2">
             <label class="block text-sm font-semibold text-gray-200">Cinema *</label>
             <select
@@ -42,12 +57,11 @@
             }
           </div>
 
-          <!-- Room Selection -->
           <div class="space-y-2">
             <label class="block text-sm font-semibold text-gray-200">Room *</label>
             <select
               formControlName="room_id"
-              class="w-full px-4 py-3 bg-form border-2 border-border-dark rounded-lg text-white focus:border-[#3d99f5] focus:outline-none transition-colors text-base appearance-none cursor-pointer"
+              class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white focus:border-primary focus:outline-none transition-colors text-base appearance-none cursor-pointer"
               [disabled]="rooms().length === 0"
             >
               <option value="">Select a room</option>
@@ -58,26 +72,11 @@
             @if (form.get('room_id')?.invalid && form.get('room_id')?.touched) {
               <p class="text-red-400 text-xs">Room is required</p>
             }
-          </div>
-
-          <!-- Movie Selection -->
-          <div class="md:col-span-2 space-y-2">
-            <label class="block text-sm font-semibold text-gray-200">Movie *</label>
-            <select
-              formControlName="movie_id"
-              class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white focus:border-primary focus:outline-none transition-colors text-base appearance-none cursor-pointer"
-            >
-              <option value="">Select a movie</option>
-              @for (movie of movies(); track movie.id) {
-                <option [value]="movie.id">{{ movie.title }}</option>
-              }
-            </select>
-            @if (form.get('movie_id')?.invalid && form.get('movie_id')?.touched) {
-              <p class="text-red-400 text-xs">Movie is required</p>
+            @if (rooms().length === 0 && form.get('cinema_id')?.value) {
+              <p class="text-yellow-400 text-xs">Please select a cinema first</p>
             }
           </div>
 
-          <!-- Screening Date -->
           <div class="space-y-2">
             <label class="block text-sm font-semibold text-gray-200">Screening Date *</label>
             <input
@@ -90,7 +89,6 @@
             }
           </div>
 
-          <!-- Screening Time -->
           <div class="space-y-2">
             <label class="block text-sm font-semibold text-gray-200">Screening Time *</label>
             <input
@@ -103,19 +101,18 @@
             }
           </div>
 
-          <!-- Ticket Price -->
           <div class="md:col-span-2 space-y-2">
-            <label class="block text-sm font-semibold text-gray-200">Ticket Price *</label>
+            <label class="block text-sm font-semibold text-gray-200">Ticket Price ($) *</label>
             <input
               type="number"
-              formControlName="price"
-              placeholder="e.g., 12.99"
+              formControlName="ticket_price"
+              placeholder="e.g., 15.99"
               class="w-full px-4 py-3 bg-bg-form border-2 border-border-dark rounded-lg text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-colors text-base"
               min="0"
               step="0.01"
             />
-            @if (form.get('price')?.invalid && form.get('price')?.touched) {
-              <p class="text-red-400 text-xs">{{ getErrorMessage('price') }}</p>
+            @if (form.get('ticket_price')?.invalid && form.get('ticket_price')?.touched) {
+              <p class="text-red-400 text-xs">{{ getErrorMessage('ticket_price') }}</p>
             }
           </div>
         </div>

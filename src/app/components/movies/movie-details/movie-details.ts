@@ -76,15 +76,6 @@ export class MovieDetails {
     const movieData = this.movieResource.value();
     if (!movieData) return movieData;
 
-    console.log('🎬 Movie Details - Movie Data:', {
-      movieId: movieData.id,
-      title: movieData.title,
-      state: movieData.state,
-      releaseDate: movieData.release_date,
-    });
-
-    // Use the backend state directly
-    console.log('✅ Using backend state:', movieData.state);
     return movieData;
   });
   loading = this.movieResource.isLoading;
@@ -164,17 +155,10 @@ export class MovieDetails {
     const movieId = this.movieId();
     const movieTitle = this.movie()?.title;
 
-    console.log('🔔 Notify Me clicked for movie:', {
-      movieId,
-      movieTitle,
-      currentState: this.movie()?.state,
-    });
-
     this.notificationLoading.set(true);
 
     this.notificationService.subscribeToMovie(movieId).subscribe({
       next: (response: NotificationResponse) => {
-        console.log('✅ Notification subscription successful:', response);
         this.notificationSignedUp.set(response.subscribed);
 
         // You could show a toast notification here
@@ -183,8 +167,6 @@ export class MovieDetails {
         this.notificationLoading.set(false);
       },
       error: (error) => {
-        console.error('❌ Notification subscription failed:', error);
-
         // Handle different error types
         let errorMessage = 'Failed to subscribe to notifications';
         if (error.status === 401) {
@@ -209,16 +191,10 @@ export class MovieDetails {
     const movieId = this.movieId();
     const movieTitle = this.movie()?.title;
 
-    console.log('🔕 Unsubscribe clicked for movie:', {
-      movieId,
-      movieTitle,
-    });
-
     this.notificationLoading.set(true);
 
     this.notificationService.unsubscribeFromMovie(movieId).subscribe({
       next: (response: NotificationResponse) => {
-        console.log('✅ Notification unsubscription successful:', response);
         this.notificationSignedUp.set(response.subscribed);
 
         // You could show a toast notification here
@@ -227,8 +203,6 @@ export class MovieDetails {
         this.notificationLoading.set(false);
       },
       error: (error) => {
-        console.error('❌ Notification unsubscription failed:', error);
-
         let errorMessage = 'Failed to unsubscribe from notifications';
         if (error.status === 401) {
           errorMessage = 'Please log in to manage notifications';
@@ -244,29 +218,9 @@ export class MovieDetails {
     });
   }
 
-  // Debug helper method
-  logMovieStatus() {
-    const currentMovie = this.movie();
-    console.log('🔍 Current Movie Status Check:', {
-      movieId: currentMovie?.id,
-      title: currentMovie?.title,
-      state: currentMovie?.state,
-      isShowing: currentMovie?.state === 'SHOWING',
-      isComingSoon: currentMovie?.state === 'COMING_SOON',
-      isEnded: currentMovie?.state === 'ENDED',
-    });
-    return true; // Return true so it doesn't affect template rendering
-  }
-
   viewShowtimes() {
     // Navigate to movie showtimes page
     const movieId = this.movieId();
-    const currentMovie = this.movie();
-    console.log('🎬 View Showtimes clicked:', {
-      movieId,
-      state: currentMovie?.state,
-      shouldBeVisible: currentMovie?.state === 'SHOWING',
-    });
     if (movieId) {
       this.router.navigate(['/movies', movieId, 'showtimes']);
     }

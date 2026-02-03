@@ -33,13 +33,8 @@ export class AddEditUserPageComponent implements OnInit {
   private initializeForm() {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
+      password: [''],
       full_name: ['', [Validators.required, Validators.minLength(3)]],
-      date_of_birth: [''],
-      is_active: [true],
-      is_admin: [false],
-      dark_mode: [true],
-      notifications_enabled: [true],
-      newsletter_subscribed: [false],
     });
   }
 
@@ -49,6 +44,9 @@ export class AddEditUserPageComponent implements OnInit {
       this.isEditMode.set(true);
       this.userId.set(parseInt(id, 10));
       this.loadUser(parseInt(id, 10));
+    } else {
+      this.form.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
+      this.form.get('password')?.updateValueAndValidity();
     }
   }
 
@@ -76,7 +74,7 @@ export class AddEditUserPageComponent implements OnInit {
     }
 
     this.loading.set(true);
-    const userData = this.form.value;
+    const userData = this.prepareUserData();
 
     const request = this.isEditMode()
       ? this.usersApi.updateUser(this.userId()!, userData)
@@ -88,7 +86,7 @@ export class AddEditUserPageComponent implements OnInit {
         this.router.navigate(['/admin/users']);
       },
       error: (err) => {
-        this.error.set('Failed to save user');
+        this.error.set(err?.error?.detail || 'Failed to save user');
         this.loading.set(false);
       },
     });
@@ -111,6 +109,14 @@ export class AddEditUserPageComponent implements OnInit {
     if (control.errors['email']) return 'Please enter a valid email';
 
     return 'Invalid field';
+  }
+
+  private prepareUserData() {
+    const formData = { ...this.form.value };
+    if (this.isEditMode() || !formData.password) {
+      delete formData.password;
+    }
+    return formData;
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {

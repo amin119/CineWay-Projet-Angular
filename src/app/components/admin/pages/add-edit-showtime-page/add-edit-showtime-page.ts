@@ -2,12 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScreeningService, Screening } from '../../../../services/screening.service';
 import { MoviesApi } from '../../../../services/movies-api';
 import { CinemaService } from '../../../../services/cinema.service';
 import { MovieModel } from '../../../../models/movie.model';
 import { Cinema } from '../../../../models/cinema.model';
+import { APP_API } from '../../../../config/app-api.config';
 
 interface Room {
   id: number;
@@ -25,6 +27,7 @@ export class AddEditShowtimePageComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
   private screeningService = inject(ScreeningService);
   private moviesApi = inject(MoviesApi);
   private cinemasApi = inject(CinemaService);
@@ -49,12 +52,12 @@ export class AddEditShowtimePageComponent implements OnInit {
 
   private initializeForm() {
     this.form = this.fb.group({
+      movie_id: ['', Validators.required],
       cinema_id: ['', Validators.required],
       room_id: ['', Validators.required],
-      movie_id: ['', Validators.required],
       screening_date: ['', Validators.required],
       screening_time: ['', Validators.required],
-      price: ['', [Validators.required, Validators.min(0)]],
+      ticket_price: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -76,7 +79,6 @@ export class AddEditShowtimePageComponent implements OnInit {
         next: (movies) => {
           this.movies.set(movies);
           this.loading.set(false);
-          // Check query param after movies are loaded
           const movieId = this.route.snapshot.queryParams['movie_id'];
           if (movieId) {
             this.form.patchValue({ movie_id: parseInt(movieId, 10) });
@@ -120,12 +122,12 @@ export class AddEditShowtimePageComponent implements OnInit {
           const timeStr = date.toTimeString().slice(0, 5);
 
           this.form.patchValue({
+            movie_id: showtime.movie_id,
             cinema_id: showtime.room?.cinema_id || '',
             room_id: showtime.room_id,
-            movie_id: showtime.movie_id,
             screening_date: dateStr,
             screening_time: timeStr,
-            price: showtime.price,
+            ticket_price: showtime.price,
           });
 
           this.loading.set(false);
@@ -144,16 +146,17 @@ export class AddEditShowtimePageComponent implements OnInit {
       return;
     }
 
-    this.cinemasApi
-      .getCinemaById(cinemaId)
+    this.http
+      .get<Room[]>(`${APP_API.cinema.list}${cinemaId}/rooms/`)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (cinema: Cinema & { rooms?: Room[] }) => {
-          this.rooms.set(cinema.rooms || []);
+        next: (rooms) => {
+          this.rooms.set(rooms || []);
           this.form.get('room_id')?.reset();
         },
         error: (err) => {
           this.error.set('Failed to load cinema rooms');
+          this.rooms.set([]);
         },
       });
   }
@@ -167,12 +170,12 @@ export class AddEditShowtimePageComponent implements OnInit {
     this.loading.set(true);
     const formValue = this.form.value;
 
-    const dateTime = `${formValue.screening_date}T${formValue.screening_time}:00`;
+    const dateTime = `${formValue.screening_date}T${formValue.screening_time}:00Z`;
     const showtimeData = {
       movie_id: formValue.movie_id,
       room_id: formValue.room_id,
       screening_time: dateTime,
-      price: formValue.price,
+      price: formValue.ticket_price,
     };
 
     const request = this.isEditMode()

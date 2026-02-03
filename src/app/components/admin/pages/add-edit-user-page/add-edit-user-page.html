@@ -1,13 +1,17 @@
 <div class="page-shell">
   <div class="page-header text-center">
-    <h1 class="page-title">{{ isEditMode() ? 'Edit User' : 'Add User' }}</h1>
-    <p class="page-subtitle">{{ isEditMode() ? 'Update user account details' : 'Create a new user account' }}</p>
+    <h1 class="page-title">{{ isEditMode() ? 'Edit User' : 'Add Admin User' }}</h1>
+    <p class="page-subtitle">
+      {{ isEditMode() ? 'Update user account details' : 'Create a new admin user account' }}
+    </p>
   </div>
 
   @if (loading()) {
     <div class="section-surface">
       <div class="flex items-center justify-center py-12">
-        <div class="h-10 w-10 animate-spin rounded-full border-4 border-[#2a3644] border-t-[#3d99f5]"></div>
+        <div
+          class="h-10 w-10 animate-spin rounded-full border-4 border-[#2a3644] border-t-[#3d99f5]"
+        ></div>
       </div>
     </div>
   } @else {
@@ -19,14 +23,14 @@
 
     <div class="flex justify-center items-start min-h-[calc(100vh-300px)]">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="w-full max-w-2xl space-y-6 px-6 py-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
             <label for="email" class="block text-sm font-semibold text-gray-200">Email *</label>
             <input
               id="email"
               type="email"
               formControlName="email"
-              placeholder="user@example.com"
+              placeholder="admin@example.com"
               class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white placeholder-gray-500 focus:border-[#3d99f5] focus:outline-none transition-colors text-base"
             />
             @if (form.get('email')?.invalid && form.get('email')?.touched) {
@@ -35,12 +39,14 @@
           </div>
 
           <div class="space-y-2">
-            <label for="full_name" class="block text-sm font-semibold text-gray-200">Full Name *</label>
+            <label for="full_name" class="block text-sm font-semibold text-gray-200"
+              >Full Name *</label
+            >
             <input
               id="full_name"
               type="text"
               formControlName="full_name"
-              placeholder="John Doe"
+              placeholder="Admin User"
               class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white placeholder-gray-500 focus:border-[#3d99f5] focus:outline-none transition-colors text-base"
             />
             @if (form.get('full_name')?.invalid && form.get('full_name')?.touched) {
@@ -48,70 +54,23 @@
             }
           </div>
 
-          <div class="space-y-2">
-            <label for="date_of_birth" class="block text-sm font-semibold text-gray-200">Date of Birth</label>
-            <input
-              id="date_of_birth"
-              type="date"
-              formControlName="date_of_birth"
-              class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white focus:border-[#3d99f5] focus:outline-none transition-colors text-base"
-            />
-          </div>
-        </div>
-
-        <div class="border-t border-[#2a3644] pt-6">
-          <h3 class="text-sm font-semibold text-gray-200 mb-4">Account Settings</h3>
-          <div class="space-y-4 flex flex-col">
-            <label class="flex items-center gap-3 cursor-pointer">
+          @if (!isEditMode()) {
+            <div class="space-y-2 md:col-span-2">
+              <label for="password" class="block text-sm font-semibold text-gray-200"
+                >Password *</label
+              >
               <input
-                type="checkbox"
-                formControlName="is_active"
-                class="w-5 h-5 rounded border-2 border-[#2a3644] bg-[#1a252f] accent-[#3d99f5]"
+                id="password"
+                type="password"
+                formControlName="password"
+                placeholder="Enter secure password"
+                class="w-full px-4 py-3 bg-[#1a252f] border-2 border-[#2a3644] rounded-lg text-white placeholder-gray-500 focus:border-[#3d99f5] focus:outline-none transition-colors text-base"
               />
-              <span class="text-sm text-gray-300">Active Account</span>
-            </label>
-
-            <label class="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                formControlName="is_admin"
-                class="w-5 h-5 rounded border-2 border-[#2a3644] bg-[#1a252f] accent-[#3d99f5]"
-              />
-              <span class="text-sm text-gray-300">Admin Privileges</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="border-t border-[#2a3644] pt-6">
-          <h3 class="text-sm font-semibold text-gray-200 mb-4">User Preferences</h3>
-          <div class="space-y-4 flex flex-col">
-            <label class="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                formControlName="dark_mode"
-                class="w-5 h-5 rounded border-2 border-[#2a3644] bg-[#1a252f] accent-[#3d99f5]"
-              />
-              <span class="text-sm text-gray-300">Dark Mode</span>
-            </label>
-
-            <label class="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                formControlName="notifications_enabled"
-                class="w-5 h-5 rounded border-2 border-[#2a3644] bg-[#1a252f] accent-[#3d99f5]"
-              />
-              <span class="text-sm text-gray-300">Enable Notifications</span>
-            </label>
-
-            <label class="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                formControlName="newsletter_subscribed"
-                class="w-5 h-5 rounded border-2 border-[#2a3644] bg-[#1a252f] accent-[#3d99f5]"
-              />
-              <span class="text-sm text-gray-300">Subscribe to Newsletter</span>
-            </label>
-          </div>
+              @if (form.get('password')?.invalid && form.get('password')?.touched) {
+                <p class="text-red-400 text-xs">{{ getErrorMessage('password') }}</p>
+              }
+            </div>
+          }
         </div>
 
         <div class="flex gap-4 pt-6 border-t border-[#2a3644]">
@@ -127,11 +86,10 @@
             [disabled]="loading() || form.invalid"
             class="flex-1 px-6 py-3 rounded-lg bg-[#3d99f5] text-white hover:bg-[#2e7bc8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold text-base"
           >
-            {{ loading() ? 'Saving...' : isEditMode() ? 'Update' : 'Create' }}
+            {{ loading() ? 'Creating...' : 'Create Admin User' }}
           </button>
         </div>
-        </form>
-      </div>
-    }
-  
+      </form>
+    </div>
+  }
 </div>
