@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { APP_API } from '../../../config/app-api.config';
 import { MovieModel } from '../../../models/movie.model';
@@ -14,7 +14,6 @@ interface CinemaMoviesResponse {
   imports: [Movie],
   templateUrl: './movies-list.html',
   styleUrl: './movies-list.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MoviesList {
   cinemaId = input.required<number>();
